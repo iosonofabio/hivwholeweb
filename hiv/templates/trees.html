@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+ <h1>Phylogenetic trees</h1>
+ {% for tree in trees %}
+  <img src={{ tree.url }} alt="Phylogenetic tree" width="500"/>
+ {% endfor %}
+ <br>
+ 
+ <hl>Select options:</hl>
+ <form action="" method="post" name="tree_settings">
+  {{form.hidden_tag()}}
+  <p>
+    Fragment: {{form.fragment(size=2)}}
+    {% for error in form.errors.fragment %}
+     <span style="color: red;">[{{error}}]</span>
+    {% endfor %}
+    <br>
+  </p>
+  <p><input type="submit" value="Plot"></p>
+ </form>
+{% endblock %}

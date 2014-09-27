@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Hello, {{user.nickname}}!</h1>
+{% for section in sections %}
+ {% if section.url %}
+  <div><p><a href={{section.url}}>{{section.name}}</a></p></div>
+ {% else %} 
+  <div><p>{{section.name}}</p></div>
+  {% endif %}
+{% endfor %}
+{% endblock %}

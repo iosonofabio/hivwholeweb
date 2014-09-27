@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+   {% if title %}
+    <title>{{title}} - Intrapatient HIV evolution</title>
+    {% else %}
+    <title>Intrapatient HIV evolution</title>
+    {% endif %}
+    {% block head_end %}{% endblock %}
+  </head>
+  <body>
+    <div>Intrapatient HIV evolution: <a href="/index">Home</a></div>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }} </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </body>
+</html>
