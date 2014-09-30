@@ -17,19 +17,24 @@ def index():
                            sections=sections,
                           )
 
+
+@hiv.route('/test/')
+def test():
+    return render_template('test.html',
+                           title='BokehJS test')
+
+
 @hiv.route('/trees/', methods=['GET', 'POST'])
-def trees(fragment='F1'):
+def trees():
 
     form = TreeForm()
-    if form.validate_on_submit():
-        fragment = form.fragment.data
-    else:
-        # FIXME: distinguish GET from POST
-        #flash('Fragment not found: '+form.fragment.data)
-        pass
+    fragments = ['F'+str(i+1) for i in xrange(6) if getattr(form, 'F'+str(i+1)).data]
+    if not form.validate_on_submit():
+        flash('Select at least one fragment!')
 
-    trees = [{'url': '/static/images/tree_consensi_'+fragment+'.png'},
-            ]
+    trees = [{'url': '/static/images/tree_consensi_'+fragment+'.png'}
+             for fragment in fragments]
+
     return render_template('trees.html',
                            title='Phylogenetic trees',
                            trees=trees,
@@ -40,10 +45,16 @@ def trees(fragment='F1'):
 def coverage():
     fragment = 'F1'
 
+    bokeh_dict = {'has_data': False}
     from test_bokeh import coverage
-    (js, div) = coverage(fragment=fragment)
-    bokeh_dict = {'js': js,
-                  'div': div}
+    try:
+        (js, div) = coverage(fragment=fragment)
+        bokeh_dict['js'] = js
+        bokeh_dict['div'] = div
+        bokeh_dict['has_data'] = True
+    except IOError:
+        flash('Could not reach the source data.')
+
 
     return render_template('coverage.html',
                            title='Coverage',

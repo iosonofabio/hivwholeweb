@@ -1,8 +1,9 @@
 {% extends "bokeh.html" %}
 {% block content %}
  <h1>{{title}}</h1>
- {{bokeh_dict.div|safe}}
-
- {{bokeh_dict.js|safe}}
+ {% if bokeh_dict.has_data %}
+  {{bokeh_dict.div|safe}}
+  {{bokeh_dict.js|safe}}
+ {% endif %}
 {% endblock %}
 

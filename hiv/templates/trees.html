@@ -10,10 +10,12 @@
  <form action="" method="post" name="tree_settings">
   {{form.hidden_tag()}}
   <p>
-    Fragment: {{form.fragment(size=2)}}
+    Fragments: F1 {{form.F1}} F2 {{form.F2}} F3 {{form.F3}} F4 {{form.F4}} F5 {{form.F5}} F6 {{form.F6}}
+    <!--
     {% for error in form.errors.fragment %}
      <span style="color: red;">[{{error}}]</span>
     {% endfor %}
+    -->
     <br>
   </p>
   <p><input type="submit" value="Plot"></p>
