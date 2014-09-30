@@ -9,7 +9,15 @@
     {% block head_end %}{% endblock %}
   </head>
   <body>
-    <div>Intrapatient HIV evolution: <a href="/index">Home</a></div>
+   <div><a href="/">Intrapatient HIV evolution</a>:
+    {% for section in sections %}
+     {% if section.url %}
+      <a href="{{section.url}}">{{section.name}}</a>
+     {% else %}
+      {{section.name}}
+     {% endif %}
+    {% endfor %}
+    </div>
     <hr>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
