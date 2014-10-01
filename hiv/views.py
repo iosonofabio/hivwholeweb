@@ -14,15 +14,6 @@ def index():
                           )
 
 
-@hiv.route('/test/')
-def test():
-    return render_template('test.html',
-                           title='BokehJS test',
-                           sections=sections,
-                           section_name='Test Bokeh',
-                          )
-
-
 @hiv.route('/trees/', methods=['GET', 'POST'])
 def trees():
     form = TreeForm()
@@ -55,30 +46,20 @@ def coverage():
         if not form.validate_on_submit():
             flash('Select at least one fragment!')
 
-    from test_bokeh import coverage
-    bokeh_dicts = []
+    from .plots_hivwholeseq import coverage
+    plot_dicts = []
     for fragment in fragments:
-        bokeh_dict = {'has_data': False}
-        try:
-            (js, div) = coverage(fragment=fragment)
-            bokeh_dict['js'] = js
-            bokeh_dict['div'] = div
-            bokeh_dict['has_data'] = True
-        except IOError:
-            flash('Could not reach the source data for fragment '+fragment+'.')
-        bokeh_dicts.append(bokeh_dict)
+        plot_dict = {'fragment': fragment,
+                     'chart': 'chart_'+fragment}
+
+        data = coverage(fragment=fragment)
+        plot_dict['data'] = data
+        plot_dicts.append(plot_dict)
 
     return render_template('coverage.html',
                            title='Coverage',
-                           bokeh_dicts=bokeh_dicts,
+                           plot_dicts=plot_dicts,
                            sections=sections,
                            section_name='Coverage',
                            form=form,
                           )
-
-
-@ hiv.route('/test_csv.csv')
-def test_csv():
-    with open('hiv/test_csv.csv', 'r') as f:
-        text = f.read()
-    return text

@@ -1,0 +1,24 @@
+.d3-plot circle {
+   fill: black;
+}
+
+.d3-plot circle:hover {
+   fill: brown;
+}
+
+.d3-axis text {
+  font: 10px sans-serif;
+}
+
+.d3-axis path,
+.d3-axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+.d3-title {
+  
+
+}
