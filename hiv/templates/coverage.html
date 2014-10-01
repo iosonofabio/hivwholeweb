@@ -1,9 +1,89 @@
 {% extends "bokeh.html" %}
 {% block content %}
  <h1>{{title}}</h1>
- {% if bokeh_dict.has_data %}
-  {{bokeh_dict.div|safe}}
-  {{bokeh_dict.js|safe}}
- {% endif %}
+ {% for bokeh_dict in bokeh_dicts %}
+   {% if bokeh_dict.has_data %}
+    {{bokeh_dict.div|safe}}
+    {{bokeh_dict.js|safe}}
+   {% endif %}
+ {% endfor %}
+
+ <hl>Select options:</hl>
+ <form action="" method="post" name="tree_settings">
+  {{form.hidden_tag()}}
+  <p>
+    Fragments: F1 {{form.F1}} F2 {{form.F2}} F3 {{form.F3}} F4 {{form.F4}} F5 {{form.F5}} F6 {{form.F6}}
+    <br>
+  </p>
+  <p><input type="submit" value="Plot"></p>
+ </form>
+
+ <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+ <style>
+
+.chart rect {
+  fill: steelblue;
+}
+
+.chart rect:hover {
+  fill: brown;
+}
+
+.chart text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+</style>
+
+<svg class="chart"></svg>
+<script>
+
+var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    width = 500 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var chart = d3.select(".chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.tsv("/test_csv.csv", type, function(error, data) {
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+  var barWidth = width / data.length;
+
+  var bar = chart.selectAll("g")
+      .data(data)
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(" + i * barWidth + ",0)"; });
+
+  bar.append("rect")
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("width", barWidth - 1);
+
+  bar.append("text")
+      .attr("x", barWidth / 2)
+      .attr("y", function(d) { return y(d.value) + 3; })
+      .attr("dy", ".75em")
+      .text(function(d) { return d.value; });
+});
+
+function type(d) {
+  d.value = +d.value; // coerce to number
+  return d;
+}
+</script>
+
 {% endblock %}
 
