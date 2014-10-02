@@ -16,7 +16,7 @@
  <script>
  var data = {{ plot_dict.data }}
  
- var margin = {top: 40, right: 30, bottom: 50, left: 60},
+ var margin = {top: 60, right: 30, bottom: 50, left: 80},
      width = 500 - margin.left - margin.right,
      height = 500 - margin.top - margin.bottom;
  
@@ -63,8 +63,8 @@
      .call(yAxis)
      .append("text")
      .attr("transform", "rotate(-90)")
-     .attr("y", -50)
-     .attr("x", -230)
+     .attr("dy", "-5em")
+     .attr("x", -height / 2)
      .style("text-anchor", "middle")
      .text("Coverage");
 
@@ -87,12 +87,13 @@
      })
      .append('svg:title')
      .text(function(d, i) {
-       return "Position: (" +  i + ", " + d + ")";
+      return "Position: " +  i + "<br/>Coverage: " + d;
      });
 
 
 $('svg circle').tipsy({ 
    gravity: 'w', 
+   fade: false,
    html: true, 
  });
 

@@ -20,6 +20,21 @@ class TreeForm(Form):
             return False
 
 
+class PhysioForm(Form):
+    p1 = BooleanField('p1', default=True)
+    p2 = BooleanField('p3')
+    p3 = BooleanField('p3')
+    p4 = BooleanField('p4')
+    p5 = BooleanField('p5')
+
+    def validate(self):
+        if super(PhysioForm, self).validate():
+            return any((self.p1.data, self.p2.data, self.p3.data,
+                        self.p4.data, self.p5.data))
+        else:
+            return False
+
+
 class CoverageForm(Form):
     F1 = BooleanField('F1', default=True)
     F2 = BooleanField('F3')

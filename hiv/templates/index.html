@@ -1,11 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Intrapatient HIV evolution</h1>
-{% for section in sections %}
- {% if section.url %}
-  <div><p><a href={{section.url}}>{{section.name}}</a></p></div>
- {% else %} 
-  <div><p>{{section.name}}</p></div>
-  {% endif %}
-{% endfor %}
+<div class="coverpage">
+<div class="introtext">
+We study genetic evolution of HIV during chronic infection on eleven patients, with nine time points per patient spanning a decade. The virus was sequenced whole-genome with a coverage of several thousand. We built this website as a resource for the HIV research community.
+</div>
+<div class=indexthumbs>
+ {% for section in sections %}
+   {% if (loop.index + 3) is divisibleby(3) %}
+    <div class="row">
+   {% endif %}
+    <div class="col-sm-6 col-md-4">
+     <div class="thumbnail">
+       {% if section.thumbnail %}
+        <img width="100" src="{{section.thumbnail}}" alt="...">
+       {% else %}
+        <img width="100" src="/static/images/icons/question.svg" alt="...">
+       {% endif %}
+       <div class="caption">
+         {% if section.url %}
+          <h3><a href={{section.url}}>{{section.name}}</a></h3>
+         {% else %} 
+ 	 <h3>{{section.name}}</h3>
+         {% endif %}
+        <p>{{section.caption}}</p>
+       </div>
+     </div>
+    </div>
+   {% if (loop.index + 3) is divisibleby(3) %}
+    </div>
+   {% endif %}
+ {% endfor %}
+</div>
+</div>
 {% endblock %}

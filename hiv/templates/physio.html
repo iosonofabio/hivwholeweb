@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+ <h1>Viral load and CD4+ count</h1>
+ {% for dict in dicts %}
+  <img src={{ dict.url }} alt="Viral load and CD4+ count" width="500"/>
+ {% endfor %}
+ <br>
+ 
+ <hl>Select options:</hl>
+ <form action="" method="post" name="physio_settings">
+  {{form.hidden_tag()}}
+  <p>
+    Patients: p1 {{form.p1}} p2 {{form.p2}} p3 {{form.p3}} p4 {{form.p4}} p5 {{form.p5}}
+    <br>
+  </p>
+  <p><input type="submit" value="Plot"></p>
+ </form>
+{% endblock %}

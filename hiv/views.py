@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request
 from hiv import hiv
-from forms import TreeForm, CoverageForm
+from forms import TreeForm, PhysioForm, CoverageForm
 from .backbone import sections
 
 
@@ -33,6 +33,28 @@ def trees():
                            form=form,
                            sections=sections,
                            section_name='Phylogenetic trees',
+                          )
+
+
+@hiv.route('/physiological/', methods=['GET', 'POST'])
+def physio():
+    form = PhysioForm()
+    if request.method == 'GET':
+        pnames = ['p1']
+    else:
+        pnames = ['p'+str(i+1) for i in xrange(5) if getattr(form, 'p'+str(i+1)).data]
+        if not form.validate_on_submit():
+            flash('Select at least one patient!')
+
+    dicts = [{'url': '/static/images/physiological/'+pname+'.png'}
+             for pname in pnames]
+
+    return render_template('physio.html',
+                           title='Viral load and CD4+ counts',
+                           dicts=dicts,
+                           form=form,
+                           sections=sections,
+                           section_name='Viral load and CD4+ counts',
                           )
 
 

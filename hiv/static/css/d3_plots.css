@@ -3,11 +3,11 @@
 }
 
 .d3-plot circle:hover {
-   fill: brown;
+   fill: steelblue;
 }
 
 .d3-axis text {
-  font: 10px sans-serif;
+  font: 14px sans-serif;
 }
 
 .d3-axis path,
@@ -19,6 +19,6 @@
 
 
 .d3-title {
-  
-
+  font: 20px sans-serif;
+  font-weight: bold;
 }
