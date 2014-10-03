@@ -1,7 +1,6 @@
 from flask import render_template, flash, redirect, request
 from hiv import hiv
 from forms import TreeForm, PhysioForm, CoverageForm
-from .backbone import sections
 
 
 @hiv.route('/')
@@ -9,7 +8,6 @@ from .backbone import sections
 def index():
     return render_template('index.html',
                            title='Home',
-                           sections=sections,
                            section_name='Home',
                           )
 
@@ -31,7 +29,6 @@ def trees():
                            title='Phylogenetic trees',
                            trees=trees,
                            form=form,
-                           sections=sections,
                            section_name='Phylogenetic trees',
                           )
 
@@ -53,7 +50,6 @@ def physio():
                            title='Viral load and CD4+ counts',
                            dicts=dicts,
                            form=form,
-                           sections=sections,
                            section_name='Viral load and CD4+ counts',
                           )
 
@@ -81,7 +77,24 @@ def coverage():
     return render_template('coverage.html',
                            title='Coverage',
                            plot_dicts=plot_dicts,
-                           sections=sections,
                            section_name='Coverage',
                            form=form,
                           )
+
+
+@hiv.route('/allele_frequencies/')
+def allele_frequencies():
+    data = [[3, 3, 3],
+            [10, 0, 3]]
+
+    plot_dict = {'data': data,
+                 'fragment': 'F0',
+                 'chart': 'chart_F0'}
+
+    return render_template('allele_frequencies.html',
+                           title='Allele frequencies',
+                           plot_dict=plot_dict,
+                           section_name='Allele frequencies',
+                          )
+
+    pass

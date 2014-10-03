@@ -5,7 +5,7 @@
 We study genetic evolution of HIV during chronic infection on eleven patients, with nine time points per patient spanning a decade. The virus was sequenced whole-genome with a coverage of several thousand. We built this website as a resource for the HIV research community.
 </div>
 <div class=indexthumbs>
- {% for section in sections %}
+ {% for section in config.SECTIONS %}
    {% if (loop.index + 3) is divisibleby(3) %}
     <div class="row">
    {% endif %}

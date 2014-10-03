@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block head_end %}
+ <!-- D3.js for plots -->
+ <link href="/static/css/d3_plots.css" rel="stylesheet" type="text/css">
+ <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+ <!-- typsy (patched for D3.js) for fancy tiptools -->
+ <link href="/static/css/tipsy.css" rel="stylesheet" type="text/css" />
+ <script type="text/javascript" src="/static/js/jquery.tipsy.js"></script>
+ <!-- jQuery is also required, but we load it in the base template (bootstrap needs it too) -->
+{% endblock %}
+{% block content %}
+
+ <svg class="d3-plot {{ plot_dict.fragment }}"></svg>
+ <script>
+ var datat = {{ plot_dict.data }};
+
+ var indi = 0, indif = (indi + 1) % datat.length;
+
+ var data = datat[indi];
+
+ var dataf = datat[indif];
+ 
+ var margin = {top: 60, right: 30, bottom: 50, left: 80},
+     width = 500 - margin.left - margin.right,
+     height = 500 - margin.top - margin.bottom;
+ 
+ var y = d3.scale.linear()
+      .domain([0, 11 * d3.max(data)])
+      .range([height, 0]);
+ 
+ var x = d3.scale.linear()
+      .domain([0, data.length + 1])
+      .range([0, width]);
+ 
+ var xAxis = d3.svg.axis()
+     .scale(x)
+     .orient("bottom");
+ 
+ var yAxis = d3.svg.axis()
+     .scale(y)
+     .orient("left");
+ 
+ var chart_ext = d3.select(".{{ plot_dict.fragment }}")
+     .attr("width", width + margin.left + margin.right)
+     .attr("height", height + margin.bottom + margin.top)
+
+chart_ext.append("text")
+     .attr("class", "d3-title")
+     .attr("x", width / 2)
+     .attr("y", margin.top / 2)
+     .text("{{ plot_dict.fragment }}");
+
+var chart = chart_ext.append("g")
+     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+ 
+chart.append("g")
+    .attr("class", "d3-axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", 40)
+    .style("text-anchor", "middle")
+    .text("Position [bp]");
+
+chart.append("g")
+    .attr("class", "d3-axis")
+    .call(yAxis)
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("dy", "-5em")
+    .attr("x", -height / 2)
+    .style("text-anchor", "middle")
+    .text("Allele frequency");
+
+var circles = chart.append("g")
+     .attr("class", "circles present")
+
+var circlesf = chart.append("g")
+     .attr("class", "circles future")
+
+var arrows = chart.append("g")
+     .attr("class", "arrows future")
+
+circles.selectAll()
+     .data(data)
+     .enter()
+     .append("circle")
+     .attr("class", "circle")
+     .attr("cy", function(d, i) { return y(d); })
+     .attr("cx", function(d, i) { return x(i + 1); })
+     .attr("r", 3)
+     .on("mouseover", function(d, i) {
+       d3.select(this)
+	.attr("r", 6);
+
+       circlesf.selectAll()
+	.data(dataf)
+	.enter()
+	.append("circle")
+	.attr("class", "circle future")
+	.attr("cy", function(d, i) { return y(d); })
+	.attr("cx", function(d, i) { return x(i + 1); })
+	.attr("r", 4);
+
+       arrows.selectAll()
+	.data(data)
+	.enter()
+	.append("line")
+	.attr("class", "arrow future")
+	.attr("x1", function(d, i) { return x(i + 1)})
+	.attr("x2", function(d, i) { return x(i + 1)})
+	.attr("y1", function(d, i) { return y(0.9 * d + 0.1 * dataf[i]); })
+	.attr("y2", function(d, i) { return y(0.1 * d + 0.9 * dataf[i]); })
+        .attr("stroke", "black")
+	.attr("stroke-width", 2);
+
+       return ;
+     })
+     .on("mouseout", function(d, i) {
+       d3.select(this)
+	.attr("r", 3);
+
+       circlesf.selectAll(".future")
+	.remove();
+
+       arrows.selectAll(".arrow")
+	.remove();
+     
+       return ;
+     })
+     .append('svg:title')
+     .text(function(d, i) {
+      return "Position: " +  i + "<br/>Frequency: " + d + " -> " + dataf[i];
+     });
+
+$('svg circle').tipsy({ 
+   gravity: 'w', 
+   fade: false,
+   html: true, 
+ });
+
+   
+ </script>
+
+{% endblock %}
+
