@@ -1,4 +1,7 @@
 #/usr/bin/env python
-from hiv import hiv
+from hiv import hiv as app
 
-hiv.run(debug=True)
+
+# Script
+if __name__ == '__main__':
+    app.run(debug=True)
