@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request
-from hiv import hiv
-from forms import TreeForm, PhysioForm, CoverageForm
+from . import hiv
+from .forms import TreeForm, PhysioForm, CoverageForm
 
 
 @hiv.route('/')
