@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block head_end %}
+<script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
+<script src="/static/js/d3.phylogram.js/newick.js" type="text/javascript"></script>
+<script src="/static/js/d3.phylogram.js/d3.phylogram.js" type="text/javascript"></script>
+<script>
+{% for tree in trees %}
+ function load_{{tree.name}}() {
+  var newick = Newick.parse("(cons_init_p20097:0.00000,(157.0_VL96-15555_consensus:0.00055,(597.0_VL98-1253_consensus:0.00055,(1119.0_VK99-2133_consensus:0.00120,((1428.0_VK00-1524_consensus:0.00274,(1289.0_VK99-4204_consensus:0.00056,1317.0_VK00-0119_consensus:0.00055):0.00053)0.87:0.00160,(1896.0_VK01-2965_consensus:0.00112,(2338.0_VK02-4452_consensus:0.00055,(2613.0_VK03-3214_consensus:0.00055,(2674.0_VK03-4298_consensus:0.00055,(2957.0_VK04-3106_consensus:0.00056,3031.0_VK04-4187_consensus:0.00055)1.00:0.00393)0.79:0.00056)0.98:0.00337)1.00:0.00563)0.95:0.00283)0.76:0.00174)0.61:0.00161)0.91:0.00280)0.98:0.00224):1.00000;")
+var newick2 = Newick.parse("(((Crotalus_oreganus_oreganus_cytochrome_b:0.00800,Crotalus_horridus_cytochrome_b:0.05866):0.04732,(Thamnophis_elegans_terrestris_cytochrome_b:0.00366,Thamnophis_atratus_cytochrome_b:0.00172):0.06255):0.00555,(Pituophis_catenifer_vertebralis_cytochrome_b:0.00552,Lampropeltis_getula_cytochrome_b:0.02035):0.05762,((Diadophis_punctatus_cytochrome_b:0.06486,Contia_tenuis_cytochrome_b:0.05342):0.01037,Hypsiglena_torquata_cytochrome_b:0.05346):0.00779);")
+var newickNodes = []
+function buildNewickNodes(node, callback) {
+newickNodes.push(node)
+if (node.branchset) {
+for (var i=0; i < node.branchset.length; i++) {
+buildNewickNodes(node.branchset[i])
+}
+}
+}
+buildNewickNodes(newick)
+d3.phylogram.build('#phylogram', newick, {
+width: 300,
+height: 400
+});
+}
+{% endfor %}
+</script>
+{% endblock %}
+{% block body_attributes %}onload="load_F1() "{% endblock %}
+{% block content %}
+<table>
+<tr>
+<td>
+<h2>Circular Dendrogram</h2>
+<div id='radialtree'></div>
+</td>
+<td>
+<h2>Phylogram</h2>
+<div id='phylogram'></div>
+</td>
+</tr>
+</table>
+{% endblock %}

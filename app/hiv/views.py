@@ -22,8 +22,23 @@ def trees():
         if not form.validate_on_submit():
             flash('Select at least one fragment!')
 
-    trees = [{'url': '/static/images/tree_consensi_'+fragment+'.png'}
-             for fragment in fragments]
+    trees = []
+    for fragment in fragments:
+        # FIXME: do this better
+        import os
+        fn = os.path.dirname(__file__)+'/static/data/trees/consensi_tree_p1_'+fragment+'.newick'
+        with open(fn, 'r') as f:
+            tree = f.read().rstrip('\n')
+            # FIXME: this should be solved upstream!
+            root_dist = tree.split(':')[-1][:-1]
+            if float(root_dist) > 0.01:
+                tree = tree[:tree.rfind(':')]+'0.001;'
+        
+        trees.append({'newick': tree,
+                      'name': fragment,
+                     })
+    #trees = [{'url': '/static/images/tree_consensi_'+fragment+'.png'}
+    #         for fragment in fragments]
 
     return render_template('trees.html',
                            title='Phylogenetic trees',

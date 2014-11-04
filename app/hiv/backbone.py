@@ -11,5 +11,11 @@ sections = [{'name': 'Phylogenetic trees', 'url': '/trees/',
              'thumbnail': '/static/images/icons/allele_frequencies.svg'},
             {'name': 'Haplotype frequencies',
              'thumbnail': '/static/images/icons/haplotype_frequencies.svg'},
+            {'name': 'Site frequency spectra',
+             'thumbnail': '/static/images/icons/SFS.svg'},
+            {'name': 'Propagators',
+             'thumbnail': '/static/images/icons/propagator.svg'},
+            {'name': 'Fixation probability',
+             'thumbnail': '/static/images/icons/fixation_probability.svg'}
            ]
 
