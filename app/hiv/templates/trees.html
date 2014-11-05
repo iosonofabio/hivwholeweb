@@ -5,8 +5,37 @@
 <script type="text/javascript" src="/static/js/d3.phylogram.js/d3.phylogram.js"></script>
 <script>
 {% for tree in trees %}
-   function load_{{tree.name}}() {
-     var newick = Newick.parse("{{tree.newick}}")
+   function load2_{{tree.id}}() {
+    d3.json("/treedata/",
+      function(error, treejson) {
+       update_{{tree.id}}(treejson.newick);
+      });
+   
+   }
+
+   function load3_{{tree.id}}() {
+    d3.xhr("/treedata/", "application/json",
+      function(request) {
+       var treejson = JSON.parse(request.responseText);
+       update_{{tree.id}}(treejson.newick);
+      }
+    );
+   }
+
+   function load_{{tree.id}}() {
+    d3.xhr("/treedata/")
+     .header("Content-Type", "application/json")
+     .post(
+       JSON.stringify({patient: "{{tree.pname}}", fragment: "{{tree.fragment}}"}),
+       function(error, request) {
+	var treejson = JSON.parse(request.responseText);
+	update_{{tree.id}}(treejson.newick);
+       }
+    );
+   }
+
+   function update_{{tree.id}}(treestr) {
+     var newick = Newick.parse(treestr)
      var newickNodes = []
      function buildNewickNodes(node, callback) {
        newickNodes.push(node)
@@ -17,15 +46,24 @@
        }
      }
      buildNewickNodes(newick)
-     d3.phylogram.build('#phylogram_{{tree.name}}', newick, {
-       width: 400,
-       height: 300
+
+     if ('{{tree.pname}}' == 'all') {
+       var width = 1000
+       var height = 2000	
+     } else {
+       var width = 400
+       var height = 300
+     }
+
+     d3.phylogram.build('#phylogram_{{tree.id}}', newick, {
+       width: width,
+       height: height
      });
    }
 {% endfor %}
 
 function load() {
-   {% for tree in trees %}load_{{tree.name}}();{% endfor %}
+   {% for tree in trees %}load_{{tree.id}}();{% endfor %}
 }
 </script>
 {% endblock %}
@@ -34,7 +72,7 @@ function load() {
  <h1>Phylogenetic trees</h1>
  {% for tree in trees %}
    <h3>{{tree.name}}</h3>
-   <div id='phylogram_{{tree.name}}'></div>
+   <div id='phylogram_{{tree.id}}'></div>
  {% endfor %}
  <br>
  

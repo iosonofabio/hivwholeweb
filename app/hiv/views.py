@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, request
+from flask import render_template, flash, redirect, request, jsonify
 from . import hiv
 from .forms import TreeForm, PhysioForm, CoverageForm
 
@@ -16,29 +16,22 @@ def index():
 def trees():
     form = TreeForm()
     if request.method == 'GET':
+        pnames = ['all']
         fragments = ['F1']
     else:
+        #FIXME
+        pnames = ['p1']
         fragments = ['F'+str(i+1) for i in xrange(6) if getattr(form, 'F'+str(i+1)).data]
         if not form.validate_on_submit():
             flash('Select at least one fragment!')
 
     trees = []
-    for fragment in fragments:
-        # FIXME: do this better
-        import os
-        fn = os.path.dirname(__file__)+'/static/data/trees/consensi_tree_p1_'+fragment+'.newick'
-        with open(fn, 'r') as f:
-            tree = f.read().rstrip('\n')
-            # FIXME: this should be solved upstream!
-            root_dist = tree.split(':')[-1][:-1]
-            if float(root_dist) > 0.01:
-                tree = tree[:tree.rfind(':')]+'0.001;'
-        
-        trees.append({'newick': tree,
-                      'name': fragment,
-                     })
-    #trees = [{'url': '/static/images/tree_consensi_'+fragment+'.png'}
-    #         for fragment in fragments]
+    for pname in pnames:
+        for fragment in fragments:
+            trees.append({'pname': pname,
+                          'fragment': fragment,
+                          'name': pname+', '+fragment,
+                          'id': pname+'_'+fragment})
 
     return render_template('trees.html',
                            title='Phylogenetic trees',
@@ -46,6 +39,31 @@ def trees():
                            form=form,
                            section_name='Phylogenetic trees',
                           )
+
+
+@hiv.route('/treedata/', methods=['POST'])
+def tree_json():
+    treedict = request.json
+    fragment = treedict['fragment']
+    pname = treedict['patient']
+
+    def get_tree_string(pname, fragment):
+        # FIXME: do this upstream
+        import os
+        fn = os.path.dirname(__file__)+'/static/data/trees/consensi_tree_'+pname+'_'+fragment+'.newick'
+        if pname == 'all':
+            fn = fn.replace('_all_', '_')
+        with open(fn, 'r') as f:
+            tree = f.read().rstrip('\n')
+            # FIXME: this should be solved upstream!
+            root_dist = tree.split(':')[-1][:-1]
+            if float(root_dist) > 0.01:
+                tree = tree[:tree.rfind(':')]+'0.001;'
+        return tree
+
+    tree = get_tree_string(pname, fragment)
+    treedict = {'newick': tree}
+    return jsonify(**treedict)
 
 
 @hiv.route('/physiological/', methods=['GET', 'POST'])
