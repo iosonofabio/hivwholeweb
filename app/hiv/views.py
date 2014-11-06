@@ -1,6 +1,7 @@
 from flask import render_template, flash, redirect, request, jsonify
 from . import hiv
 from .forms import TreeForm, PhysioForm, CoverageForm
+from .models import TreeModel
 
 
 @hiv.route('/')
@@ -16,12 +17,15 @@ def index():
 def trees():
     form = TreeForm()
     if request.method == 'GET':
+        show_intro = True
         pnames = ['all']
         fragments = ['F1']
     else:
-        #FIXME
-        pnames = ['p1']
-        fragments = ['F'+str(i+1) for i in xrange(6) if getattr(form, 'F'+str(i+1)).data]
+        show_intro = False
+        pnames = ['p'+str(i+1) for i in xrange(11)
+                  if getattr(form, 'p'+str(i+1)).data]
+        fragments = ['F'+str(i+1) for i in xrange(6)
+                     if getattr(form, 'F'+str(i+1)).data]
         if not form.validate_on_submit():
             flash('Select at least one fragment!')
 
@@ -37,6 +41,7 @@ def trees():
                            title='Phylogenetic trees',
                            trees=trees,
                            form=form,
+                           show_intro=show_intro,
                            section_name='Phylogenetic trees',
                           )
 
@@ -47,21 +52,7 @@ def tree_json():
     fragment = treedict['fragment']
     pname = treedict['patient']
 
-    def get_tree_string(pname, fragment):
-        # FIXME: do this upstream
-        import os
-        fn = os.path.dirname(__file__)+'/static/data/trees/consensi_tree_'+pname+'_'+fragment+'.newick'
-        if pname == 'all':
-            fn = fn.replace('_all_', '_')
-        with open(fn, 'r') as f:
-            tree = f.read().rstrip('\n')
-            # FIXME: this should be solved upstream!
-            root_dist = tree.split(':')[-1][:-1]
-            if float(root_dist) > 0.01:
-                tree = tree[:tree.rfind(':')]+'0.001;'
-        return tree
-
-    tree = get_tree_string(pname, fragment)
+    tree = TreeModel(pname, fragment).get_newick_string()
     treedict = {'newick': tree}
     return jsonify(**treedict)
 
