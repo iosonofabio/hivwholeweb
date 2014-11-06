@@ -1,7 +1,7 @@
 # Taken directly from Flask documentation
 # http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/
 import sys
-sys.path.insert(0, '/var/www/hivwholeweb/app/hivwholeweb')
+sys.path.insert(0, '/var/www/hivwholeweb/app')
 from hiv import hiv as application
 
 
