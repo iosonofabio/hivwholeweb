@@ -21,8 +21,6 @@ class TreeModel(object):
         folder = os.path.dirname(__file__)
         folder = folder+'/static/data/trees/'
         fn = 'consensi_tree_'+self.pname+'_'+self.fragment+'.newick'
-        if self.pname == 'all':
-            fn = fn.replace('_all_', '_')
         return folder+fn
 
     
