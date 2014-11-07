@@ -111,7 +111,10 @@ class CoverageModel(object):
         times = npz['times']
         cov = npz['cov']
 
-        cov = [[t, list(co)] for (t, co) in izip(times, cov)]
+        # Saturate to one, the JS client would take forever to do that
+        cov = [[t, list(np.maximum(0.8, co))] for (t, co) in izip(times, cov)]
+
+        print len(cov)
 
         data = {'cov': cov}
         return data

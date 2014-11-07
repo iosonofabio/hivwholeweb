@@ -50,7 +50,7 @@ class PatForm(Form):
     p11 = BooleanField('p11')
 
     def validate(self):
-        if super(PhysioForm, self).validate():
+        if super(PatForm, self).validate():
             return any((self.p1.data, self.p2.data, self.p3.data,
                         self.p4.data, self.p5.data, self.p6.data,
                         self.p7.data, self.p8.data, self.p9.data,

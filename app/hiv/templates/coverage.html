@@ -1,6 +1,39 @@
 {% extends "plots.html" %}
 {% block head_end %}
 {{ super() }}
+<style>
+
+.axis {
+  font: 12px sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.axis .domain {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: .3;
+  stroke-width: 10px;
+  stroke-linecap: round;
+}
+
+.axis .halo {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 8px;
+  stroke-linecap: round;
+}
+
+.slider .handle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: .5;
+  stroke-width: 1.25px;
+  cursor: crosshair;
+}
+
+</style>
 <script>
 
  function get_ymax(data) {
@@ -17,14 +50,23 @@
 
  function update(data, id) {
 
-  var margin = {top: 60, right: 30, bottom: 50, left: 80},
+  var datal = data.cov.length;
+
+  var margin = {top: 60, right: 30, bottom: 150, left: 80},
       width = 1000 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+      height = 550 - margin.top - margin.bottom;
+
+  var chart_ext = d3.select("."+id)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.bottom + margin.top);
+
+  var chart = chart_ext.append("g")
+       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   
   var covmax = get_ymax(data.cov);
 
   var y = d3.scale.log()
-       .domain([1, covmax])
+       .domain([0.5, covmax])
        .range([height, 0]);
   
   var x = d3.scale.linear()
@@ -38,13 +80,6 @@
   var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left");
-
-  var chart_ext = d3.select("."+id)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.bottom + margin.top);
-
-  var chart = chart_ext.append("g")
-       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   chart.append("g")
        .attr("class", "d3-axis")
@@ -66,23 +101,85 @@
        .style("text-anchor", "middle")
        .text("Coverage");
 
-  // This works but it's very slow!
-  // We should put a slider for time and only plot 10k points at a time :-P
+  // Initial data
   chart.append("g")
-       .attr("class", "circles COVT")
-       .selectAll()
-       .data(data.cov)
-       .enter()
-       .append("g")
        .attr("class", "circles COV")
        .selectAll()
-       .data(function(d) { return d[1]; })
+       .data(data.cov[0][1])
        .enter()
        .append("circle")
-       .attr("class", "circle")
+       .attr("class", "circle cov_point")
        .attr("cx", function(d, i) { return x(i); })
        .attr("cy", function(d) { return y(d); })
        .attr("r", 3);
+
+  // Slider
+  var xsl = d3.scale.linear()
+    .domain([1, datal])
+    .range([0, width])
+    .clamp(true);
+
+  var brush = d3.svg.brush()
+      .x(xsl)
+      .extent([1, 1])
+      .on("brush", brushed);
+
+  chart.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (height + 70) + ")")
+      .call(d3.svg.axis()
+        .scale(xsl)
+        .orient("bottom")
+        .ticks(datal)
+	.tickFormat(function(d, i){ return data.cov[i][0]; })
+        .tickPadding(12))
+    .select(".domain")
+    .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+      .attr("class", "halo");
+
+  chart.append("text")
+      .attr("x", width / 2)
+      .attr("y", height + 130)
+      .style("text-anchor", "middle")
+      .text("Time from infection [days]");
+
+  var slider = chart.append("g")
+      .attr("class", "slider")
+      .call(brush);
+
+  
+  slider.selectAll(".extent,.resize")
+      .remove();
+  
+  slider.select(".background")
+      .attr("height", height);
+  
+  var handle = slider.append("circle")
+      .attr("class", "handle")
+      .attr("transform", "translate(0," + (height + 70) + ")")
+      .attr("r", 9);
+  
+  slider
+      .call(brush.event)
+    .transition() // gratuitous intro!
+      .duration(750)
+      .call(brush.extent([1, 1]))
+      .call(brush.event);
+  
+  function brushed() {
+    var value = brush.extent()[0];
+  
+    if (d3.event.sourceEvent) { // not a programmatic event
+      value = xsl.invert(d3.mouse(this)[0]);
+      brush.extent([value, value]);
+    }
+
+    var i_time = Math.min(datal - 1, Math.max(0, Math.round(value) - 1));
+    handle.attr("cx", xsl(i_time + 1));
+    chart.selectAll(".cov_point")
+       .attr("cy", function(d, i) { return y(data.cov[i_time][1][i]); })
+}
+
 
  }
 
