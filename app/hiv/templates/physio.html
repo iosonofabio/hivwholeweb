@@ -27,120 +27,121 @@
    return ymax;
   }
 
- {% for dict in dicts %}
-   function load_{{dict.id}}() {
-    d3.xhr("/physiological/")
-     .header("Content-Type", "application/json")
-     .post(
-       JSON.stringify({patient: "{{dict.pname}}"}),
-       function(error, request) {
-	var data = JSON.parse(request.responseText);
-	update_{{dict.id}}(data.data);
-       }
-    );
-   }
+  function load_single(id, pname) {
+   d3.xhr("/physiological/")
+    .header("Content-Type", "application/json")
+    .post(
+      JSON.stringify({patient: pname}),
+      function(error, request) {
+       var data = JSON.parse(request.responseText);
+       update(data.data, id);
+      }
+   );
+  }
 
-   function update_{{dict.id}}(data) {
+  function update(data, id) {
 
-    var margin = {top: 60, right: 60, bottom: 50, left: 80},
-        width = 500 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+   var margin = {top: 60, right: 60, bottom: 50, left: 80},
+       width = 500 - margin.left - margin.right,
+       height = 500 - margin.top - margin.bottom;
 
-    var tmax = get_tmax(data);
-    var vlmax = get_ymax(data.vl);
-    var ccmax = get_ymax(data.cc);
+   var tmax = get_tmax(data);
+   var vlmax = get_ymax(data.vl);
+   var ccmax = get_ymax(data.cc);
 
-    var y_vl = d3.scale.log()
-         .domain([40, 1.1 * vlmax])
-         .range([height, 0]);
+   var y_vl = d3.scale.log()
+        .domain([40, 1.1 * vlmax])
+        .range([height, 0]);
 
-    var y_cc = d3.scale.linear()
-         .domain([0, 1.1 * ccmax])
-         .range([height, 0]);
+   var y_cc = d3.scale.linear()
+        .domain([0, 1.1 * ccmax])
+        .range([height, 0]);
+   
+   var x = d3.scale.linear()
+        .domain([0, 1.1 * tmax])
+        .range([0, width]);
+
+   var xAxis = d3.svg.axis()
+       .scale(x)
+       .orient("bottom");
+   
+   var yAxis_vl = d3.svg.axis()
+       .scale(y_vl)
+       .orient("left");
+
+   var yAxis_cc = d3.svg.axis()
+       .scale(y_cc)
+       .orient("right");
+
+   var chart_ext = d3.select("."+id)
+       .attr("width", width + margin.left + margin.right)
+       .attr("height", height + margin.bottom + margin.top);
+
+   var chart = chart_ext.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+   chart.append("g")
+        .attr("class", "d3-axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 40)
+        .style("text-anchor", "middle")
+        .text("Time from infection [days]");
     
-    var x = d3.scale.linear()
-         .domain([0, 1.1 * tmax])
-         .range([0, width]);
+   chart.append("g")
+        .attr("class", "d3-axis")
+        .call(yAxis_vl)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("dy", "-4.5em")
+        .attr("x", -height / 2)
+        .style("text-anchor", "middle")
+        .text("Viral load [copies/ml]");
 
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
-    
-    var yAxis_vl = d3.svg.axis()
-        .scale(y_vl)
-        .orient("left");
+   chart.append("g")
+        .attr("class", "d3-axis")
+        .attr("transform", "translate(" + width + " ,0)")
+        .call(yAxis_cc)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("dy", "4em")
+        .attr("x", -height / 2)
+        .style("text-anchor", "middle")
+        .text("CD4+ counts [copies/ml]");
 
-    var yAxis_cc = d3.svg.axis()
-        .scale(y_cc)
-        .orient("right");
+   chart.append("g")
+        .attr("class", "circles VL")
+        .selectAll()
+        .data(data.vl)
+        .enter()
+        .append("circle")
+        .attr("class", "circle")
+        .attr("cx", function(d) { return x(d[0]); })
+        .attr("cy", function(d) { return y_vl(d[1]); })
+        .attr("r", 3);
 
-    var chart_ext = d3.select(".{{dict.id}}")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.bottom + margin.top);
-
-    var chart = chart_ext.append("g")
-         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    chart.append("g")
-         .attr("class", "d3-axis")
-         .attr("transform", "translate(0," + height + ")")
-         .call(xAxis)
-         .append("text")
-         .attr("x", width / 2)
-         .attr("y", 40)
-         .style("text-anchor", "middle")
-         .text("Time from infection [days]");
-     
-    chart.append("g")
-         .attr("class", "d3-axis")
-	 .call(yAxis_vl)
-	 .append("text")
-         .attr("transform", "rotate(-90)")
-         .attr("dy", "-4.5em")
-         .attr("x", -height / 2)
-         .style("text-anchor", "middle")
-	 .text("Viral load [copies/ml]");
-
-    chart.append("g")
-         .attr("class", "d3-axis")
-	 .attr("transform", "translate(" + width + " ,0)")
-	 .call(yAxis_cc)
-	 .append("text")
-         .attr("transform", "rotate(-90)")
-         .attr("dy", "4em")
-         .attr("x", -height / 2)
-         .style("text-anchor", "middle")
-         .text("CD4+ counts [copies/ml]");
-
-    chart.append("g")
-         .attr("class", "circles VL")
-         .selectAll()
-         .data(data.vl)
-	 .enter()
-	 .append("circle")
-         .attr("class", "circle")
-         .attr("cx", function(d) { return x(d[0]); })
-         .attr("cy", function(d) { return y_vl(d[1]); })
-         .attr("r", 3);
-
-    chart.append("g")
-         .attr("class", "circles CC")
-         .selectAll()
-         .data(data.cc)
-	 .enter()
-	 .append("rect")
-         .attr("class", "rect")
-         .attr("x", function(d) { return x(d[0]) - 3; })
-	 .attr("y", function(d) { return y_cc(d[1]) - 3; })
-         .attr("width", 6)
-         .attr("height", 6)
-	 .attr("style", "fill:steelblue");
+   chart.append("g")
+        .attr("class", "circles CC")
+        .selectAll()
+        .data(data.cc)
+        .enter()
+        .append("rect")
+        .attr("class", "rect")
+        .attr("x", function(d) { return x(d[0]) - 3; })
+        .attr("y", function(d) { return y_cc(d[1]) - 3; })
+        .attr("width", 6)
+        .attr("height", 6)
+        .attr("style", "fill:steelblue");
 
 
-   }
- {% endfor %}
+  }
+
  function load() {
-      {% for dict in dicts %}load_{{dict.id}}();{% endfor %}
+  {% for dict in dicts %}
+  load_single("{{dict.id}}", "{{dict.pname}}");
+  {% endfor %}
  }
 </script>
 {% endblock %}

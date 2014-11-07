@@ -65,7 +65,7 @@ def physio():
         pnames = ['p1']
     else:
         show_intro = False
-        pnames = ['p'+str(i+1) for i in xrange(5)
+        pnames = ['p'+str(i+1) for i in xrange(11)
                   if getattr(form, 'p'+str(i+1)).data]
         if not form.validate_on_submit():
             flash('Select at least one patient!')
