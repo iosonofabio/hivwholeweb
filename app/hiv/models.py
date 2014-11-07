@@ -94,3 +94,25 @@ class DivdivModel(object):
         return data
 
 
+class CoverageModel(object):
+    def __init__(self, pname):
+        self.pname = pname
+
+
+    def get_coverage_filename(self, full=True):
+        fn = 'coverage_'+self.pname+'_genomewide.npz'
+        return data_folder[full]+'one_site/'+fn
+
+
+    def get_data(self):
+        from itertools import izip
+        import numpy as np
+        npz = np.load(self.get_coverage_filename())
+        times = npz['times']
+        cov = npz['cov']
+
+        cov = [[t, list(co)] for (t, co) in izip(times, cov)]
+
+        data = {'cov': cov}
+        return data
+

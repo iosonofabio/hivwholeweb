@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, request, jsonify
 from . import hiv
-from .forms import PatFragForm, PhysioForm, CoverageForm
-from .models import TreeModel, PhysioModel, DivdivModel
+from .forms import PatFragForm, PatForm
+from .models import TreeModel, PhysioModel, DivdivModel, CoverageModel
 
 
 @hiv.route('/')
@@ -59,7 +59,7 @@ def physio():
         data = {'data': PhysioModel(pname).get_data()}
         return jsonify(**data)
 
-    form = PhysioForm()
+    form = PatForm()
     if request.method == 'GET':
         show_intro = True
         pnames = ['p1']
@@ -72,7 +72,6 @@ def physio():
 
     dicts = []
     for pname in pnames:
-        pm = PhysioModel(pname)
         dicts.append({'pname': pname,
                       'name': pname,
                       'id': pname})
@@ -126,27 +125,31 @@ def divdiv():
 
 @hiv.route('/coverage/', methods=['GET', 'POST'])
 def coverage():
-    form = CoverageForm()
+    if request.json:
+        pname = request.json['patient']
+        data = {'data': CoverageModel(pname).get_data()}
+        return jsonify(**data)
+
+    form = PatForm()
     if request.method == 'GET':
-        fragments = ['F1']
+        show_intro = True
+        pnames = ['p1']
     else:
-        fragments = ['F'+str(i+1) for i in xrange(6) if getattr(form, 'F'+str(i+1)).data]
+        show_intro = False
+        pnames = ['p'+str(i+1) for i in xrange(11)
+                  if getattr(form, 'p'+str(i+1)).data]
         if not form.validate_on_submit():
-            flash('Select at least one fragment!')
+            flash('Select at least one patient!')
 
-    from .plots_hivwholeseq import coverage
-    plot_dicts = []
-    for fragment in fragments:
-        plot_dict = {'fragment': fragment,
-                     'chart': 'chart_'+fragment}
-
-        data = coverage(fragment=fragment)
-        plot_dict['data'] = data
-        plot_dicts.append(plot_dict)
+    dicts = []
+    for pname in pnames:
+        dicts.append({'pname': pname,
+                      'name': pname,
+                      'id': pname})
 
     return render_template('coverage.html',
                            title='Coverage',
-                           plot_dicts=plot_dicts,
+                           dicts=dicts,
                            section_name='Coverage',
                            form=form,
                           )

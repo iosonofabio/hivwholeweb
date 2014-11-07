@@ -37,18 +37,6 @@
   return ymin;
  }
 
- function load_single(id, pname, fragment) {
-  d3.xhr("/divdiv/")
-   .header("Content-Type", "application/json")
-   .post(
-     JSON.stringify({patient: pname, fragment: fragment}),
-     function(error, request) {
-      var data = JSON.parse(request.responseText);
-      update(data.data, id);
-     }
-  );
- }
-
  function update(data, id) {
 
   var margin = {top: 60, right: 60, bottom: 50, left: 80},
@@ -149,6 +137,18 @@
 
  }
 
+ function load_single(id, pname, fragment) {
+  d3.xhr("/divdiv/")
+   .header("Content-Type", "application/json")
+   .post(
+     JSON.stringify({patient: pname, fragment: fragment}),
+     function(error, request) {
+      var data = JSON.parse(request.responseText);
+      update(data.data, id);
+     }
+  );
+ }
+
  function load() {
   {% for dict in dicts %}
   load_single("{{dict.id}}", "{{dict.pname}}", "{{dict.fragment}}");
@@ -158,7 +158,7 @@
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- <h1>Divergence and diversity</h1>
+ <h1>{{section_name}}</h1>
  {% if show_intro %}
   <h4>
    Genetic divergence measures the fraction of genetic sites that have mutated in the viral population from the initial virus. Diversity indicates the fraction of mutated sites within a single viral population.

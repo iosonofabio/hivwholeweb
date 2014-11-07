@@ -1,115 +1,135 @@
-{% extends "base.html" %}
+{% extends "plots.html" %}
 {% block head_end %}
- <!-- D3.js for plots -->
- <link href="/static/css/d3_plots.css" rel="stylesheet" type="text/css">
- <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+{{ super() }}
+<script>
 
- <!-- typsy (patched for D3.js) for fancy tiptools -->
- <link href="/static/css/tipsy.css" rel="stylesheet" type="text/css" />
- <script type="text/javascript" src="/static/js/jquery.tipsy.js"></script>
- <!-- jQuery is also required, but we load it in the base template (bootstrap needs it too) -->
-{% endblock %}
-{% block content %}
+ function get_ymax(data) {
+  var ymax = d3.max(data[0][1]);
+  var ytmp;
+  for (i = 1; i < data.length; i++) {
+    ytmp = d3.max(data[i][1]);
+    if (ytmp > ymax) {
+     ymax = ytmp;
+    }
+  }
+  return ymax;
+ }
 
-{% for plot_dict in plot_dicts %}
- <svg class="d3-plot {{ plot_dict.fragment }}"></svg>
- <script>
- var data = {{ plot_dict.data }}
- 
- var margin = {top: 60, right: 30, bottom: 50, left: 80},
-     width = 500 - margin.left - margin.right,
-     height = 500 - margin.top - margin.bottom;
- 
- var y = d3.scale.linear()
-      .domain([0, d3.max(data)])
-      .range([height, 0]);
- 
- var x = d3.scale.linear()
-      .domain([0, data.length])
-      .range([0, width]);
- 
- var xAxis = d3.svg.axis()
-     .scale(x)
-     .orient("bottom");
- 
- var yAxis = d3.svg.axis()
-     .scale(y)
-     .orient("left");
- 
- var {{ plot_dict.chart }} = d3.select(".{{ plot_dict.fragment }}")
-     .attr("width", width + margin.left + margin.right)
-     .attr("height", height + margin.bottom + margin.top)
-     .append("g")
-     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
- 
- {{ plot_dict.chart }}.append("text")
-     .attr("class", "d3-title")
-     .attr("x", width / 2)
-     .attr("y", -20)
-     .text("{{ plot_dict.fragment }}");
- 
- {{ plot_dict.chart }}.append("g")
-     .attr("class", "d3-axis")
-     .attr("transform", "translate(0," + height + ")")
-     .call(xAxis)
-     .append("text")
-     .attr("x", width / 2)
-     .attr("y", 40)
-     .style("text-anchor", "middle")
-     .text("Position [bp]");
- 
- {{ plot_dict.chart }}.append("g")
-     .attr("class", "d3-axis")
-     .call(yAxis)
-     .append("text")
-     .attr("transform", "rotate(-90)")
-     .attr("dy", "-5em")
-     .attr("x", -height / 2)
-     .style("text-anchor", "middle")
-     .text("Coverage");
+ function update(data, id) {
 
- {{ plot_dict.chart }}.selectAll("g")
-     .data(data)
-     .enter()
-     .append("circle")
-     .attr("cy", function(d, i) { return y(d); })
-     .attr("cx", function(d, i) { return x(i); })
-     .attr("r", 2)
-     .on("mouseover", function(d, i) {
-       d3.select(this)
-       .attr("r", 10);
-       return ;
-     })
-     .on("mouseout", function(d, i) {
-       d3.select(this)
-       .attr("r", 2);
-       return ;
-     })
-     .append('svg:title')
-     .text(function(d, i) {
-      return "Position: " +  i + "<br/>Coverage: " + d;
-     });
+  var margin = {top: 60, right: 30, bottom: 50, left: 80},
+      width = 1000 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+  
+  var covmax = get_ymax(data.cov);
 
+  var y = d3.scale.log()
+       .domain([1, covmax])
+       .range([height, 0]);
+  
+  var x = d3.scale.linear()
+       .domain([-0.05 * data.cov[0][1].length, 1.05 * data.cov[0][1].length])
+       .range([0, width]);
+  
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
+  
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
 
-$('svg circle').tipsy({ 
-   gravity: 'w', 
-   fade: false,
-   html: true, 
- });
+  var chart_ext = d3.select("."+id)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.bottom + margin.top);
 
+  var chart = chart_ext.append("g")
+       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  chart.append("g")
+       .attr("class", "d3-axis")
+       .attr("transform", "translate(0," + height + ")")
+       .call(xAxis)
+       .append("text")
+       .attr("x", width / 2)
+       .attr("y", 40)
+       .style("text-anchor", "middle")
+       .text("Position [bp]");
    
- </script>
-{% endfor %}
+  chart.append("g")
+       .attr("class", "d3-axis")
+       .call(yAxis)
+       .append("text")
+       .attr("transform", "rotate(-90)")
+       .attr("dy", "-4.5em")
+       .attr("x", -height / 2)
+       .style("text-anchor", "middle")
+       .text("Coverage");
 
- <div class="form_options">
-  <hl>Select options:</hl>
-  <form action="" method="post" name="coverage_settings">
-   {{form.hidden_tag()}}
-   <p>
-     Fragments: F1 {{form.F1}} F2 {{form.F2}} F3 {{form.F3}} F4 {{form.F4}} F5 {{form.F5}} F6 {{form.F6}}
-     <br>
-   </p>
-   <p><input type="submit" value="Plot"></p>
+  // This works but it's very slow!
+  // We should put a slider for time and only plot 10k points at a time :-P
+  chart.append("g")
+       .attr("class", "circles COVT")
+       .selectAll()
+       .data(data.cov)
+       .enter()
+       .append("g")
+       .attr("class", "circles COV")
+       .selectAll()
+       .data(function(d) { return d[1]; })
+       .enter()
+       .append("circle")
+       .attr("class", "circle")
+       .attr("cx", function(d, i) { return x(i); })
+       .attr("cy", function(d) { return y(d); })
+       .attr("r", 3);
+
+ }
+
+  function load_single(id, pname) {
+   d3.xhr("/coverage/")
+    .header("Content-Type", "application/json")
+    .post(
+      JSON.stringify({patient: pname}),
+      function(error, request) {
+       var data = JSON.parse(request.responseText);
+       update(data.data, id);
+      }
+   );
+  }
+
+ function load() {
+  {% for dict in dicts %}
+  load_single("{{dict.id}}", "{{dict.pname}}");
+  {% endfor %}
+ }
+</script>
+{% endblock %}
+{% block body_attributes %}onload="load()"{% endblock %}
+{% block content %}
+ <h1>{{section_name}}</h1>
+ {% if show_intro %}
+  <h4>
+   Some intro.
+  </h4>
+ {% endif %}
+ {% for dict in dicts %}
+  <h3>{{dict.name}}</h3>
+  <svg class="d3-plot {{dict.id}}"></svg>
+ {% endfor %}
+ <br>
+
+ <h3>Select options:</h3>
+ <form role="form" action="" method="post" name="coverage_settings">
+  {{form.hidden_tag()}}
+  <div class="form-group">
+  <label for="patients">Patients</label>
+  <p id="patients">
+    Patients: p1 {{form.p1}} p2 {{form.p2}} p3 {{form.p3}} p4 {{form.p4}} p5 {{form.p5}} p6 {{form.p6}} p7 {{form.p7}} p8 {{form.p8}} p9 {{form.p9}} p10 {{form.p10}}  p11 {{form.p11}}
+    <br>
+  </p>
+  </div>
+  <button type="submit" class="btn btn-default">Plot</button>
   </form>
  </div>
 {% endblock %}

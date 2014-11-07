@@ -4,18 +4,6 @@
 <script type="text/javascript" src="/static/js/d3.phylogram.js/newick.js"></script>
 <script type="text/javascript" src="/static/js/d3.phylogram.js/d3.phylogram.js"></script>
 <script>
- function load_single(id, pname, fragment) {
-  d3.xhr("/trees/")
-   .header("Content-Type", "application/json")
-   .post(
-     JSON.stringify({patient: pname, fragment: fragment}),
-     function(error, request) {
-      var treejson = JSON.parse(request.responseText);
-      update(treejson.newick, id, pname);
-     }
-  );
- }
-
  function update(treestr, id, pname) {
    var newick = Newick.parse(treestr)
    var newickNodes = []
@@ -48,6 +36,18 @@
 
  }
 
+ function load_single(id, pname, fragment) {
+  d3.xhr("/trees/")
+   .header("Content-Type", "application/json")
+   .post(
+     JSON.stringify({patient: pname, fragment: fragment}),
+     function(error, request) {
+      var treejson = JSON.parse(request.responseText);
+      update(treejson.newick, id, pname);
+     }
+  );
+ }
+
  function load() {
   {% for dict in dicts %}
   load_single("{{dict.id}}", "{{dict.pname}}", "{{dict.fragment}}");
@@ -57,7 +57,7 @@
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- <h1>Phylogenetic trees</h1>
+ <h1>{{section_name}}</h1>
  {% if show_intro %}
   <h4>
    Phylogenetic trees give a general idea on how similar sequences are. Here we plot trees from consensus sequences from different time points, patients, and parts of the genome. You can specify which trees to display at the bottom of the page.
