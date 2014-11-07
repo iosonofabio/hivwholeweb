@@ -9,19 +9,21 @@ content:    Models for the hivwholeweb site.
 
             This makes our 'models' a bit odd.
 '''
-class TreeModel(object):
+import os
+data_folder_short = '/static/data/'
+data_folder_full = os.path.dirname(__file__)+data_folder_short
+data_folder = [data_folder_short, data_folder_full]
 
+
+class TreeModel(object):
     def __init__(self, pname, fragment):
         self.pname = pname
         self.fragment = fragment
 
 
-    def get_filename(self):
-        import os
-        folder = os.path.dirname(__file__)
-        folder = folder+'/static/data/trees/'
+    def get_filename(self, full=True):
         fn = 'consensi_tree_'+self.pname+'_'+self.fragment+'.newick'
-        return folder+fn
+        return data_folder[full]+'trees/'+fn
 
     
     def get_newick_string(self):
@@ -33,4 +35,33 @@ class TreeModel(object):
             if float(root_dist) > 0.01:
                 tree = tree[:tree.rfind(':')]+'0.001;'
         return tree
+
+
+class PhysioModel(object):
+    def __init__(self, pname):
+        self.pname = pname
+
+
+    def get_viral_load_filename(self, full=True):
+        fn = 'viral_load_'+self.pname+'.dat'
+        return data_folder[full]+'physiological/'+fn
+
+
+    def get_cell_count_filename(self, full=True):
+        fn = 'cell_count_'+self.pname+'.dat'
+        return data_folder[full]+'physiological/'+fn
+
+
+    def get_data(self):
+        import numpy as np
+        vl = np.loadtxt(self.get_viral_load_filename(), skiprows=1)
+        cc = np.loadtxt(self.get_cell_count_filename(), skiprows=1)
+
+        vl = map(list, vl)
+        cc = map(list, cc)
+
+        data = {'vl': vl,
+                'cc': cc}
+        return data
+
 

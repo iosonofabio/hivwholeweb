@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, request, jsonify
 from . import hiv
 from .forms import TreeForm, PhysioForm, CoverageForm
-from .models import TreeModel
+from .models import TreeModel, PhysioModel
 
 
 @hiv.route('/')
@@ -15,6 +15,12 @@ def index():
 
 @hiv.route('/trees/', methods=['GET', 'POST'])
 def trees():
+    if request.json:
+        req = request.json
+        tree = TreeModel(req['patient'], req['fragment']).get_newick_string()
+        data = {'newick': tree}
+        return jsonify(**data)
+
     form = TreeForm()
     if request.method == 'GET':
         show_intro = True
@@ -29,36 +35,30 @@ def trees():
         if not form.validate_on_submit():
             flash('Select at least one fragment!')
 
-    trees = []
+    dicts = []
     for pname in pnames:
         for fragment in fragments:
-            trees.append({'pname': pname,
+            dicts.append({'pname': pname,
                           'fragment': fragment,
                           'name': pname+', '+fragment,
                           'id': pname+'_'+fragment})
 
     return render_template('trees.html',
                            title='Phylogenetic trees',
-                           trees=trees,
+                           dicts=dicts,
                            form=form,
                            show_intro=show_intro,
                            section_name='Phylogenetic trees',
                           )
 
 
-@hiv.route('/treedata/', methods=['POST'])
-def tree_json():
-    treedict = request.json
-    fragment = treedict['fragment']
-    pname = treedict['patient']
-
-    tree = TreeModel(pname, fragment).get_newick_string()
-    treedict = {'newick': tree}
-    return jsonify(**treedict)
-
-
 @hiv.route('/physiological/', methods=['GET', 'POST'])
 def physio():
+    if request.json:
+        pname = request.json['patient']
+        data = {'data': PhysioModel(pname).get_data()}
+        return jsonify(**data)
+
     form = PhysioForm()
     if request.method == 'GET':
         pnames = ['p1']
@@ -67,8 +67,10 @@ def physio():
         if not form.validate_on_submit():
             flash('Select at least one patient!')
 
-    dicts = [{'url': '/static/images/physiological/'+pname+'.png'}
-             for pname in pnames]
+    dicts = []
+    for pname in pnames:
+        pm = PhysioModel(pname)
+        dicts.append({'pname': pname, 'id': pname})
 
     return render_template('physio.html',
                            title='Viral load and CD4+ counts',

@@ -4,37 +4,21 @@
 <script type="text/javascript" src="/static/js/d3.phylogram.js/newick.js"></script>
 <script type="text/javascript" src="/static/js/d3.phylogram.js/d3.phylogram.js"></script>
 <script>
-{% for tree in trees %}
-   function load2_{{tree.id}}() {
-    d3.json("/treedata/",
-      function(error, treejson) {
-       update_{{tree.id}}(treejson.newick);
-      });
-   
-   }
+{% for dict in dicts %}
 
-   function load3_{{tree.id}}() {
-    d3.xhr("/treedata/", "application/json",
-      function(request) {
-       var treejson = JSON.parse(request.responseText);
-       update_{{tree.id}}(treejson.newick);
-      }
-    );
-   }
-
-   function load_{{tree.id}}() {
-    d3.xhr("/treedata/")
+   function load_{{dict.id}}() {
+    d3.xhr("/trees/")
      .header("Content-Type", "application/json")
      .post(
-       JSON.stringify({patient: "{{tree.pname}}", fragment: "{{tree.fragment}}"}),
+       JSON.stringify({patient: "{{dict.pname}}", fragment: "{{dict.fragment}}"}),
        function(error, request) {
 	var treejson = JSON.parse(request.responseText);
-	update_{{tree.id}}(treejson.newick);
+	update_{{dict.id}}(treejson.newick);
        }
     );
    }
 
-   function update_{{tree.id}}(treestr) {
+   function update_{{dict.id}}(treestr) {
      var newick = Newick.parse(treestr)
      var newickNodes = []
      function buildNewickNodes(node, callback) {
@@ -47,23 +31,28 @@
      }
      buildNewickNodes(newick)
 
-     if ('{{tree.pname}}' == 'all') {
-       var width = 1000
-       var height = 2000	
+     if ("{{dict.pname}}" == "all") {
+       var width = 600
+       var height = 1000	
      } else {
        var width = 400
        var height = 300
      }
 
-     d3.phylogram.build('#phylogram_{{tree.id}}', newick, {
+     var dict = d3.phylogram.build('#phylogram_{{dict.id}}', newick, {
        width: width,
        height: height
      });
+
+     dict.vis.selectAll("circle")
+      .attr('stroke',  'steelblue')
+      .attr('fill', 'steelblue');
+
    }
 {% endfor %}
 
 function load() {
-   {% for tree in trees %}load_{{tree.id}}();{% endfor %}
+   {% for dict in dicts %}load_{{dict.id}}();{% endfor %}
 }
 </script>
 {% endblock %}
@@ -75,9 +64,9 @@ function load() {
    Phylogenetic trees give a general idea on how similar sequences are. Here we plot trees from consensus sequences from different time points, patients, and parts of the genome. You can specify which trees to display at the bottom of the page.
   </h4>
  {% endif %}
- {% for tree in trees %}
-   <h3>{{tree.name}}</h3>
-   <div id='phylogram_{{tree.id}}'></div>
+ {% for dict in dicts %}
+   <h3>{{dict.name}}</h3>
+   <div id='phylogram_{{dict.id}}'></div>
  {% endfor %}
  <br>
  
@@ -97,6 +86,7 @@ function load() {
     p1 {{form.p1}} p2 {{form.p2}} p3 {{form.p3}} p4 {{form.p4}} p5 {{form.p5}} p6 {{form.p6}} p7 {{form.p7}} p8 {{form.p8}} p9 {{form.p9}} p10 {{form.p10}} p11 {{form.p11}}
     <br>
   </p>
+  </div>
   <button type="submit" class="btn btn-default">Plot</button>
  </form>
 {% endblock %}
