@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block head_end %}
+ <!-- D3.js for plots -->
+ <link href="/static/css/d3_plots.css" rel="stylesheet" type="text/css">
+ <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+ <!-- typsy (patched for D3.js) for fancy tiptools -->
+ <link href="/static/css/tipsy.css" rel="stylesheet" type="text/css" />
+ <script type="text/javascript" src="/static/js/jquery.tipsy.js"></script>
+ <!-- jQuery is also required, but we load it in the base template (bootstrap needs it too) -->
+{% endblock %}

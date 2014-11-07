@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, request, jsonify
 from . import hiv
-from .forms import TreeForm, PhysioForm, CoverageForm
-from .models import TreeModel, PhysioModel
+from .forms import PatFragForm, PhysioForm, CoverageForm
+from .models import TreeModel, PhysioModel, DivdivModel
 
 
 @hiv.route('/')
@@ -21,7 +21,7 @@ def trees():
         data = {'newick': tree}
         return jsonify(**data)
 
-    form = TreeForm()
+    form = PatFragForm()
     if request.method == 'GET':
         show_intro = True
         pnames = ['all']
@@ -33,7 +33,7 @@ def trees():
         fragments = ['F'+str(i+1) for i in xrange(6)
                      if getattr(form, 'F'+str(i+1)).data]
         if not form.validate_on_submit():
-            flash('Select at least one fragment!')
+            flash('Select at least one fragment and patient!')
 
     dicts = []
     for pname in pnames:
@@ -73,7 +73,9 @@ def physio():
     dicts = []
     for pname in pnames:
         pm = PhysioModel(pname)
-        dicts.append({'pname': pname, 'id': pname})
+        dicts.append({'pname': pname,
+                      'name': pname,
+                      'id': pname})
 
     return render_template('physio.html',
                            title='Viral load and CD4+ counts',
@@ -81,6 +83,44 @@ def physio():
                            form=form,
                            show_intro=show_intro,
                            section_name='Viral load and CD4+ counts',
+                          )
+
+
+@hiv.route('/divdiv/', methods=['GET', 'POST'])
+def divdiv():
+    if request.json:
+        req = request.json
+        data = {'data': DivdivModel(req['patient'], req['fragment']).get_data()}
+        return jsonify(**data)
+
+    form = PatFragForm()
+    if request.method == 'GET':
+        show_intro = True
+        pnames = ['p1']
+        fragments = ['F1']
+    else:
+        show_intro = False
+        pnames = ['p'+str(i+1) for i in xrange(11)
+                  if getattr(form, 'p'+str(i+1)).data]
+        fragments = ['F'+str(i+1) for i in xrange(6)
+                     if getattr(form, 'F'+str(i+1)).data]
+        if not form.validate_on_submit():
+            flash('Select at least one fragment and patient!')
+
+    dicts = []
+    for pname in pnames:
+        for fragment in fragments:
+            dicts.append({'pname': pname,
+                          'fragment': fragment,
+                          'name': pname+', '+fragment,
+                          'id': pname+'_'+fragment})
+
+    return render_template('divdiv.html',
+                           title='Divergence and diversity',
+                           dicts=dicts,
+                           form=form,
+                           show_intro=show_intro,
+                           section_name='Divergence and diversity',
                           )
 
 

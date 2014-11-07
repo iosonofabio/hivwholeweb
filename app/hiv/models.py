@@ -65,3 +65,32 @@ class PhysioModel(object):
         return data
 
 
+class DivdivModel(object):
+    def __init__(self, pname, fragment):
+        self.pname = pname
+        self.fragment = fragment
+
+
+    def get_divergence_filename(self, full=True):
+        fn = 'divergence_'+self.pname+'_'+self.fragment+'.dat'
+        return data_folder[full]+'divdiv/'+fn
+
+
+    def get_diversity_filename(self, full=True):
+        fn = 'diversity_'+self.pname+'_'+self.fragment+'.dat'
+        return data_folder[full]+'divdiv/'+fn
+
+
+    def get_data(self):
+        import numpy as np
+        dg = np.loadtxt(self.get_divergence_filename(), skiprows=1)
+        ds = np.loadtxt(self.get_diversity_filename(), skiprows=1)
+
+        dg = map(list, dg)
+        ds = map(list, ds)
+
+        data = {'dg': dg,
+                'ds': ds}
+        return data
+
+
