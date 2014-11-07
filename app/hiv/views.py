@@ -61,9 +61,12 @@ def physio():
 
     form = PhysioForm()
     if request.method == 'GET':
+        show_intro = True
         pnames = ['p1']
     else:
-        pnames = ['p'+str(i+1) for i in xrange(5) if getattr(form, 'p'+str(i+1)).data]
+        show_intro = False
+        pnames = ['p'+str(i+1) for i in xrange(5)
+                  if getattr(form, 'p'+str(i+1)).data]
         if not form.validate_on_submit():
             flash('Select at least one patient!')
 
@@ -76,6 +79,7 @@ def physio():
                            title='Viral load and CD4+ counts',
                            dicts=dicts,
                            form=form,
+                           show_intro=show_intro,
                            section_name='Viral load and CD4+ counts',
                           )
 

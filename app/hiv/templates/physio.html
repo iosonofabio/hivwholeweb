@@ -163,6 +163,11 @@
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
  <h1>Viral load and CD4+ count</h1>
+ {% if show_intro %}
+  <h4>
+   The most relevant physiological parameters for HIV infection are viral load and CD4+ counts in the patient blood. Lower viral loads and higher CD4+ counts are generally assciated with better clinical outcome.
+  </h4>
+ {% endif %}
  {% for dict in dicts %}
   <svg class="d3-plot {{dict.pname}}"></svg>
  <br>
