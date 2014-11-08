@@ -174,8 +174,50 @@ class CoverageModel(object):
         # Saturate to one, the JS client would take forever to do that
         cov = [[t, list(np.maximum(0.8, co))] for (t, co) in izip(times, cov)]
 
-        print len(cov)
-
         data = {'cov': cov}
         return data
+
+
+class AlleleFrequencyModel(object):
+    def __init__(self, pname):
+        self.pname = pname
+
+
+    def get_allele_counts_filename(self, full=True):
+        fn = 'allele_counts_'+self.pname+'_genomewide.npz'
+        return data_folder[full]+'one_site/'+fn
+
+
+    def get_data(self, cov_min=100, af_min=1e-1):
+        from itertools import izip
+        import numpy as np
+        npz = np.load(self.get_allele_counts_filename())
+        times = npz['times']
+        act = npz['act']
+        alpha = npz['alpha']
+
+        aft = []
+        for pos in xrange(act.shape[2]):
+            act_pos = act[:, :, pos]
+            cov_pos = act_pos.sum(axis=1)
+            ind = cov_pos >= cov_min
+            if ind.sum() < 2:
+                continue
+
+            aft_pos = (1.0 * act_pos[ind].T / cov_pos[ind]).T
+
+            # Ignore ancestral alleles
+            aft_pos[:, act_pos[0].argmax()] = 0
+
+            cand = ((aft_pos > af_min).sum(axis=0) >= 4).nonzero()[0]
+            for ai in cand:
+                af = aft_pos[:, ai]
+                af[af < 2e-3] = 1e-3
+                aft.append([pos, alpha[ai], zip(times[ind], af)])
+            
+        data = {'aft': aft,
+                'tmax': times.max(),
+                'len': act.shape[2]}
+        return data
+
 

@@ -1,7 +1,8 @@
 from flask import render_template, flash, redirect, request, jsonify
 from . import hiv
 from .forms import PatFragForm, PatForm
-from .models import TreeModel, PhysioModel, DivdivModel, CoverageModel, GenomeModel
+from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
+                     GenomeModel, AlleleFrequencyModel)
 from .backbone import find_section
 
 
@@ -193,19 +194,37 @@ def coverage():
                           )
 
 
-@hiv.route('/allele_frequencies/')
+@hiv.route(find_section(id='af')['url'], methods=['GET', 'POST'])
 def allele_frequencies():
-    data = [[3, 3, 3],
-            [10, 0, 3]]
+    if request.json:
+        pname = request.json['patient']
+        data = {'data': AlleleFrequencyModel(pname).get_data()}
+        return jsonify(**data)
 
-    plot_dict = {'data': data,
-                 'fragment': 'F0',
-                 'chart': 'chart_F0'}
+    section = find_section(id='af')
+
+    form = PatForm()
+    if request.method == 'GET':
+        show_intro = True
+        pnames = ['p1']
+    else:
+        show_intro = False
+        pnames = ['p'+str(i+1) for i in xrange(11)
+                  if getattr(form, 'p'+str(i+1)).data]
+        if not form.validate_on_submit():
+            flash('Select at least one patient!')
+
+    dicts = []
+    for pname in pnames:
+        dicts.append({'pname': pname,
+                      'name': pname,
+                      'id': pname})
 
     return render_template('allele_frequencies.html',
-                           title='Allele frequencies',
-                           plot_dict=plot_dict,
-                           section_name='Allele frequencies',
+                           title=section['name'],
+                           dicts=dicts,
+                           form=form,
+                           show_intro=show_intro,
+                           section_name=section['name'],
                           )
 
-    pass

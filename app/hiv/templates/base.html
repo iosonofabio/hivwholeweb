@@ -35,12 +35,14 @@
 	      {% if section_name == section.name %}
 	        <li class="active"><a href="{{section.url}}">{{section.name}}</a></li>
 	      {% else %}
-	        <li><a href="{{section.url}}">{{section.name}}</a></li>
+	      <!--
+	       <li><a href="{{section.url}}">{{section.name}}</a></li>
+	      --> 
 	      {% endif %}
              {% endif %}
-            {% endfor %}
+	    {% endfor %}
           </ul>
-        </div>
+	</div>
       </div>
     </div>
 
