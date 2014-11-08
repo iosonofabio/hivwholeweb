@@ -1,7 +1,8 @@
 from flask import render_template, flash, redirect, request, jsonify
 from . import hiv
 from .forms import PatFragForm, PatForm
-from .models import TreeModel, PhysioModel, DivdivModel, CoverageModel
+from .models import TreeModel, PhysioModel, DivdivModel, CoverageModel, GenomeModel
+from .backbone import find_section
 
 
 @hiv.route('/')
@@ -89,7 +90,9 @@ def physio():
 def divdiv():
     if request.json:
         req = request.json
-        data = {'data': DivdivModel(req['patient'], req['fragment']).get_data()}
+        pname = request.json['patient']
+        fragment = request.json['fragment']
+        data = {'data': DivdivModel(pname, fragment).get_data()}
         return jsonify(**data)
 
     form = PatFragForm()
@@ -122,6 +125,40 @@ def divdiv():
                            section_name='Divergence and diversity',
                           )
 
+@hiv.route(find_section(id='genome')['url'], methods=['GET', 'POST'])
+def genomes():
+    if request.json:
+        pname = request.json['patient']
+        data = {'data': GenomeModel(pname).get_data()}
+        return jsonify(**data)
+
+    section = find_section(id='genome')
+
+    form = PatForm()
+    if request.method == 'GET':
+        show_intro = True
+        pnames = ['p1']
+    else:
+        show_intro = False
+        pnames = ['p'+str(i+1) for i in xrange(11)
+                  if getattr(form, 'p'+str(i+1)).data]
+        if not form.validate_on_submit():
+            flash('Select at least one patient!')
+
+    dicts = []
+    for pname in pnames:
+        dicts.append({'pname': pname,
+                      'name': pname,
+                      'id': pname})
+
+    return render_template('genome.html',
+                           title=section['name'],
+                           dicts=dicts,
+                           form=form,
+                           show_intro=show_intro,
+                           section_name=section['name'],
+                          )
+
 
 @hiv.route('/coverage/', methods=['GET', 'POST'])
 def coverage():
@@ -150,8 +187,9 @@ def coverage():
     return render_template('coverage.html',
                            title='Coverage',
                            dicts=dicts,
-                           section_name='Coverage',
                            form=form,
+                           show_intro=show_intro,
+                           section_name='Coverage',
                           )
 
 

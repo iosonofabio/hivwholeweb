@@ -65,6 +65,66 @@ class PhysioModel(object):
         return data
 
 
+class GenomeModel(object):
+    def __init__(self, pname, region='genomewide', type='patient reference'):
+        self.pname = pname
+        self.region = region
+        self.type = type
+
+
+    def get_reference_filename(self, full=True, format='gb'):
+        fn = 'reference_'+self.pname+'_'+self.region+'.'+format
+        return data_folder[full]+'sequences/'+fn
+
+
+    def get_genome_filename(self, *args, **kwargs):
+        if self.type == 'patient reference':
+            return self.get_reference_filename(*args, **kwargs)
+        
+        else:
+            raise ValueError('Genome type not found')
+
+    def get_genome(self, format='gb'):
+        from Bio import SeqIO
+        seq = SeqIO.read(self.get_genome_filename(format=format), format)
+
+        if format == 'gb':
+            from .cookbook import correct_genbank_features_load
+            correct_genbank_features_load(seq)
+
+        return seq
+
+
+    def get_data(self):
+        seq = self.get_genome()
+        
+        features = []
+        frame_start = 0
+        for fea in seq.features:
+            loc = [[lp.nofuzzy_start, lp.nofuzzy_end]
+                      for lp in fea.location.parts]
+
+            f = {'name': fea.id,
+                 'type': fea.type,
+                 'location': loc}
+            features.append(f)
+
+            # Get all frames relative to gag (which is frame 1)
+            if fea.id == 'gag':
+                frame_start = loc[0][0]
+
+        data = {'len': len(seq),
+                'id': seq.id,
+                'name': seq.name,
+                'description': seq.description,
+                'framestart': frame_start,
+                'seq': ''.join(seq),
+                'features': features,
+               }
+
+        return data
+
+
 class DivdivModel(object):
     def __init__(self, pname, fragment):
         self.pname = pname

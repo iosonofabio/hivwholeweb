@@ -8,4 +8,18 @@
  <link href="/static/css/tipsy.css" rel="stylesheet" type="text/css" />
  <script type="text/javascript" src="/static/js/jquery.tipsy.js"></script>
  <!-- jQuery is also required, but we load it in the base template (bootstrap needs it too) -->
+
+ <!-- nice IE has no way of finding a string in a list of strings (!) -->
+ <!-- maybe we have to put the snippet directly into single scripts, let's hope not -->
+ <script type="text/javascript">
+  if (!Array.prototype.indexOf) {
+     Array.prototype.indexOf = function(item) {
+        var i = this.length;
+        while (i--) {
+           if (this[i] === item) return i;
+        }
+        return -1;
+     }
+  }
+ </script>
 {% endblock %}
