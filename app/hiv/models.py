@@ -221,3 +221,37 @@ class AlleleFrequencyModel(object):
         return data
 
 
+class SFSModel(object):
+    def get_sfs_filename(self, full=True):
+        fn = 'sfs_allfrags_allpats.npz'
+        return data_folder[full]+'one_site/'+fn
+
+
+    def get_data(self):
+        import numpy as np
+        npz = np.load(self.get_sfs_filename())
+
+        # We need to zip the data to make it easier in D3.js
+        keys_zip = set()
+        keys_nonzip = set()
+        for key in npz:
+            for suffix in ['_bin_centers', '_sfs']:
+                if suffix in key:
+                    keys_zip.add(key[:-(len(suffix))])
+                    break
+            else:
+                keys_nonzip.add(key)
+
+        data = {}
+        for key in keys_zip:
+            # We need to mask nonstring characters (nice JS)
+            keynew = key.replace('.', '')
+            data[keynew] = zip(npz[key+'_bin_centers'], npz[key+'_sfs'])
+        for key in keys_nonzip:
+            keynew = key.replace('.', '')
+            data[keynew] = list(npz[key])
+
+        return data
+
+
+
