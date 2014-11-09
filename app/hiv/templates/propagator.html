@@ -8,7 +8,7 @@
       width = 600 - margin.left - margin.right,
       height = 450 - margin.top - margin.bottom;
 
-  var chart_ext = d3.select(".sfs")
+  var chart_ext = d3.select(".propagator")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.bottom + margin.top);
 
@@ -16,7 +16,7 @@
        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   var y = d3.scale.log()
-       .domain([1e1, 1e9])
+       .domain([1e-1, 1e5])
        .range([height, 0]);
   
   var x = d3.scale.linear()
@@ -27,6 +27,11 @@
   var xx = function(d) {
    return x(Math.log10(d / (1.0 - d)));
   }
+
+  var colors = d3.scale.linear()
+  .domain([0, data.HIV.length])
+  .interpolate(d3.interpolateRgb)
+  .range(["darkblue", "darkred"]);
 
   var xAxis = d3.svg.axis()
       .scale(x)
@@ -56,46 +61,46 @@
        .style("text-anchor", "middle")
        .text("Density");
 
-  chart.append("g")
-       .attr("class", "circles HIV")
-       .selectAll()
-       .data(data.HIV)
-       .enter()
-       .append("circle")
-       .attr("class", "circle")
-       .attr("cx", function(d) { return xx(d[0]); })
-       .attr("cy", function(d) { return y(d[1]); })
-       .attr("r", 5);
-
   var lineFunc = d3.svg.line()
-                       .x(function(d) { return xx(d[0]); })
-		       .y(function(d) { return y(d[1]); })
-		       .interpolate('linear');
+                       .x(function(d) { return d[0]; })
+		       .y(function(d) { return d[1]; })
+		       .interpolate('monotone');
 
-  chart.append("svg:path")
-       .attr("d", lineFunc(data.neutral))
-       .attr("stroke", "darkblue")
+  function prepareLine(xi) {
+   return [[xx(xi), height], [xx(xi), 0]]  
+   console.log(prepareLine(xi));
+  }
+
+  // TODO: generalize with interactivity
+  for(i = 0; i < data.HIV.length; i+= 3) {
+   // HIV propagator
+   chart.append("g")
+        .attr("class", "circles HIV")
+        .selectAll()
+        .data(data.HIV[i].prop)
+        .enter()
+        .append("circle")
+        .attr("class", "circle")
+        .attr("cx", function(d) { return xx(d[0]); })
+        .attr("cy", function(d) { return y(d[1]); })
+        .attr("r", 5)
+        .attr("style", "fill:" + colors(i));
+
+   // Initial frequency
+   chart.append("svg:path")
+       .attr("d", function(d) { return lineFunc(prepareLine(data.HIV[i].xi)); })
+       .attr("stroke", colors(i))
        .attr("stroke-width", 2)
-       .attr("fill", "none");
+       .attr("fill", "none")
+       .attr("opacity", 0.5);
 
-  chart.append("svg:path")
-     .attr("d", lineFunc(data.betatree_alpha_15_3000))
-     .attr("stroke", "green")
-     .attr("stroke-width", 2)
-     .attr("fill", "none");
-
-  chart.append("svg:path")
-     .attr("d", lineFunc(data.bsc_3000))
-     .attr("stroke", "darkred")
-     .attr("stroke-width", 2)
-     .attr("fill", "none");
-
+  }
 
 
  }
 
  function load_single() {
-  d3.xhr("/sfs/")
+  d3.xhr("/propagators/")
    .header("Content-Type", "application/json")
    .post(
      JSON.stringify({test: ""}),
@@ -116,12 +121,11 @@
  <h1>{{section_name}}</h1>
  {% if show_intro %}
   <h4>
-   During evolution, most mutations are rare, but some become widespread through the viral population. The site frequency spectrum shows how many mutations are found at different levels of abundance. Theoretical models predict different spectra depending on the strength of selection.
+   Propagator info.
   </h4>
  {% endif %}
- <svg class="d3-plot sfs"></svg>
+ <svg class="d3-plot propagator"></svg>
  <br>
 
 {% endblock %}
-
 

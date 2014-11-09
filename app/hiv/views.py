@@ -2,7 +2,8 @@ from flask import render_template, flash, redirect, request, jsonify
 from . import hiv
 from .forms import PatFragForm, PatForm
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
-                     GenomeModel, AlleleFrequencyModel, SFSModel)
+                     GenomeModel, AlleleFrequencyModel, SFSModel,
+                     PropagatorModel)
 from .backbone import find_section
 
 
@@ -237,10 +238,28 @@ def sfs():
 
     section = find_section(id='sfs')
 
-    # NOTE: we probably want to support several SFS plots here
+    # NOTE: we probably want to support several plots here
     show_intro = True
 
     return render_template('sfs.html',
+                           title=section['name'],
+                           show_intro=show_intro,
+                           section_name=section['name'],
+                          )
+
+
+@hiv.route(find_section(id='prop')['url'], methods=['GET', 'POST'])
+def propagators():
+    if request.json:
+        data = {'data': PropagatorModel().get_data()}
+        return jsonify(**data)
+
+    section = find_section(id='prop')
+
+    # NOTE: we might want to support several plots here
+    show_intro = True
+
+    return render_template('propagator.html',
                            title=section['name'],
                            show_intro=show_intro,
                            section_name=section['name'],

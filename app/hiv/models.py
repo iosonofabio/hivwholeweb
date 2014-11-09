@@ -11,7 +11,7 @@ content:    Models for the hivwholeweb site.
 '''
 import os
 data_folder_short = '/static/data/'
-data_folder_full = os.path.dirname(__file__)+data_folder_short
+data_folder_full = os.path.dirname(os.path.abspath(__file__))+data_folder_short
 data_folder = [data_folder_short, data_folder_full]
 
 
@@ -250,6 +250,52 @@ class SFSModel(object):
         for key in keys_nonzip:
             keynew = key.replace('.', '')
             data[keynew] = list(npz[key])
+
+        return data
+
+
+class PropagatorModel(object):
+    def get_propagator_filename(self, dt, full=True):
+        fn = 'propagator_allfrags_allpats_dt_'+'_'.join(map(str, dt))+'.npz'
+        return data_folder[full]+'one_site/'+fn
+
+
+    def get_data(self, dt=[500, 1000], full=True):
+        from itertools import izip
+        import numpy as np
+        npz = np.load(self.get_propagator_filename(dt, full=full))
+
+        # We need to zip the data to make it easier in D3.js
+        keys_zip = set()
+        keys_nonzip = set()
+        for key in npz:
+            for suffix in ['_final_frequency',
+                           '_prop',
+                           '_initial_frequency',
+                           '_dt']:
+                if suffix in key:
+                    keys_zip.add(key[:-(len(suffix))])
+                    break
+            else:
+                keys_nonzip.add(key)
+
+        data = {}
+        for key in keys_zip:
+            data_key = []
+            binsc = npz[key+'_final_frequency']
+            dt = list(npz[key+'_dt'])
+            for (xi, prop) in izip(npz[key+'_initial_frequency'],
+                                   npz[key+'_prop']):
+
+                # Zip deleting extreme bins
+                prop_zipped = zip(binsc[1:-1], prop[1:-1])
+                data_key.append({'dt': dt,
+                                 'xi': xi,
+                                 'prop': prop_zipped})
+            data[key] = data_key
+                
+        for key in keys_nonzip:
+            data[key] = list(npz[key])
 
         return data
 
