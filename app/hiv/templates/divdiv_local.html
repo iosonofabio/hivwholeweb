@@ -121,14 +121,14 @@
        .attr("opacity", 0.8);
 
   var chartge = chart.append("g")
-       .attr("class", "d3-chart genome-chart", id)
+       .attr("class", "d3-chart genome-chart"+id)
        .attr("transform", "translate(0," + (2 * height_single + 2 * vpad) + ")");
 
  }
 
  function update_genome(data, id) {
 
-   var chart = d3.select(".genome-chart");
+  var chart = d3.select(".genome-chart"+id);
 
   var margin = {top: 60, right: 30, bottom: 50, left: 80},
       width = 1000 - margin.left - margin.right;
