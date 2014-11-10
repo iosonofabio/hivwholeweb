@@ -300,4 +300,46 @@ class PropagatorModel(object):
         return data
 
 
+class DivdivLocalModel(object):
+    def __init__(self, pname):
+        self.pname = pname
+
+
+    def get_divergence_filename(self, full=True):
+        fn = 'divergence_trajectory_'+self.pname+'_genomewide.npz'
+        return data_folder[full]+'divdiv/'+fn
+
+
+    def get_diversity_filename(self, full=True):
+        fn = 'diversity_trajectory_'+self.pname+'_genomewide.npz'
+        return data_folder[full]+'divdiv/'+fn
+
+
+    def get_data(self, dx=20):
+        from itertools import izip
+        import numpy as np
+        npz = np.load(self.get_divergence_filename())
+        times = npz['times']
+        dg = npz['dg'][:, ::dx]
+        block_length = npz['block_length'][0]
+        len_times = len(times)
+
+        # NOTE: negative numbers are missing coverage, what do we do with those?
+        dg = [[t, list(np.maximum(0.0001, d))] for (t, d) in izip(times, dg)]
+
+        npz = np.load(self.get_diversity_filename())
+        times = npz['times']
+        ds = npz['ds'][:, ::dx]
+        len_times = max(len_times, len(times))
+
+        # NOTE: we assume div and div have the same block length
+        ds = [[t, list(np.maximum(0.0001, d))] for (t, d) in izip(times, ds)]
+
+        data = {'dg': dg,
+                'ds': ds,
+                'block_length': block_length,
+                'dx': dx,
+                'len': len_times}
+        return data
+
 

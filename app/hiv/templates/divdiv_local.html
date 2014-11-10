@@ -1,0 +1,283 @@
+{% extends "plots.html" %}
+{% block head_end %}
+{{ super() }}
+<script>
+
+ function get_ymax(data) {
+  var ymax = d3.max(data[0][1]);
+  var ytmp;
+  for (i = 1; i < data.length; i++) {
+    ytmp = d3.max(data[i][1]);
+    if (ytmp > ymax) {
+     ymax = ytmp;
+    }
+  }
+  return ymax;
+ }
+
+ function update(data, id) {
+
+  var datal = data.dg.length;
+
+  var margin = {top: 60, right: 30, bottom: 50, left: 80},
+      width = 1000 - margin.left - margin.right,
+      height = 800 - margin.top - margin.bottom,
+      height_genome = 200,
+      vpad = 30, height_single = (height - height_genome - 2 * vpad) / 2;
+
+  var chart_ext = d3.select("."+id)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.bottom + margin.top);
+
+  var chart = chart_ext.append("g")
+       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var chartdg = chart.append("g");
+  
+  var chartds = chart.append("g")
+       .attr("transform", "translate(0," + (height_single + vpad) + ")");
+  
+  var dgmax = get_ymax(data.dg);
+  var dsmax = get_ymax(data.dg);
+
+  var y = d3.scale.log()
+       .domain([0.0001, dgmax])
+       .range([height_single, 0]);
+  
+  var x = d3.scale.linear()
+       .domain([0, data.dg[0][1].length * data.dx + data.block_length])
+       .range([20, width - 20]);
+  
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
+  
+  var ydgAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+
+  var ydsAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+
+  chart.append("g")
+       .attr("class", "d3-axis")
+       .attr("transform", "translate(0," + height + ")")
+       .call(xAxis)
+       .append("text")
+       .attr("x", width / 2)
+       .attr("y", 40)
+       .style("text-anchor", "middle")
+       .text("Position [bp]");
+   
+  chartdg.append("g")
+       .attr("class", "d3-axis")
+       .call(ydgAxis)
+       .append("text")
+       .attr("transform", "rotate(-90)")
+       .attr("dy", "-4.5em")
+       .attr("x", -height_single / 2)
+       .style("text-anchor", "middle")
+       .text("Divergence");
+
+  chartds.append("g")
+       .attr("class", "d3-axis")
+       .call(ydsAxis)
+       .append("text")
+       .attr("transform", "rotate(-90)")
+       .attr("dy", "-4.5em")
+       .attr("x", -height_single / 2)
+       .style("text-anchor", "middle")
+       .text("Diversity");
+
+  var lineFunc = d3.svg.line()
+                       .x(function(d, i) { return x(i * data.dx + 0.5 * data.block_length); })
+		       .y(function(d) { return y(d); })
+		       .interpolate('monotone');
+
+  var colors = d3.scale.linear()
+  .domain([0, data.len / 4, data.len / 3, data.len / 2, 2 * data.len / 3, 3 * data.len / 4, data.len])
+  .interpolate(d3.interpolateRgb)
+  .range(["darkblue", "blue", "cyan", "green", "yellow", "orange", "red"]);
+
+  chartdg.selectAll()
+       .data(data.dg)
+       .enter()
+       .append("svg:path")
+       .attr("d", function(d) { return lineFunc(d[1]); })
+       .attr("stroke", function(d, i) { return colors(i); })
+       .attr("stroke-width", 2)
+       .attr("fill", "none")
+       .attr("opacity", 0.8);
+
+  chartds.selectAll()
+       .data(data.ds)
+       .enter()
+       .append("svg:path")
+       .attr("d", function(d) { return lineFunc(d[1]); })
+       .attr("stroke", function(d, i) { return colors(i); })
+       .attr("stroke-width", 2)
+       .attr("fill", "none")
+       .attr("opacity", 0.8);
+
+  var chartge = chart.append("g")
+       .attr("class", "d3-chart genome-chart", id)
+       .attr("transform", "translate(0," + (2 * height_single + 2 * vpad) + ")");
+
+ }
+
+ function update_genome(data, id) {
+
+   var chart = d3.select(".genome-chart");
+
+  var margin = {top: 60, right: 30, bottom: 50, left: 80},
+      width = 1000 - margin.left - margin.right;
+
+   var x = d3.scale.linear()
+        .domain([0, data.len])
+        .range([20, width - 20]);
+
+   function get_n_feature_types(data) {
+    features = [];
+    var found = 0;
+    for(i = 0; i < data.features.length; i++) {
+     found = 0;
+     for(j = 0; j < features.length; j++) {
+      if (features[j] == data.features[i].type) {
+       found = 1;
+      }
+     }
+     if (found == 0) {
+      features.push(data.features[i].type);
+     }
+    }
+    return features.length; 
+   }
+ 
+   function get_feature_group(groupname) {
+    var group = [];
+    for(i = 0; i < data.features.length; i++) {
+     if (data.features[i].type == groupname) {
+      group.push(data.features[i]);
+     }
+    }
+    return group;
+   }
+
+   function height_feature(feature) {
+    if (feature.type == "fragment") {
+     return height_fragment(feature);
+    } else if ((feature.type == "gene") | (feature.type == "protein")) {
+     return height_inframe(feature); 
+    } else {
+     return 0;
+    }
+   }
+
+   function height_fragment(fragment) {
+    var fn = +(fragment.name[1]);
+    if (fn % 2) {
+     return 0;
+    } else {
+     return 25;
+    }
+   }
+
+   function height_inframe(feature) {
+    var frame = (+(feature.location[0][0]) - (+data.framestart)) % 3;
+    return frame * 25;
+   }
+
+   function plot_group(groupname, dy) {
+    var group = get_feature_group(groupname);
+    var fea = chart.selectAll()
+                   .data(group)
+         	  .enter()
+         	  .append("g")
+                   .attr("class", "feature " + groupname)
+         	  .attr("transform", function(d) { return "translate(" + x(d.location[0][0]) + "," + (dy + height_feature(d)) + ")";})
+
+    fea.append("rect")
+         .attr("x", 0)
+         .attr("y", 0)
+         .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
+         .attr("height", 20)
+         .attr("style", "fill:steelblue;fill-opacity:0.5;stroke-width:1;stroke:rgb(0,0,0)");
+
+    fea.append("text")
+         .attr("x", function(d) { return 0.5 * (x(d.location[0][1]) - x(d.location[0][0])); })
+         .attr("y", 15)
+         .text(function(d) { return d.name; })
+         .style("text-anchor", "middle")
+
+   }
+
+   plot_group("fragment", 0);
+   plot_group("protein", 60);
+   plot_group("RNA_structure", 150);
+   plot_group("other", 150);
+
+ }
+ 
+  function load_single(id, pname) {
+   d3.xhr("/divdiv_local/")
+    .header("Content-Type", "application/json")
+    .post(
+      JSON.stringify({patient: pname}),
+      function(error, request) {
+       var data = JSON.parse(request.responseText);
+       update(data.data, id);
+      }
+   );
+  }
+
+ function load_single_genome(id, pname) {
+     d3.xhr("/genomes/")
+    .header("Content-Type", "application/json")
+    .post(
+      JSON.stringify({patient: pname}),
+      function(error, request) {
+       var data = JSON.parse(request.responseText);
+       update_genome(data.data, id);
+      }
+   );
+ }
+
+ function load() {
+  {% for dict in dicts %}
+  load_single("{{dict.id}}", "{{dict.pname}}");
+  load_single_genome("{{dict.id}}", "{{dict.pname}}");
+  {% endfor %}
+ }
+</script>
+{% endblock %}
+{% block body_attributes %}onload="load()"{% endblock %}
+{% block content %}
+ <h1>{{section_name}}</h1>
+ {% if show_intro %}
+  <h4>
+   Some intro.
+  </h4>
+ {% endif %}
+ {% for dict in dicts %}
+  <h3>{{dict.name}}</h3>
+  <svg class="d3-plot {{dict.id}}"></svg>
+ {% endfor %}
+ <br>
+
+ <h3>Select options:</h3>
+ <form role="form" action="" method="post" name="divdiv_local_settings">
+  {{form.hidden_tag()}}
+  <div class="form-group">
+  <label for="patients">Patients</label>
+  <p id="patients">
+    Patients: p1 {{form.p1}} p2 {{form.p2}} p3 {{form.p3}} p4 {{form.p4}} p5 {{form.p5}} p6 {{form.p6}} p7 {{form.p7}} p8 {{form.p8}} p9 {{form.p9}} p10 {{form.p10}}  p11 {{form.p11}}
+    <br>
+  </p>
+  </div>
+  <button type="submit" class="btn btn-default">Plot</button>
+  </form>
+ </div>
+{% endblock %}
+
+

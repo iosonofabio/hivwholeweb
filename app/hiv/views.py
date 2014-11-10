@@ -3,7 +3,7 @@ from . import hiv
 from .forms import PatFragForm, PatForm
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
-                     PropagatorModel)
+                     PropagatorModel, DivdivLocalModel)
 from .backbone import find_section
 
 
@@ -192,6 +192,41 @@ def coverage():
                            form=form,
                            show_intro=show_intro,
                            section_name='Coverage',
+                          )
+
+
+@hiv.route(find_section(id='divdiv_local')['url'], methods=['GET', 'POST'])
+def divdiv_local():
+    if request.json:
+        pname = request.json['patient']
+        data = {'data': DivdivLocalModel(pname).get_data()}
+        return jsonify(**data)
+
+    section = find_section(id='divdiv_local')
+
+    form = PatForm()
+    if request.method == 'GET':
+        show_intro = True
+        pnames = ['p1']
+    else:
+        show_intro = False
+        pnames = ['p'+str(i+1) for i in xrange(11)
+                  if getattr(form, 'p'+str(i+1)).data]
+        if not form.validate_on_submit():
+            flash('Select at least one patient!')
+
+    dicts = []
+    for pname in pnames:
+        dicts.append({'pname': pname,
+                      'name': pname,
+                      'id': pname})
+
+    return render_template('divdiv_local.html',
+                           title=section['name'],
+                           dicts=dicts,
+                           form=form,
+                           show_intro=show_intro,
+                           section_name=section['name'],
                           )
 
 
