@@ -226,27 +226,26 @@
       JSON.stringify({patient: pname}),
       function(error, request) {
        var data = JSON.parse(request.responseText);
+
        update(data.data, id);
+
+       d3.xhr("/genomes/")
+       .header("Content-Type", "application/json")
+       .post(
+         JSON.stringify({patient: pname}),
+         function(error, request) {
+          var data = JSON.parse(request.responseText);
+          update_genome(data.data, id);
+         }
+       );
+
       }
    );
   }
 
- function load_single_genome(id, pname) {
-     d3.xhr("/genomes/")
-    .header("Content-Type", "application/json")
-    .post(
-      JSON.stringify({patient: pname}),
-      function(error, request) {
-       var data = JSON.parse(request.responseText);
-       update_genome(data.data, id);
-      }
-   );
- }
-
  function load() {
   {% for dict in dicts %}
   load_single("{{dict.id}}", "{{dict.pname}}");
-  load_single_genome("{{dict.id}}", "{{dict.pname}}");
   {% endfor %}
  }
 </script>
