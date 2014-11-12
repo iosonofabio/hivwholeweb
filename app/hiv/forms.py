@@ -62,7 +62,7 @@ class PatForm(Form):
 class RoiForm(Form):
     # FIXME: allow all fragments, including HXB2 and genomewide
     fragment = SelectField('Fragment',
-                           choices=[['F'+str(i)] * 2 for i in xrange(1, 2)])
+                           choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])
     start = IntegerField('Start coordinate')
     end = IntegerField('End coordinate')
 
@@ -87,7 +87,6 @@ class RoiForm(Form):
 
 
 class LocalHaplotypeForm(Form):
-    # FIXME: allow all pats (we lack the data for now)
     patient = SelectField('Patient',
-                          choices=[['p'+str(i)] * 2 for i in xrange(1, 2)])
+                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
     roi = FormField(RoiForm)

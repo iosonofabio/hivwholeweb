@@ -5,43 +5,12 @@ date:       11/11/14
 content:    Support module to calculate local haplotypes from a bamfile.
 '''
 # Functions
-def store_alignments(alis, filename):
-    '''Save alignments to file'''
-    file_formats = {'stk': 'stockholm',
-                    'fasta': 'fasta',
-                    'phy': 'phylip-relaxed'}
-
-    foldername = os.path.dirname(filename)
-    if not os.path.isdir(foldername):
-        raise IOError('Destination folder for file save not found')
-
-    if os.path.isfile(filename):
-        raise IOError('Destination file already exists on file system')
-
-    file_format = filename.split('.')[-1]
-    if file_format in file_formats:
-        file_format = file_formats[file_format]
-        AlignIO.write(alis, filename, file_format)
-
-    elif file_format == 'zip':
-        import StringIO
-        import zipfile, zlib
-        with zipfile.ZipFile(filename, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
-            for i, ali in enumerate(alis):
-                f = StringIO.StringIO()
-                AlignIO.write(ali, f, 'fasta')
-                zf.writestr(str(i+1)+'.fasta', f.getvalue())
-
-    else:
-        raise ValueError('File format not recognized')
-
-
 def build_msa(haploc, VERBOSE=0, label=''):
     '''Build multiple sequence alignment from cluster of haplotypes'''
     from Bio.SeqRecord import SeqRecord
     from Bio.Seq import Seq
     from Bio.Alphabet.IUPAC import ambiguous_dna
-    
+
     seqs = [SeqRecord(Seq(seq, ambiguous_dna),
                       id=label+'count_'+str(count)+'_#'+str(i),
                       name=label+'count_'+str(count)+'_#'+str(i))
@@ -190,8 +159,9 @@ def get_local_haplotypes_aligned(bamfilename, start, end, label='', VERBOSE=0, m
     '''Get local haplotypes, clustered and aligned'''
     haplo = get_local_haplotypes(bamfilename, start, end, VERBOSE=VERBOSE,
                                  maxreads=maxreads)
-
     haploc = cluster_haplotypes(haplo, VERBOSE=VERBOSE)
+    if len(haploc) == 0:
+        return None
 
     msa = build_msa(haploc, VERBOSE=VERBOSE,
                     label=label)

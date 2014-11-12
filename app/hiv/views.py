@@ -333,7 +333,7 @@ def haplotypes():
     end = form.roi.end.data
     roi = (fragment, start, end)
 
-    hm = LocalHaplotypeModel('p1', roi)
+    hm = LocalHaplotypeModel(pname, roi)
 
     # Get the data in a temporary folder/file
     tmp_folder = '/home/hivwholewebu1/tmp/'

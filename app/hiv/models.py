@@ -360,6 +360,12 @@ class LocalHaplotypeModel(object):
         return data_folder[full]+'patients/'+fn
 
 
+    def get_timeline_filename(self, full=True):
+        '''Get the filename of the timeline'''
+	fn = self.pname+'/timeline.tsv'
+	return data_folder[full]+'patients/'+fn
+
+
     def get_local_haplotype_filename(self, tmp_root_folder=None, full=True):
         '''Get the filename of a temporary file with the haplotype data'''
         import random
@@ -403,16 +409,21 @@ class LocalHaplotypeModel(object):
         file_format = filename.split('.')[-1]
         if file_format in file_formats:
             file_format = file_formats[file_format]
+	    alis = [ali['ali'] for ali in alis if ali is not None]
             AlignIO.write(alis, filename, file_format)
     
         elif file_format == 'zip':
             import StringIO
             import zipfile, zlib
+
             with zipfile.ZipFile(filename, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
                 for i, ali in enumerate(alis):
+		    if ali is None:
+		        continue
+
                     f = StringIO.StringIO()
-                    AlignIO.write(ali, f, 'fasta')
-                    zf.writestr(str(i+1)+'.fasta', f.getvalue())
+                    AlignIO.write(ali['ali'], f, 'fasta')
+                    zf.writestr(str(ali['time'])+'_days.fasta', f.getvalue())
     
         else:
             raise ValueError('File format not recognized')
@@ -420,20 +431,34 @@ class LocalHaplotypeModel(object):
 
     def get_data(self, tmp_root_folder=None):
         '''Get the data'''
+	import numpy as np
         from .analysis.get_local_haplotypes import get_local_haplotypes_aligned
 
-        i_time = 0
-        alis = []
+	times = np.loadtxt(self.get_timeline_filename())
+
         # FIXME: do this better
         fragment, start, end = self.roi 
-        bamfilename = self.get_bam_filename(i_time, fragment)
 
-        label = self.pname+'_'+str(0)+'_days_'
+        alis = []
+	for i_time in xrange(len(times)):
+	    bamfilename = self.get_bam_filename(i_time, fragment)
+	    if not os.path.isfile(bamfilename):
+	        alis.append(None)
+	        continue
 
-        ali = get_local_haplotypes_aligned(bamfilename, start, end,
-                                           label=label,
-                                           VERBOSE=2)
-        alis = [ali]
+            label = self.pname+'_'+str(times[i_time])+'_days_'+\
+	      fragment+'_'+str(start+1)+'_'+str(end)+'_'
+
+            ali = get_local_haplotypes_aligned(bamfilename, start, end,
+                                               label=label,
+                                               VERBOSE=2)
+
+            if ali is None:
+                alis.append(None)
+                continue
+
+	    alis.append({'time': times[i_time],
+	                 'ali': ali})
 
         fn_out = self.get_local_haplotype_filename(tmp_root_folder=tmp_root_folder)
         self.store_alignments(alis, fn_out)
