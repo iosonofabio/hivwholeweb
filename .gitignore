@@ -1,5 +1,6 @@
 app/flask
 app/hiv/static/data
+app/hiv/static/tmp
 
 ### /home/fabio/.gitignore-boilerplates/Python.gitignore
 

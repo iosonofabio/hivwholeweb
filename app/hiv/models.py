@@ -360,10 +360,13 @@ class LocalHaplotypeModel(object):
         return data_folder[full]+'patients/'+fn
 
 
-    def get_local_haplotype_filename(self, full=True):
+    def get_local_haplotype_filename(self, tmp_root_folder=None, full=True):
         '''Get the filename of a temporary file with the haplotype data'''
         import random
-        dirname = tmp_folder[full]+str(random.randint(0, 10000))+'/'
+	if tmp_root_folder is None:
+	    tmp_root_folder = tmp_folder[full]
+
+        dirname = tmp_root_folder+str(random.randint(0, 10000))+'/'
         while os.path.isdir(dirname):
             dirname = tmp_folder[full]+str(random.randint(0, 10000))+'/'
 
@@ -415,7 +418,7 @@ class LocalHaplotypeModel(object):
             raise ValueError('File format not recognized')
 
 
-    def get_data(self):
+    def get_data(self, tmp_root_folder=None):
         '''Get the data'''
         from .analysis.get_local_haplotypes import get_local_haplotypes_aligned
 
@@ -432,7 +435,7 @@ class LocalHaplotypeModel(object):
                                            VERBOSE=2)
         alis = [ali]
 
-        fn_out = self.get_local_haplotype_filename()
+        fn_out = self.get_local_haplotype_filename(tmp_root_folder=tmp_root_folder)
         self.store_alignments(alis, fn_out)
 
         return fn_out

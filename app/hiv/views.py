@@ -334,9 +334,10 @@ def haplotypes():
     roi = (fragment, start, end)
 
     hm = LocalHaplotypeModel('p1', roi)
-    
+
     # Get the data in a temporary folder/file
-    fn = hm.get_data()
+    tmp_folder = '/home/hivwholewebu1/tmp/'
+    fn = hm.get_data(tmp_root_folder=tmp_folder)
 
     # Read it in...
     with open(fn, 'r') as f:
@@ -348,6 +349,6 @@ def haplotypes():
     # TODO: refine this to show a success page with a download link etc. (that
     # changes the policies on temporary files, storage use, etc., so watch out)
     response = make_response(fstr)
-    response.headers["Content-Disposition"] = "attachment; filename=alignment.zip"
+    response.headers["Content-Disposition"] = "attachment; filename=alignments.zip"
 
     return response
