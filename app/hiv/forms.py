@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import BooleanField
+from wtforms import BooleanField, IntegerField, SelectField, FormField
 from wtforms.validators import Required
 
 
@@ -57,3 +57,37 @@ class PatForm(Form):
                         self.p10.data, self.p11.data))
         else:
             return False
+
+
+class RoiForm(Form):
+    # FIXME: allow all fragments, including HXB2 and genomewide
+    fragment = SelectField('Fragment',
+                           choices=[['F'+str(i)] * 2 for i in xrange(1, 2)])
+    start = IntegerField('Start coordinate')
+    end = IntegerField('End coordinate')
+
+    # TODO: make dynamic validator that accepts different fragment
+    # arguments, e.g. genomewide or HXB2
+    # TODO: make clean meassages for failures
+    def validate(self):
+
+        if not super(RoiForm, self).validate():
+            return False
+
+        start = self.start.data
+        end = self.end.data
+
+        if (start < 1) or (end < 1) or (end < start):
+            return False
+
+        if (end - start > 600):
+            return False
+
+        return True
+
+
+class LocalHaplotypeForm(Form):
+    # FIXME: allow all pats (we lack the data for now)
+    patient = SelectField('Patient',
+                          choices=[['p'+str(i)] * 2 for i in xrange(1, 2)])
+    roi = FormField(RoiForm)

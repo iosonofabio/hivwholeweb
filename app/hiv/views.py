@@ -1,9 +1,9 @@
-from flask import render_template, flash, redirect, request, jsonify
+from flask import render_template, flash, redirect, request, jsonify, make_response
 from . import hiv
-from .forms import PatFragForm, PatForm
+from .forms import PatFragForm, PatForm, LocalHaplotypeForm
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
-                     PropagatorModel, DivdivLocalModel)
+                     PropagatorModel, DivdivLocalModel, LocalHaplotypeModel)
 from .backbone import find_section
 
 
@@ -300,3 +300,54 @@ def propagators():
                            section_name=section['name'],
                           )
 
+
+@hiv.route(find_section(id='haplo')['url'], methods=['GET', 'POST'])
+def haplotypes():
+
+    form = LocalHaplotypeForm()
+    section = find_section(id='haplo')
+
+    if request.method == 'GET':
+        show_intro = True
+        return render_template('haplotypes.html',
+                               title=section['name'],
+                               show_intro=show_intro,
+                               form=form,
+                               section_name=section['name'],
+                              )
+
+    show_intro = False
+    if not form.validate_on_submit():
+        flash('Form incorrectly filled!')
+
+        return render_template('haplotypes.html',
+                       title=section['name'],
+                       show_intro=show_intro,
+                       form=form,
+                       section_name=section['name'],
+                      )
+
+    pname = form.patient.data
+    fragment = form.roi.fragment.data
+    start = form.roi.start.data - 1 #Inclusive coordinates
+    end = form.roi.end.data
+    roi = (fragment, start, end)
+
+    hm = LocalHaplotypeModel('p1', roi)
+    
+    # Get the data in a temporary folder/file
+    fn = hm.get_data()
+
+    # Read it in...
+    with open(fn, 'r') as f:
+        fstr = f.read()
+
+    # ...and delete it
+    hm.clean_temporary_folders()
+
+    # TODO: refine this to show a success page with a download link etc. (that
+    # changes the policies on temporary files, storage use, etc., so watch out)
+    response = make_response(fstr)
+    response.headers["Content-Disposition"] = "attachment; filename=alignment.zip"
+
+    return response

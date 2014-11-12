@@ -13,6 +13,10 @@ import os
 data_folder_short = '/static/data/'
 data_folder_full = os.path.dirname(os.path.abspath(__file__))+data_folder_short
 data_folder = [data_folder_short, data_folder_full]
+tmp_folder_short = '/static/tmp/'
+tmp_folder_full = os.path.dirname(os.path.abspath(__file__))+tmp_folder_short
+tmp_folder = [tmp_folder_short, tmp_folder_full]
+
 
 
 class TreeModel(object):
@@ -343,3 +347,92 @@ class DivdivLocalModel(object):
         return data
 
 
+class LocalHaplotypeModel(object):
+    def __init__(self, pname, roi):
+        self.pname = pname
+        self.roi = roi
+        self.dirnames = []
+
+
+    def get_bam_filename(self, i_time, fragment, full=True):
+        '''Get the BAM filename of a sample and a fragment'''
+        fn = self.pname+'/samples/'+str(i_time+1)+'/'+fragment+'.bam'
+        return data_folder[full]+'patients/'+fn
+
+
+    def get_local_haplotype_filename(self, full=True):
+        '''Get the filename of a temporary file with the haplotype data'''
+        import random
+        dirname = tmp_folder[full]+str(random.randint(0, 10000))+'/'
+        while os.path.isdir(dirname):
+            dirname = tmp_folder[full]+str(random.randint(0, 10000))+'/'
+
+        self.dirnames.append(dirname)
+        os.mkdir(dirname)
+
+        fn = dirname+self.pname+'_'+'_'.join(map(str, self.roi))+'.zip'
+        return fn
+
+
+    def clean_temporary_folders(self):
+        import shutil
+        for dirname in self.dirnames:
+            if os.path.isdir(dirname):
+                shutil.rmtree(dirname)
+        self.dirnames = []
+
+
+    @staticmethod
+    def store_alignments(alis, filename):
+        '''Save alignments to file'''
+        from Bio import AlignIO
+        file_formats = {'stk': 'stockholm',
+                        'fasta': 'fasta',
+                        'phy': 'phylip-relaxed'}
+    
+        foldername = os.path.dirname(filename)
+        if not os.path.isdir(foldername):
+            raise IOError('Destination folder for file save not found')
+    
+        if os.path.isfile(filename):
+            raise IOError('Destination file already exists on file system')
+    
+        file_format = filename.split('.')[-1]
+        if file_format in file_formats:
+            file_format = file_formats[file_format]
+            AlignIO.write(alis, filename, file_format)
+    
+        elif file_format == 'zip':
+            import StringIO
+            import zipfile, zlib
+            with zipfile.ZipFile(filename, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
+                for i, ali in enumerate(alis):
+                    f = StringIO.StringIO()
+                    AlignIO.write(ali, f, 'fasta')
+                    zf.writestr(str(i+1)+'.fasta', f.getvalue())
+    
+        else:
+            raise ValueError('File format not recognized')
+
+
+    def get_data(self):
+        '''Get the data'''
+        from .analysis.get_local_haplotypes import get_local_haplotypes_aligned
+
+        i_time = 0
+        alis = []
+        # FIXME: do this better
+        fragment, start, end = self.roi 
+        bamfilename = self.get_bam_filename(i_time, fragment)
+
+        label = self.pname+'_'+str(0)+'_days_'
+
+        ali = get_local_haplotypes_aligned(bamfilename, start, end,
+                                           label=label,
+                                           VERBOSE=2)
+        alis = [ali]
+
+        fn_out = self.get_local_haplotype_filename()
+        self.store_alignments(alis, fn_out)
+
+        return fn_out
