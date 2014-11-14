@@ -1,123 +1,8 @@
 {% extends "plots.html" %}
 {% block head_end %}
 {{ super() }}
-<script>
- function get_n_feature_types(data) {
-  features = [];
-  var found = 0;
-  for(i = 0; i < data.features.length; i++) {
-   found = 0;
-   for(j = 0; j < features.length; j++) {
-    if (features[j] == data.features[i].type) {
-     found = 1;
-    }
-   }
-   if (found == 0) {
-    features.push(data.features[i].type);
-   }
-  }
-  return features.length; 
- }
-
- function update(data, id) {
-
-  var n_feature_types = get_n_feature_types(data);
-
-  var margin = {top: 50, right: 60, bottom: 50, left: 80},
-      width = 800 - margin.left - margin.right,
-      height = 200;
-
-   var x = d3.scale.linear()
-        .domain([0, data.len])
-        .range([20, width - 20]);
-
-   var xAxis = d3.svg.axis()
-       .scale(x)
-       .orient("bottom");
-
-   var chart_ext = d3.select("."+id)
-       .attr("width", width + margin.left + margin.right)
-       .attr("height", height + margin.bottom + margin.top);
-
-   var chart = chart_ext.append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-   chart.append("g")
-        .attr("class", "d3-axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-        .append("text")
-        .attr("x", width / 2)
-        .attr("y", 40)
-        .style("text-anchor", "middle")
-        .text("Position [bp]");
-
-   function get_feature_group(groupname) {
-    var group = [];
-    for(i = 0; i < data.features.length; i++) {
-     if (data.features[i].type == groupname) {
-      group.push(data.features[i]);
-     }
-    }
-    return group;
-   }
-
-   function height_feature(feature) {
-    if (feature.type == "fragment") {
-     return height_fragment(feature);
-    } else if ((feature.type == "gene") | (feature.type == "protein")) {
-     return height_inframe(feature); 
-    } else {
-     return 0;
-    }
-   }
-
-   function height_fragment(fragment) {
-    var fn = +(fragment.name[1]);
-    if (fn % 2) {
-     return 0;
-    } else {
-     return 25;
-    }
-   }
-
-   function height_inframe(feature) {
-    var frame = (+(feature.location[0][0]) - (+data.framestart)) % 3;
-    return frame * 25;
-   }
-
-   function plot_group(groupname, dy) {
-    var group = get_feature_group(groupname);
-    var fea = chart.selectAll()
-                   .data(group)
-         	  .enter()
-         	  .append("g")
-                   .attr("class", "feature " + groupname)
-         	  .attr("transform", function(d) { return "translate(" + x(d.location[0][0]) + "," + (dy + height_feature(d)) + ")";})
-
-    fea.append("rect")
-         .attr("x", 0)
-         .attr("y", 0)
-         .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
-         .attr("height", 20)
-         .attr("style", "fill:steelblue;fill-opacity:0.5;stroke-width:1;stroke:rgb(0,0,0)");
-
-    fea.append("text")
-         .attr("x", function(d) { return 0.5 * (x(d.location[0][1]) - x(d.location[0][0])); })
-         .attr("y", 15)
-         .text(function(d) { return d.name; })
-         .style("text-anchor", "middle")
-
-   }
-
-   plot_group("fragment", 0);
-   plot_group("protein", 60);
-   plot_group("RNA_structure", 150);
-   plot_group("other", 150);
-
- }
-
-
+<script type="text/javascript" src="/static/genome.js"></script>
+<script type="text/javascript">
  function load_single(id, pname) {
      d3.xhr("/genomes/")
     .header("Content-Type", "application/json")
@@ -147,9 +32,14 @@
  {% endif %}
  {% for dict in dicts %}
   <h3>{{dict.name}}</h3>
-  <svg class="d3-plot {{dict.id}}"></svg>
+  <div class="svg-container">
+   <svg class="d3-plot {{dict.id}}"></svg>
+  </div> 
  <br>
  {% endfor %}
+ <div>
+ <b>Note</b>: Genome coordinates are inclusive at both ends and start from 1.
+ </div>
  
  <h3>Select options:</h3>
  <form role="form" action="" method="post" name="genome_settings">

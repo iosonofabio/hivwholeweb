@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block head_end %}
+ <!-- jQuery is also required, but we load it in the base template (bootstrap needs it too) -->
+
  <!-- D3.js for plots -->
  <link href="/static/css/d3_plots.css" rel="stylesheet" type="text/css">
- <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+ <script src="/static/components/d3/d3.js" charset="utf-8"></script>
 
- <!-- typsy (patched for D3.js) for fancy tiptools -->
- <link href="/static/css/tipsy.css" rel="stylesheet" type="text/css" />
- <script type="text/javascript" src="/static/js/jquery.tipsy.js"></script>
- <!-- jQuery is also required, but we load it in the base template (bootstrap needs it too) -->
+ <!-- d3-tip for tooltips -->
+ <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+ <script type="text/javascript" src="/static/components/d3-tip/index.js"></script>
 
  <!-- nice IE has no way of finding a string in a list of strings (!) -->
  <!-- maybe we have to put the snippet directly into single scripts, let's hope not -->
