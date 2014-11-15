@@ -25,7 +25,7 @@ function get_n_feature_types(data) {
 
   var div_width = $('.svg-container').width();
 
-  var margin = {top: 10, right: 60, bottom: 50, left: 80},
+  var margin = {top: 3, right: 60, bottom: 42, left: 60},
       width = div_width - margin.left - margin.right,
       height = 200, height_block = 20, vpad_block = 5;
 
@@ -105,7 +105,6 @@ function get_n_feature_types(data) {
     if (feature.type == "fragment") {
      return height_fragment(feature);
     } else if ((feature.type == "protein") | (feature.type == "gene")) {
-     console.log(feature);
      return height_inframe(feature); 
     } else {
      return 0;
@@ -131,6 +130,54 @@ function get_n_feature_types(data) {
     return frame * (height_block + vpad_block);
    }
 
+   function moverFeature(d) {
+     // change color
+     var rect = d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect");
+
+     rect.style("fill", "darkred");  
+
+     // show tooltip
+     tip.show(d);
+
+     // show line connecting the exons
+     var exons = [];
+     if (d.name.indexOf('exon 1') != -1) {
+      exons = ["exon-1", "exon-2"];
+     } else if (d.name.indexOf('exon 2') != -1) {
+      exons = ["exon-2", "exon-1"];
+     }
+     if (exons.length > 0) {
+       var rect2 = d3.select("#" + d.name.replace(/[ ']/g, "-").replace(exons[0], exons[1]) + "rect");
+       var d2 = rect2.data()[0];
+       var box2 = d3.select('#' + d.name.replace(/[ ']/g, "-").replace(exons[0], exons[1]) + "-box");
+       // FIXME: rewrite (?): we extract the y coordinate from the affine transformation STRING!
+       var boxy = +(d3.select(this).attr("transform").split(",")[1].split(")")[0]);
+       var box2y = +(box2.attr("transform").split(",")[1].split(")")[0]);
+
+       chart.append('line')
+	.attr("class", "exon-line")
+	.attr("x1", 0.5 * (x(d.location[0][1]) + x(d.location[0][0])))
+	.attr("x2", 0.5 * (x(d2.location[0][1]) + x(d2.location[0][0])))
+	.attr("y1", boxy + 0.5 * height_block)
+	.attr("y2", box2y + 0.5 * height_block)
+        .style("stroke", "darkred")
+        .style("stroke-width", 2);
+     }
+   }
+
+   function moutFeature(d) {
+     // change color back
+     d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect")
+      .style("fill", "steelblue");
+
+     // hide tooltip
+     tip.hide(d);   
+
+     // hide exon line
+     if ((d.name.indexOf('exon 1') != -1) | (d.name.indexOf('exon 2') != -1)) {
+       chart.selectAll(".exon-line").remove();
+     }
+   }
 
    function plot_group(groupname, dy) {
     var group = get_feature_group(groupname);
@@ -139,10 +186,10 @@ function get_n_feature_types(data) {
          	   .enter()
          	   .append("g")
                    .attr("class", "featurebox " + groupname)
-		   .attr("id", function(d) { return d.name + "-box"; })
+		   .attr("id", function(d) { return d.name.replace(/[ ']/g, "-") + "-box"; })
          	  .attr("transform", function(d) { return "translate(" + x(d.location[0][0]) + "," + (dy + height_feature(d)) + ")";})
-         .on('mouseover', function(d) { d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect").style("fill", "darkred"); tip.show(d); })
-         .on('mouseout', function(d) { d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect").style("fill", "steelblue"); tip.hide(d); });
+         .on('mouseover', moverFeature)
+         .on('mouseout', moutFeature);
 
     var fearect = fea.append("rect")
          .attr("class", "featurerect")
