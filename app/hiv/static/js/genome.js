@@ -97,7 +97,6 @@ function update(data, id) {
      }
     }
    }
-
    return group;
   }
 
@@ -199,7 +198,10 @@ function update(data, id) {
         .attr("y", 0)
         .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
         .attr("height", 20)
-        .attr("style", "fill:steelblue;fill-opacity:0.5;stroke-width:1;stroke:rgb(0,0,0)");
+        .style("fill", "steelblue")
+	.style("fill-opacity", 0.5)
+	.style("stroke-width", 1)
+	.style("stroke", "black");
 
    // show text only of longer things (that's why we have a tooltip)
    fea.append("text")
