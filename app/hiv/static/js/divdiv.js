@@ -50,16 +50,10 @@
   var dsmax = get_ymax(data.ds);
   var dsmin = get_ymin(data.ds);
 
-  var y_dg = d3.scale.log()
-       .domain([0.9 * dgmin, 1.1 * dgmax])
+  var y = d3.scale.log()
+       .domain([1e-3, 0.5])
        .range([height, 0]);
 
-  var y_ds = d3.scale.log()
-       .domain([0.9 * dsmin, 1.1 * dsmax])
-       .range([height, 0]);
-  
- var y = {"dg": y_dg, "ds": y_ds};
- 
   var x = d3.scale.linear()
        .domain([0, 1.1 * tmax])
        .range([0, width]);
@@ -72,14 +66,26 @@
      .scale(x)
      .orient("bottom")
      .tickFormat("");
+
+ var xAxisGrid = d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .tickSize(-height, 0, 0)
+      .tickFormat("");
  
   var yAxis_dg = d3.svg.axis()
-      .scale(y_dg)
+      .scale(y)
       .orient("left");
 
   var yAxis_ds = d3.svg.axis()
-      .scale(y_ds)
+      .scale(y)
       .orient("right");
+
+ var yAxisGrid = d3.svg.axis()
+      .scale(y)
+      .orient("right")
+      .tickSize(width, 0, 0)
+      .tickFormat("");
 
   var chart_ext = d3.select("."+id)
       .attr("width", width + margin.left + margin.right)
@@ -88,7 +94,17 @@
   var chart = chart_ext.append("g")
        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  chart.append("g")
+ // Draw the grid lines (they should stay behind)
+ chart.append("g")
+     .attr("class", "grid")
+     .attr("transform", "translate(0," + height + ")")
+     .call(xAxisGrid);
+
+ chart.append("g")
+     .attr("class", "grid")
+     .call(yAxisGrid);
+
+ chart.append("g")
        .attr("class", "d3-axis")
        .attr("transform", "translate(0," + height + ")")
        .call(xAxis)
@@ -98,19 +114,10 @@
        .style("text-anchor", "middle")
        .text("Time from infection [days]");
    
- // Draw the x Grid lines
- chart.append("g")
-     .attr("class", "grid")
-     .attr("transform", "translate(0," + height + ")")
-     .call(make_x_axis()
-         .tickSize(-height, 0, 0)
-         .tickFormat("")
-     );
-
  chart.append("g")
       .attr("class", "d3-axis")
       .call(xAxisTop);
-
+ 
  var dgTextBox = chart.append("g")
        .attr("class", "d3-axis")
        .call(yAxis_dg)
@@ -153,7 +160,6 @@
       .attr("height", 14)
       .style("fill", colors.ds);
 
-
   chart.append("g")
        .attr("class", "circles DG")
        .selectAll()
@@ -162,7 +168,7 @@
        .append("circle")
        .attr("class", "circle")
        .attr("cx", function(d) { return x(d[0]); })
-       .attr("cy", function(d) { return y_dg(d[1]); })
+       .attr("cy", function(d) { return y(d[1]); })
        .attr("r", 6);
 
   chart.append("g")
@@ -173,17 +179,10 @@
        .append("rect")
        .attr("class", "rect")
        .attr("x", function(d) { return x(d[0]) - 3; })
-       .attr("y", function(d) { return y_ds(d[1]) - 3; })
+       .attr("y", function(d) { return y(d[1]) - 3; })
        .attr("width", 12)
        .attr("height", 12)
        .style("fill", "steelblue");
-
- // function for the x grid lines
- function make_x_axis() {
-     return d3.svg.axis()
-         .scale(x)
-         .orient("bottom");
- }
 
  }
 
