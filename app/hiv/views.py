@@ -352,3 +352,15 @@ def haplotypes():
     response.headers["Content-Disposition"] = "attachment; filename=alignments.zip"
 
     return response
+
+
+@hiv.route('/impressum/', methods=['GET'])
+def impressum():
+    return render_template('impressum.html',
+                           title='Impressum')
+
+
+@hiv.route('/contact/', methods=['GET'])
+def contact():
+    return render_template('contact.html',
+                           title='Contact')
