@@ -34,155 +34,8 @@
 }
 
 </style>
-<script>
-
- function get_ymax(data) {
-  var ymax = d3.max(data[0][1]);
-  var ytmp;
-  for (i = 1; i < data.length; i++) {
-    ytmp = d3.max(data[i][1]);
-    if (ytmp > ymax) {
-     ymax = ytmp;
-    }
-  }
-  return ymax;
- }
-
- function update(data, id) {
-
-  var datal = data.cov.length;
-
-  var margin = {top: 60, right: 30, bottom: 150, left: 80},
-      width = 1000 - margin.left - margin.right,
-      height = 550 - margin.top - margin.bottom;
-
-  var chart_ext = d3.select("."+id)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.bottom + margin.top);
-
-  var chart = chart_ext.append("g")
-       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
-  var covmax = get_ymax(data.cov);
-
-  var y = d3.scale.log()
-       .domain([0.5, covmax])
-       .range([height, 0]);
-  
-  var x = d3.scale.linear()
-       .domain([-0.05 * data.cov[0][1].length, 1.05 * data.cov[0][1].length])
-       .range([0, width]);
-  
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
-  
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left");
-
-  chart.append("g")
-       .attr("class", "d3-axis")
-       .attr("transform", "translate(0," + height + ")")
-       .call(xAxis)
-       .append("text")
-       .attr("x", width / 2)
-       .attr("y", 40)
-       .style("text-anchor", "middle")
-       .text("Position [bp]");
-   
-  chart.append("g")
-       .attr("class", "d3-axis")
-       .call(yAxis)
-       .append("text")
-       .attr("transform", "rotate(-90)")
-       .attr("dy", "-4.5em")
-       .attr("x", -height / 2)
-       .style("text-anchor", "middle")
-       .text("Coverage");
-
-  // Initial data
-  chart.append("g")
-       .attr("class", "circles COV")
-       .selectAll()
-       .data(data.cov[0][1])
-       .enter()
-       .append("circle")
-       .attr("class", "circle cov_point")
-       .attr("cx", function(d, i) { return x(i); })
-       .attr("cy", function(d) { return y(d); })
-       .attr("r", 3);
-
-  // Slider
-  var xsl = d3.scale.linear()
-    .domain([1, datal])
-    .range([0, width])
-    .clamp(true);
-
-  var brush = d3.svg.brush()
-      .x(xsl)
-      .extent([1, 1])
-      .on("brush", brushed);
-
-  chart.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + (height + 70) + ")")
-      .call(d3.svg.axis()
-        .scale(xsl)
-        .orient("bottom")
-        .ticks(datal)
-	.tickFormat(function(d, i){ return data.cov[i][0]; })
-        .tickPadding(12))
-    .select(".domain")
-    .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-      .attr("class", "halo");
-
-  chart.append("text")
-      .attr("x", width / 2)
-      .attr("y", height + 130)
-      .style("text-anchor", "middle")
-      .text("Time from infection [days]");
-
-  var slider = chart.append("g")
-      .attr("class", "slider")
-      .call(brush);
-
-  
-  slider.selectAll(".extent,.resize")
-      .remove();
-  
-  slider.select(".background")
-      .attr("height", height);
-  
-  var handle = slider.append("circle")
-      .attr("class", "handle")
-      .attr("transform", "translate(0," + (height + 70) + ")")
-      .attr("r", 9);
-  
-  slider
-      .call(brush.event)
-    .transition() // gratuitous intro!
-      .duration(750)
-      .call(brush.extent([1, 1]))
-      .call(brush.event);
-  
-  function brushed() {
-    var value = brush.extent()[0];
-  
-    if (d3.event.sourceEvent) { // not a programmatic event
-      value = xsl.invert(d3.mouse(this)[0]);
-      brush.extent([value, value]);
-    }
-
-    var i_time = Math.min(datal - 1, Math.max(0, Math.round(value) - 1));
-    handle.attr("cx", xsl(i_time + 1));
-    chart.selectAll(".cov_point")
-       .attr("cy", function(d, i) { return y(data.cov[i_time][1][i]); })
-}
-
-
- }
-
+<script type="text/javascript" src="/static/js/coverage.js"></script>
+<script type="text/javascript">
   function load_single(id, pname) {
    d3.xhr("/coverage/")
     .header("Content-Type", "application/json")
@@ -190,7 +43,19 @@
       JSON.stringify({patient: pname}),
       function(error, request) {
        var data = JSON.parse(request.responseText);
-       update(data.data, id);
+
+       d3.xhr("/genomes/")
+       .header("Content-Type", "application/json")
+       .post(
+         JSON.stringify({patient: pname}),
+         function(error, request) {
+          var data_gn = JSON.parse(request.responseText);
+	  // This is not totally safe, but ok for now
+	  data = data.data;
+	  data.genome = data_gn.data;
+	  update(data, id);
+         }
+       );
       }
    );
   }
@@ -207,12 +72,14 @@
  <h1>{{section_name}}</h1>
  {% if show_intro %}
   <h4>
-   Some intro.
+   Coverage indicates how many times each base in the genome was sequenced. The reciprocal value is the maximal sequencing depth, but the total depth is often limited by the number of HIV molecules in the plasma samples or by the error rate of the PCR polymerase.
   </h4>
  {% endif %}
  {% for dict in dicts %}
   <h3>{{dict.name}}</h3>
-  <svg class="d3-plot {{dict.id}}"></svg>
+  <div class="svg-container">
+   <svg class="d3-plot {{dict.id}}"></svg>
+  </div>
  {% endfor %}
  <br>
 

@@ -33,65 +33,64 @@
   return ymin;
  }
 
- function update(data, id) {
+function update(data, id) {
 
  var colors = {"dg": "black", "ds": "steelblue"};
 
  var div_width = $('.svg-container').width();
 
+ var margin = {top: 10, right: 80, bottom: 60, left: 80},
+     width = 0.9 * div_width - margin.left - margin.right,
+     height = 500 - margin.top - margin.bottom;
 
-  var margin = {top: 10, right: 80, bottom: 60, left: 80},
-      width = 0.9 * div_width - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+ var tmax = get_tmax(data);
+ var dgmax = get_ymax(data.dg);
+ var dgmin = get_ymin(data.dg);
+ var dsmax = get_ymax(data.ds);
+ var dsmin = get_ymin(data.ds);
 
-  var tmax = get_tmax(data);
-  var dgmax = get_ymax(data.dg);
-  var dgmin = get_ymin(data.dg);
-  var dsmax = get_ymax(data.ds);
-  var dsmin = get_ymin(data.ds);
+ var y = d3.scale.log()
+      .domain([1e-3, 0.5])
+      .range([height, 0]);
 
-  var y = d3.scale.log()
-       .domain([1e-3, 0.5])
-       .range([height, 0]);
+ var x = d3.scale.linear()
+      .domain([0, 1.1 * tmax])
+      .range([0, width]);
 
-  var x = d3.scale.linear()
-       .domain([0, 1.1 * tmax])
-       .range([0, width]);
-
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
-
-  var xAxisTop = d3.svg.axis()
+ var xAxis = d3.svg.axis()
      .scale(x)
-     .orient("bottom")
-     .tickFormat("");
+     .orient("bottom");
+
+ var xAxisTop = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .tickFormat("");
 
  var xAxisGrid = d3.svg.axis()
-      .scale(x)
-      .orient("bottom")
-      .tickSize(-height, 0, 0)
-      .tickFormat("");
- 
-  var yAxis_dg = d3.svg.axis()
-      .scale(y)
-      .orient("left");
+     .scale(x)
+     .orient("bottom")
+     .tickSize(-height, 0, 0)
+     .tickFormat("");
 
-  var yAxis_ds = d3.svg.axis()
-      .scale(y)
-      .orient("right");
+ var yAxis_dg = d3.svg.axis()
+     .scale(y)
+     .orient("left");
+
+ var yAxis_ds = d3.svg.axis()
+     .scale(y)
+     .orient("right");
 
  var yAxisGrid = d3.svg.axis()
-      .scale(y)
-      .orient("right")
-      .tickSize(width, 0, 0)
-      .tickFormat("");
+     .scale(y)
+     .orient("right")
+     .tickSize(width, 0, 0)
+     .tickFormat("");
 
-  var chart_ext = d3.select("."+id)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.bottom + margin.top);
+ var chart_ext = d3.select("."+id)
+     .attr("width", width + margin.left + margin.right)
+     .attr("height", height + margin.bottom + margin.top);
 
-  var chart = chart_ext.append("g")
+ var chart = chart_ext.append("g")
        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
  // Draw the grid lines (they should stay behind)
@@ -160,7 +159,7 @@
       .attr("height", 14)
       .style("fill", colors.ds);
 
-  chart.append("g")
+ chart.append("g")
        .attr("class", "circles DG")
        .selectAll()
        .data(data.dg)
@@ -171,7 +170,7 @@
        .attr("cy", function(d) { return y(d[1]); })
        .attr("r", 6);
 
-  chart.append("g")
+ chart.append("g")
        .attr("class", "circles DS")
        .selectAll()
        .data(data.ds)
