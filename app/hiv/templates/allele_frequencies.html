@@ -1,80 +1,8 @@
 {% extends "plots.html" %}
 {% block head_end %}
 {{ super() }}
-<script>
- function update(data, id) {
-
-  var datal = data.len;
-
-  var margin = {top: 30, right: 30, bottom: 50, left: 80},
-      width = 1000 - margin.left - margin.right,
-      height = 450 - margin.top - margin.bottom;
-
-  var chart_ext = d3.select("."+id)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.bottom + margin.top);
-
-  var chart = chart_ext.append("g")
-       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  var y = d3.scale.log()
-       .domain([0.0009, 1.01])
-       .range([height, 0]);
-  
-  var x = d3.scale.linear()
-       .domain([-10, 1.05 * data.tmax])
-       .range([0, width]);
-
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
-  
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left");
-
-  chart.append("g")
-       .attr("class", "d3-axis")
-       .attr("transform", "translate(0," + height + ")")
-       .call(xAxis)
-       .append("text")
-       .attr("x", width / 2)
-       .attr("y", 40)
-       .style("text-anchor", "middle")
-       .text("Time from infection [days]");
-   
-  chart.append("g")
-       .attr("class", "d3-axis")
-       .call(yAxis)
-       .append("text")
-       .attr("transform", "rotate(-90)")
-       .attr("dy", "-4.5em")
-       .attr("x", -height / 2)
-       .style("text-anchor", "middle")
-       .text("Frequency");
-
-  var lineFunc = d3.svg.line()
-                       .x(function(d) { return x(d[0]); })
-		       .y(function(d) { return y(d[1]); })
-		       .interpolate('monotone');
-
-  var colors = d3.scale.linear()
-  .domain([0, data.len / 4, data.len / 3, data.len / 2, 2 * data.len / 3, 3 * data.len / 4, data.len])
-  .interpolate(d3.interpolateRgb)
-  .range(["darkblue", "blue", "cyan", "green", "yellow", "orange", "red"]);
-
-  chart.selectAll()
-       .data(data.aft)
-       .enter()
-       .append("svg:path")
-       .attr("d", function(d) { return lineFunc(d[2]); })
-       .attr("stroke", function(d) { return colors(d[0]); })
-       .attr("stroke-width", 2)
-       .attr("fill", "none")
-       .attr("opacity", 0.5);
-
- }
-
+<script type="text/javascript" src="/static/js/allele_frequencies.js"></script>
+<script type="text/javascript">
  function load_single(id, pname) {
   d3.xhr("/allele_frequencies/")
    .header("Content-Type", "application/json")
@@ -82,7 +10,20 @@
      JSON.stringify({patient: pname}),
      function(error, request) {
       var data = JSON.parse(request.responseText);
-      update(data.data, id);
+
+      d3.xhr("/genomes/")
+      .header("Content-Type", "application/json")
+      .post(
+        JSON.stringify({patient: pname}),
+        function(error, request) {
+         var data_gn = JSON.parse(request.responseText);
+         // This is not totally safe, but ok for now
+         data = data.data;
+         data.genome = data_gn.data;
+         update(data, id);
+        }
+      );
+
      }
   );
  }

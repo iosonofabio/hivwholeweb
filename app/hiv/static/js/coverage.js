@@ -166,6 +166,8 @@ function update(data, id) {
 
    var i_time = get_itime(value);
    handle.attr("cx", xsl(i_time + 1));
+   // we could put a transition here, but it the code must be optimized first, or else it's
+   // going to stutter a lot
    charts.cov.selectAll(".cov_point")
       .attr("cy", function(d, i) { return y(data.cov[i_time][1][i]); })
  }
