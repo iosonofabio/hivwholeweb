@@ -230,6 +230,8 @@ function update_genome(data, id, width, height) {
 
    // thicken lines in this feature
    d3.selectAll(".aft")
+     .transition()
+     .duration(500)
      .attr("opacity", function(daft) {
        if ((daft[0] >= d.location[0][0]) & (daft[0] < d.location[0][1])) {
 	return 1;
@@ -255,6 +257,8 @@ function update_genome(data, id, width, height) {
 
    // restore opacity of lines
    d3.selectAll(".aft")
+     .transition()
+     .duration(400)
      .attr("opacity", 0.5);   
 
  }
