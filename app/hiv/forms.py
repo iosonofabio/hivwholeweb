@@ -90,3 +90,10 @@ class LocalHaplotypeForm(Form):
     patient = SelectField('Patient',
                           choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
     roi = FormField(RoiForm)
+
+
+class TreeForm(Form):
+    patient = SelectField('Patient',
+                          choices=[['all'] * 2] + [['p'+str(i)] * 2 for i in xrange(1, 12)])
+    fragment = SelectField('Fragment',
+                           choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])

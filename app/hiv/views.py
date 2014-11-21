@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, jsonify, make_response
 from . import hiv
-from .forms import PatFragForm, PatForm, LocalHaplotypeForm
+from .forms import PatFragForm, PatForm, LocalHaplotypeForm, TreeForm
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
                      PropagatorModel, DivdivLocalModel, LocalHaplotypeModel)
@@ -24,31 +24,26 @@ def trees():
         data = {'newick': tree}
         return jsonify(**data)
 
-    form = PatFragForm()
+    form = TreeForm()
     if request.method == 'GET':
         show_intro = True
-        pnames = ['all']
-        fragments = ['F1']
+        pname = 'all'
+        fragment = 'F1'
     else:
         show_intro = False
-        pnames = ['p'+str(i+1) for i in xrange(11)
-                  if getattr(form, 'p'+str(i+1)).data]
-        fragments = ['F'+str(i+1) for i in xrange(6)
-                     if getattr(form, 'F'+str(i+1)).data]
+        pname = form.patient.data
+        fragment = form.fragment.data
         if not form.validate_on_submit():
-            flash('Select at least one fragment and patient!')
+            flash('Select one fragment and one patient!')
 
-    dicts = []
-    for pname in pnames:
-        for fragment in fragments:
-            dicts.append({'pname': pname,
-                          'fragment': fragment,
-                          'name': pname+', '+fragment,
-                          'id': pname+'_'+fragment})
+    data = {'pname': pname,
+            'fragment': fragment,
+            'name': pname+', '+fragment,
+            'id': pname+'_'+fragment}
 
     return render_template('trees.html',
                            title='Phylogenetic trees',
-                           dicts=dicts,
+                           data=data,
                            form=form,
                            show_intro=show_intro,
                            section_name='Phylogenetic trees',
