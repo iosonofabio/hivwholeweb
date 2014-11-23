@@ -74,6 +74,7 @@ function update(text, id, pname) {
     .children(function(d) { return d.branchset; })
     .separation(function(a, b) { return 1; });
 
+ // FIXME: check the scale!!
  var tree = Newick.parse(text);
  var nodes = cluster.nodes(tree);
  var depth = maxDepth(nodes[0], 0, 0),
@@ -90,19 +91,33 @@ function update(text, id, pname) {
       .attr("stroke", "black")
       .attr("stroke-width", 2);
 
- /* label nodes with circles
- var node = vis.selectAll("g.node")
-      .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
-    .enter().append("g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+ var barLengthData;
+ if (id.indexOf("all") != -1) {
+  barLengthData = 0.02;
+ } else {
+  barLengthData = 0.005;
+ }
+ var barLength = treeScale * barLengthData;
+ var bar = vis.append("g")
+              .attr("class", "lengthbar")
+	      .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
 
-  node.append("circle")
-      .attr("r", 5)
-      .style("stroke", "steelblue")
-      .style("stroke-width", 2)
-      .style("fill", "none");
-  */
+ bar.selectAll(".lengthbar")
+    .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
+    .enter()
+    .append("svg:line")
+    .attr("x1", function(d) { return d[0]; })
+    .attr("x2", function(d) { return d[1]; })
+    .attr("y1", function(d) { return d[2]; })
+    .attr("y2", function(d) { return d[3]; })
+    .style("stroke", "black")
+    .style("stroke-width", 2);
+
+ bar.append("text")
+  .attr("x", -barLength / 2)
+  .attr("y", 25)
+  .text(barLengthData)
+  .attr("text-anchor", "middle");
 
  var annoLine = vis.selectAll("path.anno")
       .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
@@ -117,9 +132,30 @@ function update(text, id, pname) {
 
  var label = vis.selectAll("text")
       .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
-    .enter().append("text")
+      .enter().append("text")
       .attr("dy", ".31em")
       .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
       .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (r - 170 + 8) + ")rotate(" + (d.x < 180 ? 0 : 180) + ")"; })
-      .text(function(d) { return d.name.replace(/_/g, ' '); });
+      .text(function(d) { return d.name.replace(/_/g, ' '); })
+      .on("mouseover", mover)
+      .on("mouseout", mout);
+
+function mover(d) {
+  var t = project(d);
+  vis.append("circle")
+      .attr("class", "highlight")
+      .attr("cx", t[0])
+      .attr("cy", t[1])
+      .attr("r", 8)
+      .style("stroke", "steelblue")
+      .style("stroke-width", 3)
+      .style("fill", "none");
+
+}
+
+function mout(d) {
+  vis.selectAll(".highlight")
+     .remove();
+}
+
 }
