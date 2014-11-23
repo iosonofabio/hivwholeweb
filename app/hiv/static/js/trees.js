@@ -119,10 +119,13 @@ function update(text, id, pname) {
   .text(barLengthData)
   .attr("text-anchor", "middle");
 
- var annoLine = vis.selectAll("path.anno")
+ var label = vis.selectAll(".anno")
       .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
       .enter()
-      .append("path")
+      .append("g")
+      .attr("class", "anno");
+
+  label.append("path")
       .attr("class", "anno")
       .attr("d", function(d) { return stepAnno(d, rInternal); })
       .attr("fill", "none")
@@ -130,9 +133,7 @@ function update(text, id, pname) {
       .style("stroke-dasharray", ("3, 3"))
       .attr("stroke-width", 2);
 
- var label = vis.selectAll("text")
-      .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
-      .enter().append("text")
+  label.append("text")
       .attr("dy", ".31em")
       .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
       .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (r - 170 + 8) + ")rotate(" + (d.x < 180 ? 0 : 180) + ")"; })
