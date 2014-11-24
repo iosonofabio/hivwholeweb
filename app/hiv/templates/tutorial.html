@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title>Intrapatient HIV evolution - {{title}}</title>
+
+<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+<meta name="author" content="Hakim El Hattab">
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link rel="stylesheet" href="/static/components/reveal.js/css/reveal.min.css">
+<link rel="stylesheet" href="/static/components/reveal.js/css/theme/default.css" id="theme">
+
+<!-- For syntax highlighting -->
+<link rel="stylesheet" href="/static/components/reveal.js/lib/css/zenburn.css">
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+	if( window.location.search.match( /print-pdf/gi ) ) {
+		var link = document.createElement( 'link' );
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = 'css/print/pdf.css';
+		document.getElementsByTagName( 'head' )[0].appendChild( link );
+	}
+</script>
+
+<!--[if lt IE 9]>
+<script src="lib/js/html5shiv.js"></script>
+<![endif]-->
+</head>
+
+<body>
+<div class="reveal">
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+ <section>
+  <h2>HIV: Intrapatient Evolution</h2>
+  <p style="font-size:70%;"><i>Fabio Zanini</i>, <i>Richard Neher et al</i>.</p><br>
+  <p class="grey">Scroll right to continue.</p>
+</section>
+
+<section data-background="/static/images/tutorial/HIV_Tcell.jpg">
+ <p style="text-align:center; text-shadow: 0px 0px 40px black, 0px 0px 30px black, 0px 0px 20px black, -2px -2px 10px black, 2px 2px 5px black;">HIV is a virus that infects human immune cells.</p>
+</section>
+
+<section>
+ <p style="text-align:left">An HIV infection lasts for many years.</p>
+ <svg id="d3-plot-time1"></svg>
+</section>
+
+<section>
+ <p style="text-align:left">The concentration of virions in the blood increases with time.</p>
+ <svg id="d3-plot-time2"></svg>
+</section>
+
+</div>
+</div>
+
+<script src="/static/components/reveal.js/lib/js/head.min.js"></script>
+<script src="/static/components/reveal.js/js/reveal.min.js"></script>
+<link href="/static/css/d3_plots.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/components/d3/d3.min.js"></script>
+<script src="/static/components/jquery/dist/jquery.min.js"></script>
+
+<script>
+
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+	controls: true,
+	progress: true,
+	history: true,
+	center: true,
+
+	theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+	transition: Reveal.getQueryHash().transition || 'fade', // default/cube/page/concave/zoom/linear/fade/none
+
+	// Parallax scrolling
+	// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+	// parallaxBackgroundSize: '2100px 900px',
+
+	// Optional libraries used to extend on reveal.js
+	dependencies: [
+		{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+		{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+		{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+});
+
+// d3 part below
+function create_virion() {
+ var width = 800,
+     height = 300,
+     radius = 80
+     radiusCapsid = radius - 30;
+ 
+ var visAll = d3.selectAll(".HIV")
+   .attr("width", width)
+   .attr("height", height);
+ 
+ var vis = d3.selectAll("#HIVVirion")
+   .append("g")
+   .attr("class", "virion")
+   .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
+ 
+ 
+ // draw virus circle
+ vis.append("circle")
+   .attr("cx", 0)
+   .attr("cy", 0)
+   .attr("r", radius)
+   .style("fill", "darkred")
+   .style("fill-opacity", 0.5)
+   .style("stroke", "darkred")
+   .style("stroke-width", 8);
+ 
+ 
+ // draw hexagon
+ var hexagonData = [
+       { "x": radiusCapsid/4,  "y": -radiusCapsid},
+       { "x": radiusCapsid/2,   "y": 0.8 * radiusCapsid}, 
+       { "x": radiusCapsid/3,   "y": radiusCapsid}, 
+       { "x": -radiusCapsid/3,  "y": radiusCapsid},
+       { "x": -radiusCapsid/2,  "y": 0.8 * radiusCapsid},
+       { "x": -radiusCapsid/4,  "y": -radiusCapsid},
+     ];
+ 
+ drawHexagon = d3.svg.line()
+       .x(function(d) { return d.x; })
+       .y(function(d) { return d.y; })
+       .interpolate("linear-closed");
+ 
+ vis.append("path")
+    .attr("d", drawHexagon(hexagonData))
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 5)
+    .attr("fill", "none");
+ 
+ // draw cell circle as a callback
+ Reveal.addEventListener( 'fragmentshown', function( event ) {
+  vis.append("circle")
+    .attr("class", "cell")
+    .attr("cx", 40)
+    .attr("cy", -5)
+    .attr("r", 200)
+    .style("fill", "none")
+    .style("stroke", "darkred")
+    .style("stroke-width", 35);
+ 
+ } );
+ 
+ Reveal.addEventListener( 'fragmenthidden', function( event ) {
+     // event.fragment = the fragment DOM element
+    vis.selectAll(".cell")
+     .remove();
+ } );
+ 
+ 
+ Reveal.addEventListener( 'slidechanged', function( event ) {
+     // event.previousSlide, event.currentSlide, event.indexh, event.indexv
+ } );
+ 
+}
+
+function create_time1() {
+
+ var secWidth = $("section").width();
+
+ var margin = {left: 200, right:50, top:50, bottom:80},
+    width = secWidth - margin.left - margin.right,
+    height = 400;
+
+ var vis = d3.select("#d3-plot-time1")
+   .attr("width", width + margin.left + margin.right)
+   .attr("height", height + margin.top + margin.bottom)
+   .append("g")
+   .attr("class", "virion")
+   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+ var x = d3.scale.linear()
+      .domain([0, 3000])
+      .range([0, width]);
+
+ var xAxis = d3.svg.axis()
+     .scale(x)
+     .orient("bottom");
+
+ vis.append("g")
+      .attr("class", "d3-axis-white")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", 65)
+      .style("text-anchor", "middle")
+      .text("Time from infection [days]");
+
+
+vis.append("defs").append("marker")
+    .attr("id", "arrowhead")
+    .attr("refX", 1) /*must be smarter way to calculate shift*/
+    .attr("refY", 2)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 4)
+    .attr("orient", "auto")
+    .append("path")
+        .attr("d", "M 0,0 V4 L6,2 Z")
+	.attr("fill", "white");
+
+
+// FIXME: here an animation would be good, but it's buggy
+vis.append("line")
+   .attr("marker-end", "url(#arrowhead)")
+   .attr("x1", 0)
+   .attr("x2", x(2000))
+   .attr("y1", height / 2)
+   .attr("y2", height / 2)
+   .attr("stroke-width", 20)
+   .attr("stroke", "white");
+
+}
+
+function delete_time1() {
+ d3.select("#d3-plot-time2").selectAll("*").remove();
+}
+
+function create_time2() {
+
+ var secWidth = $("section").width();
+
+ var margin = {left: 200, right:50, top:50, bottom:80},
+    width = secWidth - margin.left - margin.right,
+    height = 400;
+
+ var vis = d3.select("#d3-plot-time2")
+   .attr("width", width + margin.left + margin.right)
+   .attr("height", height + margin.top + margin.bottom)
+   .append("g")
+   .attr("class", "virion")
+   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+ var x = d3.scale.linear()
+      .domain([0, 3000])
+      .range([0, width]);
+
+ var y = d3.scale.log()
+      .domain([50, 100000])
+      .range([height, 0]);
+
+ var xAxis = d3.svg.axis()
+     .scale(x)
+     .orient("bottom");
+
+ var yAxis = d3.svg.axis()
+     .scale(y)
+     .orient("left");
+
+ vis.append("g")
+      .attr("class", "d3-axis-white")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", 65)
+      .style("text-anchor", "middle")
+      .text("Time from infection [days]");
+
+ vis.append("g")
+      .attr("class", "d3-axis-white")
+      .call(yAxis)
+      .append("g")
+      .attr("class", "d3-axis-textbox")
+      .attr("transform", "rotate(-90)")
+      .append("text")
+      .attr("dy", "-4.8em")
+      .attr("x", -height / 2)
+      .style("text-anchor", "middle")
+      .text("Viral load [copies/ml]");
+
+
+vis.append("defs").append("marker")
+    .attr("id", "arrowhead_red")
+    .attr("refX", 1) /*must be smarter way to calculate shift*/
+    .attr("refY", 2)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 4)
+    .attr("orient", "auto")
+    .append("path")
+        .attr("d", "M 0,0 V4 L6,2 Z")
+	.attr("fill", "darkred");
+
+
+// FIXME: here an animation would be good, but it's buggy
+var data = [[150, 100], [300, 180], [500, 300],
+            [1500, 10000], [2500, 50000]];
+vis.append("path")
+   .attr("marker-end", "url(#arrowhead_red)")
+   .attr("d", d3.svg.line()
+     .x(function(d) { return x(d[0]); })
+     .y(function(d) { return y(d[1]); })
+     .interpolate("monotone")(data))
+   .attr("stroke-width", 5)
+   .attr("stroke", "darkred")
+   .attr("fill", "none");
+
+}
+
+function delete_time2() {
+ d3.select("#d3-plot-time2").selectAll("*").remove();
+}
+
+
+
+
+/* Add events later
+Reveal.addEventListener('slidechanged', function( event ) {
+     // event.previousSlide, event.currentSlide, event.indexh, event.indexv
+
+ var cs = event.currentSlide,
+     ps = event.previousSlide,
+     plotT1 = document.getElementById("d3-plot-time1");
+
+ if (cs.contains(plotT1)) {
+  create_time1();
+ } else {
+  delete_time1();
+ }
+});
+*/
+
+/* Load everything for now */
+create_time1();
+create_time2();
+
+
+</script>
+</body>
+</html>

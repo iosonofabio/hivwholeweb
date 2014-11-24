@@ -359,3 +359,9 @@ def impressum():
 def contact():
     return render_template('contact.html',
                            title='Contact')
+
+
+@hiv.route('/tutorial/', methods=['GET'])
+def tutorial():
+    return render_template('tutorial.html',
+                           title='Tutorial')

@@ -22,3 +22,17 @@
   font: 20px sans-serif;
   font-weight: bold;
 }
+
+
+.d3-axis-white text {
+  font: 28px sans-serif;
+  fill: white;
+}
+
+.d3-axis-white path,
+.d3-axis-white line {
+  fill: none;
+  stroke: white;
+  shape-rendering: crispEdges;
+}
+
