@@ -1,5 +1,7 @@
 # Sections of the website (for navbar et al)
-sections = [{'id': 'tree', 'name': 'Phylogenetic trees', 'url': '/trees/',
+sections = [{'id': 'tutorial', 'name': 'Tutorial', 'url': '/tutorial/',
+             'thumbnail': '/static/images/icons/tutorial.svg'},
+            {'id': 'tree', 'name': 'Phylogenetic trees', 'url': '/trees/',
              'thumbnail': '/static/images/icons/tree.svg'},
             {'id': 'physio', 'name': 'Viral load and CD4+ counts', 'url': '/physiological/',
              'thumbnail': '/static/images/icons/viral_load.svg'},

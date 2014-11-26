@@ -305,9 +305,12 @@ class PropagatorModel(object):
 
 
 class DivdivLocalModel(object):
-    def __init__(self, pname):
+    def __init__(self, pname, observables=['dg', 'ds'],
+                 itimes=None, roi=None):
         self.pname = pname
-
+        self.observables = observables
+        self.itimes = itimes
+        self.roi = roi
 
     def get_divergence_filename(self, full=True):
         fn = 'divergence_trajectory_'+self.pname+'_genomewide.npz'
@@ -319,12 +322,24 @@ class DivdivLocalModel(object):
         return data_folder[full]+'divdiv/'+fn
 
 
+    def trim_to_roi(self, data):
+        if self.roi is None:
+            return data
+
+        # FIXME: implement this
+        if self.roi[0] != 'genomewide':
+            raise ValueError('Not implemented!')
+
+        # NOTE: we use double inclusive coordinates
+        return data[:, int(self.roi[1]): int(self.roi[2]) + 1]
+
+
     def get_data(self, dx=20):
         from itertools import izip
         import numpy as np
         npz = np.load(self.get_divergence_filename())
         times = npz['times']
-        dg = npz['dg'][:, ::dx]
+        dg = self.trim_to_roi(npz['dg'])[:, ::dx]
         block_length = npz['block_length'][0]
         len_times = len(times)
 
@@ -333,17 +348,26 @@ class DivdivLocalModel(object):
 
         npz = np.load(self.get_diversity_filename())
         times = npz['times']
-        ds = npz['ds'][:, ::dx]
+        ds = self.trim_to_roi(npz['ds'])[:, ::dx]
         len_times = max(len_times, len(times))
 
         # NOTE: we assume div and div have the same block length
         ds = [[t, list(np.maximum(0.0001, d))] for (t, d) in izip(times, ds)]
 
-        data = {'dg': dg,
-                'ds': ds,
-                'block_length': block_length,
+        data = {'block_length': block_length,
                 'dx': dx,
                 'len': len_times}
+
+        # FIXME: this is buggy, we don't get the itime from the raw data
+        if self.itimes is not None:
+            dg = [dg[i] for i in self.itimes]
+            ds = [ds[i] for i in self.itimes]
+
+        if 'dg' in self.observables:
+            data['dg'] = dg
+        if 'ds' in self.observables:
+            data['ds'] = ds
+
         return data
 
 

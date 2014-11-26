@@ -193,8 +193,14 @@ def coverage():
 @hiv.route(find_section(id='divdiv_local')['url'], methods=['GET', 'POST'])
 def divdiv_local():
     if request.json:
-        pname = request.json['patient']
-        data = {'data': DivdivLocalModel(pname).get_data()}
+        req = request.json
+        pname = req['patient']
+        kwargs = {}
+        for key in ('observables', 'itimes', 'roi'):
+            if key in req:
+                kwargs[key] = req[key]
+
+        data = {'data': DivdivLocalModel(pname, **kwargs).get_data()}
         return jsonify(**data)
 
     section = find_section(id='divdiv_local')

@@ -477,10 +477,18 @@ function updateVirion(active) {
     .attr("cx", function(d) { return d; })
     .attr("cy", 0)
     .attr("r", 8)
-    .attr("fill", "darkred");
+    .attr("fill", "darkred")
+    .style("opacity", 0)
+    .transition()
+    .duration(400)
+    .style("opacity", 1);
 
  } else {
-  gen.selectAll(".otherMut").remove();
+  gen.selectAll(".otherMut")
+   .transition()
+   .duration(400)
+   .style("opacity", 0)
+   .remove();
  }
 
 }
@@ -609,8 +617,9 @@ function createMutSpread() {
   .attr("r", 10)
   .attr("fill", "steelblue");
 
+// line of evolution
 vis.append("defs").append("marker")
-    .attr("id", "arrowhead")
+    .attr("id", "arrowheadEvo")
     .attr("refX", 1) /*must be smarter way to calculate shift*/
     .attr("refY", 2)
     .attr("markerWidth", 6)
@@ -620,7 +629,6 @@ vis.append("defs").append("marker")
         .attr("d", "M 0,0 V4 L6,2 Z")
 	.attr("fill", "white");
 
-// line of evolution
  var dataLines = [
  {'x1': dataVirion[0].x + 1.2 * radius,
   'x2': dataVirion[3].x - 1.2 * radius,
@@ -639,7 +647,7 @@ vis.append("defs").append("marker")
     .data(dataLines)
     .enter()
     .append("line")
-    .attr("marker-end", "url(#arrowhead)")
+    .attr("marker-end", "url(#arrowheadEvo)")
     .attr("x1", function(d) { return d.x1; })
     .attr("x2", function(d) { return d.x2; })
     .attr("y1", function(d) { return d.y1; })
@@ -664,15 +672,131 @@ vis.append("defs").append("marker")
 }
 
 
+function createDiversity() {
+
+ var secWidth = $("section").width();
+
+ var margin = {left: 180, right:30, top:80, bottom:120},
+     width = secWidth - margin.left - margin.right,
+     height = 240, roi = [6500, 7500];
+
+ var vis = d3.selectAll("#divDivEnv")
+   .attr("width", width + margin.left + margin.right)
+   .attr("height", height + margin.top + margin.bottom)
+   .append("g")
+   .attr("class", "virion")
+   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var y = d3.scale.log()
+       .domain([0.001, 0.1])
+       .range([height, 0]);
+  
+  var x = d3.scale.linear()
+       .domain(roi)
+       .range([20, width - 20]);
+  
+  // Axis stuff
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
+  
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+
+  // X axis
+  vis.append("g")
+       .attr("class", "d3-axis-white")
+       .attr("transform", "translate(0," + height + ")")
+       .call(xAxis)
+       .append("text")
+       .attr("x", width / 2)
+       .attr("y", 80)
+       .style("text-anchor", "middle")
+       .text("Position  in HIV genome [bp]");
+   
+  // Y axis
+  vis.append("g")
+       .attr("class", "d3-axis-white")
+       .call(yAxis)
+       .append("text")
+       .attr("transform", "rotate(-90)")
+       .attr("dy", "-4em")
+       .attr("x", -height / 2)
+       .style("text-anchor", "middle")
+       .text("Diversity");
+
+  // Diversity
+  d3.xhr("/divdiv_local/")
+  .header("Content-Type", "application/json")
+  .post(
+    JSON.stringify({patient: "p1",
+                    observables: ["ds"],
+		    itimes: [4],
+		    roi: ["genomewide", roi[0], roi[1]]}),
+    function(error, request) {
+     var dataDiv = JSON.parse(request.responseText).data;
+
+     vis.append("path")
+        .attr("d", d3.svg.line()
+                 .x(function(d, i) { return x(roi[0] + i * dataDiv.dx); })
+           	 .y(function(d) { return y(d); })
+           	 .interpolate("basis")
+           	 (dataDiv.ds[0][1])
+                    )
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 5)
+        .attr("fill", "none");
+
+     vis.append("rect")
+        .attr("id", "diversityBar")
+        .attr("x", x(6760))
+        .attr("y", height - 25)
+	.attr("width", x(7060) - x(6760))
+	.attr("height", 10)
+	.attr("fill", "darkred");
+
+    });
+
+}
+
+function updateDiversity(active) {
+
+ var secWidth = $("section").width();
+
+ var margin = {left: 180, right:30, top:80, bottom:120},
+     width = secWidth - margin.left - margin.right,
+     height = 240, roi = [6500, 7500];
+
+ var x = d3.scale.linear()
+       .domain(roi)
+       .range([20, width - 20]);
+
+ if (active) {
+  d3.select("#diversityBar")
+        .transition()
+	.duration(1000)
+        .attr("x", x(7150));
+
+ } else {
+  d3.select("#diversityBar")
+        .transition()
+	.duration(1000)
+        .attr("x", x(6760));
+ }
+
+}
+
 
 /* Fragment events */
 Reveal.addEventListener('fragmentshown', function(event) {
    // event.fragment = the fragment DOM element
    if (event.fragment.id == 'otherMuts') updateVirion(true);
+   else if (event.fragment.id == 'divRRE') updateDiversity(true);
 });
 Reveal.addEventListener('fragmenthidden', function(event) {
    if (event.fragment.id == 'otherMuts') updateVirion(false);
-   // event.fragment = the fragment DOM element
+   else if (event.fragment.id == 'divRRE') updateDiversity(false);
 });
 
 
@@ -698,4 +822,4 @@ create_time2();
 create_time3();
 create_virion();
 createMutSpread();
-
+createDiversity();
