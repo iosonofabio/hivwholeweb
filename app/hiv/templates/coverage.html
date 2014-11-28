@@ -50,11 +50,22 @@
          JSON.stringify({patient: pname}),
          function(error, request) {
           var data_gn = JSON.parse(request.responseText);
-	  // This is not totally safe, but ok for now
-	  data = data.data;
-	  data.genome = data_gn.data;
-	  update(data, id);
-         }
+
+	  d3.xhr("/n_templates/")
+	   .header("Content-Type", "application/json")
+	   .post(
+             JSON.stringify({patient: pname}),
+             function(error, request) {
+              var data_ntemplates = JSON.parse(request.responseText);
+
+	      // This is not totally safe, but ok for now
+	      data = data.data;
+	      data.genome = data_gn.data;
+	      data.ntemplates = data_ntemplates.data.ntemplates;
+	      update(data, id);
+	     }
+	   );
+          }
        );
       }
    );

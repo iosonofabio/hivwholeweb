@@ -1,8 +1,10 @@
-from flask import render_template, flash, redirect, request, jsonify, make_response
+from flask import (render_template, flash, redirect, request, jsonify,
+                   make_response, abort)
 from . import hiv
 from .forms import PatFragForm, PatForm, LocalHaplotypeForm, TreeForm
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
+                     NTemplatesModel,
                      PropagatorModel, DivdivLocalModel, LocalHaplotypeModel)
 from .backbone import find_section
 
@@ -81,6 +83,17 @@ def physio():
                            show_intro=show_intro,
                            section_name='Viral load and CD4+ counts',
                           )
+
+
+@hiv.route('/n_templates/', methods=['POST'])
+def n_templates():
+    if request.json:
+        pname = request.json['patient']
+        data = {'data': NTemplatesModel(pname).get_data()}
+        return jsonify(**data)
+
+    else:
+        abort(403)
 
 
 @hiv.route('/divdiv/', methods=['GET', 'POST'])

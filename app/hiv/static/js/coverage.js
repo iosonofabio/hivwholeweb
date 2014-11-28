@@ -95,7 +95,7 @@ function update(data, id) {
  // Initial data
  charts.cov.append("g")
       .attr("class", "circles COV")
-      .selectAll()
+      .selectAll("cov_point")
       .data(data.cov[0][1])
       .enter()
       .append("circle")
@@ -103,6 +103,21 @@ function update(data, id) {
       .attr("cx", function(d, i) { return x(i); })
       .attr("cy", function(d) { return y(d); })
       .attr("r", 3);
+
+ // Add number of templates line if present
+ charts.cov.selectAll(".ntemplates")
+   .data(data.ntemplates)
+   .enter()
+   .append("line")
+   .filter(function(d) { return d[0] == data.cov[0][0]; })
+   .attr("class", "ntemplates")
+   .attr("x1", x(0))
+   .attr("x2", function(d) { return x(data.cov[0][1].length); })
+   .attr("y1", function(d) { return y(d[1]); })
+   .attr("y2", function(d) { return y(d[1]); })
+   .attr("stroke", "darkred")
+   .attr("stroke-width", 15)
+   .attr("opacity", 0.3);
 
  // Slider
  var xsl = d3.scale.linear()
@@ -169,7 +184,24 @@ function update(data, id) {
    // we could put a transition here, but it the code must be optimized first, or else it's
    // going to stutter a lot
    charts.cov.selectAll(".cov_point")
-      .attr("cy", function(d, i) { return y(data.cov[i_time][1][i]); })
+      .attr("cy", function(d, i) { return y(data.cov[i_time][1][i]); });
+
+   // add template number line
+   charts.cov.selectAll(".ntemplates").remove();
+   charts.cov.selectAll(".ntemplates")
+     .data(data.ntemplates)
+     .enter()
+     .append("line")
+     .filter(function(d) { return d[0] == data.cov[i_time][0]; })
+     .attr("class", "ntemplates")
+     .attr("x1", x(0))
+     .attr("x2", function(d) { return x(data.cov[i_time][1].length); })
+     .attr("y1", function(d) { return y(d[1]); })
+     .attr("y2", function(d) { return y(d[1]); })
+     .attr("stroke", "darkred")
+     .attr("stroke-width", 15)
+     .attr("opacity", 0.3);
+
  }
 
   // update the genome

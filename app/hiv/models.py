@@ -69,6 +69,26 @@ class PhysioModel(object):
         return data
 
 
+class NTemplatesModel(object):
+    def __init__(self, pname):
+        self.pname = pname
+
+
+    def get_ntemplates_filename(self, full=True):
+        fn = 'ntemplates_'+self.pname+'.dat'
+        return data_folder[full]+'physiological/'+fn
+
+
+    def get_data(self):
+        import numpy as np
+        nt = np.loadtxt(self.get_ntemplates_filename(), skiprows=1)
+
+        nt = map(list, nt)
+
+        data = {'ntemplates': nt}
+        return data
+
+
 class GenomeModel(object):
     def __init__(self, pname, region='genomewide', type='patient reference'):
         self.pname = pname
