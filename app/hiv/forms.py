@@ -97,3 +97,16 @@ class TreeForm(Form):
                           choices=[['all'] * 2] + [['p'+str(i)] * 2 for i in xrange(1, 12)])
     fragment = SelectField('Fragment',
                            choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])
+
+
+class PatSingleForm(Form):
+    patient = SelectField('Patient',
+                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+
+
+class PatFragSingleForm(Form):
+    patient = SelectField('Patient',
+                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+    fragment = SelectField('Fragment',
+                           choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])
+

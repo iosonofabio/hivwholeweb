@@ -7,11 +7,11 @@ function update(data, id) {
 
   var div_width = $('.svg-container').width();
 
-  var margin = {top: 10, right: 30, bottom: 50, left: 80},
+  var margin = {top: 10, right: 30, bottom: 150, left: 80},
       width = div_width - margin.left - margin.right,
-      height = 800 - margin.top - margin.bottom,
+      height = 700 - margin.top - margin.bottom,
       height_genome = 200,
-      vpad = 30, height_single = (height - height_genome - 2 * vpad) / 2;
+      vpad = 25, height_single = (height - height_genome - 2 * vpad) / 2;
 
   var chart_ext = d3.select("."+id)
       .attr("width", width + margin.left + margin.right)
@@ -119,25 +119,99 @@ function update(data, id) {
   .interpolate(d3.interpolateRgb)
   .range(["darkblue", "blue", "cyan", "green", "yellow", "orange", "red"]);
 
-  charts.dg.selectAll()
-       .data(data.dg)
-       .enter()
-       .append("svg:path")
-       .attr("d", function(d) { return lineFunc(d[1]); })
-       .attr("stroke", function(d, i) { return colors(i); })
+ // Initial data
+ charts.dg.append("svg:path")
+       .attr("class", "lineDivergence")
+       .attr("d", lineFunc(data.dg[0][1]))
+       .attr("stroke", "black")
        .attr("stroke-width", 2)
        .attr("fill", "none")
        .attr("opacity", 0.8);
 
-  charts.ds.selectAll()
-       .data(data.ds)
-       .enter()
-       .append("svg:path")
-       .attr("d", function(d) { return lineFunc(d[1]); })
-       .attr("stroke", function(d, i) { return colors(i); })
+ charts.ds.append("svg:path")
+       .attr("class", "lineDiversity")
+       .attr("d", lineFunc(data.ds[0][1]))
+       .attr("stroke", "black")
        .attr("stroke-width", 2)
        .attr("fill", "none")
        .attr("opacity", 0.8);
+
+ // Slider
+ var xsl = d3.scale.linear()
+   .domain([1, datal])
+   .range([0, width])
+   .clamp(true);
+
+ chart.append("g")
+     .attr("class", "x axis")
+     .attr("transform", "translate(0," + (height + 70) + ")")
+     .call(d3.svg.axis()
+       .scale(xsl)
+       .orient("bottom")
+       .ticks(datal)
+       .tickFormat(function(d, i){ return data.dg[i][0]; })
+       .tickPadding(12))
+   .select(".domain")
+   .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+     .attr("class", "halo");
+
+ chart.append("text")
+     .attr("x", width / 2)
+     .attr("y", height + 130)
+     .style("text-anchor", "middle")
+     .text("Time from infection [days]");
+
+ var brush = d3.svg.brush()
+     .x(xsl)
+     .extent([1, 1])
+     .on("brush", brushed);
+
+ var slider = chart.append("g")
+     .attr("class", "slider")
+     .call(brush);
+ 
+ slider.selectAll(".extent,.resize")
+     .remove();
+ 
+ var handle = slider.append("circle")
+     .attr("class", "handle")
+     .attr("transform", "translate(0," + (height + 70) + ")")
+     .attr("r", 9);
+ 
+ slider.call(brush.event)
+     .transition() // gratuitous intro!
+     .duration(750)
+     .call(brush.extent([1, 1]))
+     .call(brush.event);
+
+ function get_itime(value) {
+  return Math.min(datal - 1, Math.max(0, Math.round(value) - 1)); 
+ }
+ 
+ function brushed() {
+   var value = brush.extent()[0];
+ 
+   if (d3.event.sourceEvent) { // not a programmatic event
+     value = xsl.invert(d3.mouse(this)[0]);
+     brush.extent([value, value]);
+   }
+
+   var i_time = get_itime(value);
+   handle.attr("cx", xsl(i_time + 1));
+   // we could put a transition here, but it the code must be optimized first, or else it's
+   // going to stutter a lot
+   charts.dg.selectAll(".lineDivergence")
+       .transition()
+       .duration(1000)
+       .attr("d", lineFunc(data.dg[i_time][1]));
+
+   charts.ds.selectAll(".lineDiversity")
+       .transition()
+       .duration(1000)
+       .attr("d", lineFunc(data.ds[i_time][1]));
+
+ }
+
  
   // update the genome
   update_genome(data_gn, id, x);

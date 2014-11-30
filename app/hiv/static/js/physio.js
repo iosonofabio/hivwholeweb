@@ -136,8 +136,7 @@ function update(data, id) {
       .attr("cx", function(d) { return x(d[0]); })
       .attr("cy", function(d) { return y_vl(d[1]); })
       .attr("r", 6)
-      .style("fill", colors.vl)
-      .call(function(d) { plotLine("vl", d); });
+      .style("fill", colors.vl);
 
  chart.append("g")
       .attr("class", "circles CC")
@@ -150,8 +149,10 @@ function update(data, id) {
       .attr("y", function(d) { return y_cc(d[1]) - 3; })
       .attr("width", 12)
       .attr("height", 12)
-      .style("fill", colors.cc)
-      .call(function(d) { plotLine("cc", d); });
+      .style("fill", colors.cc);
+
+ plotLine("vl");
+ plotLine("cc");
 
  function plotLine(dtype, d) {
      chart.append("path")

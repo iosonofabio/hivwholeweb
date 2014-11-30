@@ -35,7 +35,7 @@
 
 function update(data, id) {
 
- var colors = {"dg": "black", "ds": "steelblue"};
+ var colors = {"dg": "darkred", "ds": "steelblue"};
 
  var div_width = $('.svg-container').width();
 
@@ -168,7 +168,8 @@ function update(data, id) {
        .attr("class", "circle")
        .attr("cx", function(d) { return x(d[0]); })
        .attr("cy", function(d) { return y(d[1]); })
-       .attr("r", 6);
+       .attr("r", 6)
+       .style("fill", colors.dg);
 
  chart.append("g")
        .attr("class", "circles DS")
@@ -182,6 +183,27 @@ function update(data, id) {
        .attr("width", 12)
        .attr("height", 12)
        .style("fill", "steelblue");
+
+ plotLine("dg");
+ plotLine("ds");
+
+ function plotLine(dtype, d) {
+     chart.append("path")
+         .attr("class", "data-line-" + dtype)
+         .attr("d", lineFunction(data[dtype]))
+	 .style("stroke-width", 3)
+	 .style("stroke", colors[dtype])
+	 .style("opacity", 0.6)
+	 .style("fill", "none");
+ }
+
+ function lineFunction(data) {
+  return d3.svg.line()
+            .x(function(d) { return x(d[0]); })
+            .y(function(d) { return y(d[1]); })
+            .interpolate("monotone")(data);
+ }
+
 
  }
 

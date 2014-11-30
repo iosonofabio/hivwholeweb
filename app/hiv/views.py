@@ -1,7 +1,8 @@
 from flask import (render_template, flash, redirect, request, jsonify,
                    make_response, abort)
 from . import hiv
-from .forms import PatFragForm, PatForm, LocalHaplotypeForm, TreeForm
+from .forms import (PatFragForm, PatForm, LocalHaplotypeForm, TreeForm,
+                    PatSingleForm, PatFragSingleForm)
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
                      NTemplatesModel,
@@ -52,33 +53,30 @@ def trees():
                           )
 
 
-@hiv.route('/physiological/', methods=['GET', 'POST'])
+@hiv.route(find_section(id='physio')['url'], methods=['GET', 'POST'])
 def physio():
     if request.json:
         pname = request.json['patient']
         data = {'data': PhysioModel(pname).get_data()}
         return jsonify(**data)
 
-    form = PatForm()
+    form = PatSingleForm()
     if request.method == 'GET':
         show_intro = True
-        pnames = ['p1']
+        pname = 'p1'
     else:
         show_intro = False
-        pnames = ['p'+str(i+1) for i in xrange(11)
-                  if getattr(form, 'p'+str(i+1)).data]
+        pname = form.patient.data
         if not form.validate_on_submit():
-            flash('Select at least one patient!')
+            flash('Select a patient!')
 
-    dicts = []
-    for pname in pnames:
-        dicts.append({'pname': pname,
-                      'name': pname,
-                      'id': pname})
+    data = {'pname': pname,
+            'name': pname,
+            'id': pname}
 
     return render_template('physio.html',
                            title='Viral load and CD4+ counts',
-                           dicts=dicts,
+                           data=data,
                            form=form,
                            show_intro=show_intro,
                            section_name='Viral load and CD4+ counts',
@@ -105,31 +103,26 @@ def divdiv():
         data = {'data': DivdivModel(pname, fragment).get_data()}
         return jsonify(**data)
 
-    form = PatFragForm()
+    form = PatFragSingleForm()
     if request.method == 'GET':
         show_intro = True
-        pnames = ['p1']
-        fragments = ['F1']
+        pname = 'p1'
+        fragment = 'F1'
     else:
         show_intro = False
-        pnames = ['p'+str(i+1) for i in xrange(11)
-                  if getattr(form, 'p'+str(i+1)).data]
-        fragments = ['F'+str(i+1) for i in xrange(6)
-                     if getattr(form, 'F'+str(i+1)).data]
+        pname = form.patient.data
+        fragment = form.fragment.data
         if not form.validate_on_submit():
-            flash('Select at least one fragment and patient!')
+            flash('Select a fragment and a patient!')
 
-    dicts = []
-    for pname in pnames:
-        for fragment in fragments:
-            dicts.append({'pname': pname,
-                          'fragment': fragment,
-                          'name': pname+', '+fragment,
-                          'id': pname+'_'+fragment})
+    data = {'pname': pname,
+            'fragment': fragment,
+            'name': pname+', '+fragment,
+            'id': pname+'_'+fragment}
 
     return render_template('divdiv.html',
                            title='Divergence and diversity',
-                           dicts=dicts,
+                           data=data,
                            form=form,
                            show_intro=show_intro,
                            section_name='Divergence and diversity',
@@ -144,26 +137,23 @@ def genomes():
 
     section = find_section(id='genome')
 
-    form = PatForm()
+    form = PatSingleForm()
     if request.method == 'GET':
         show_intro = True
-        pnames = ['p1']
+        pname = 'p1'
     else:
         show_intro = False
-        pnames = ['p'+str(i+1) for i in xrange(11)
-                  if getattr(form, 'p'+str(i+1)).data]
+        pname = form.patient.data
         if not form.validate_on_submit():
-            flash('Select at least one patient!')
+            flash('Select a patient!')
 
-    dicts = []
-    for pname in pnames:
-        dicts.append({'pname': pname,
-                      'name': pname,
-                      'id': pname})
+    data = {'pname': pname,
+            'name': pname,
+            'id': pname}
 
     return render_template('genome.html',
                            title=section['name'],
-                           dicts=dicts,
+                           data=data,
                            form=form,
                            show_intro=show_intro,
                            section_name=section['name'],
@@ -218,26 +208,23 @@ def divdiv_local():
 
     section = find_section(id='divdiv_local')
 
-    form = PatForm()
+    form = PatSingleForm()
     if request.method == 'GET':
         show_intro = True
-        pnames = ['p1']
+        pname = 'p1'
     else:
         show_intro = False
-        pnames = ['p'+str(i+1) for i in xrange(11)
-                  if getattr(form, 'p'+str(i+1)).data]
+        pname = form.patient.data
         if not form.validate_on_submit():
             flash('Select at least one patient!')
 
-    dicts = []
-    for pname in pnames:
-        dicts.append({'pname': pname,
-                      'name': pname,
-                      'id': pname})
+    data = {'pname': pname,
+            'name': pname,
+            'id': pname}
 
     return render_template('divdiv_local.html',
                            title=section['name'],
-                           dicts=dicts,
+                           data=data,
                            form=form,
                            show_intro=show_intro,
                            section_name=section['name'],
@@ -253,26 +240,23 @@ def allele_frequencies():
 
     section = find_section(id='af')
 
-    form = PatForm()
+    form = PatSingleForm()
     if request.method == 'GET':
         show_intro = True
-        pnames = ['p1']
+        pname = 'p1'
     else:
         show_intro = False
-        pnames = ['p'+str(i+1) for i in xrange(11)
-                  if getattr(form, 'p'+str(i+1)).data]
+        pname = form.patient.data
         if not form.validate_on_submit():
             flash('Select at least one patient!')
 
-    dicts = []
-    for pname in pnames:
-        dicts.append({'pname': pname,
-                      'name': pname,
-                      'id': pname})
+    data = {'pname': pname,
+            'name': pname,
+            'id': pname}
 
     return render_template('allele_frequencies.html',
                            title=section['name'],
-                           dicts=dicts,
+                           data=data,
                            form=form,
                            show_intro=show_intro,
                            section_name=section['name'],

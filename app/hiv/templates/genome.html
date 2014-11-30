@@ -16,9 +16,7 @@
  }
 
  function load() {
-  {% for dict in dicts %}
-  load_single("{{dict.id}}", "{{dict.pname}}");
-  {% endfor %}
+  load_single("{{data.id}}", "{{data.pname}}");
  }
 </script>
 {% endblock %}
@@ -30,13 +28,11 @@
    The HIV genome is annotated with genes, proteins, and RNA structures. The PCR fragments used for RNA amplification are also shown.
   </h4>
  {% endif %}
- {% for dict in dicts %}
-  <h3>{{dict.name}}</h3>
+ <h3>{{data.name}}</h3>
   <div class="svg-container">
-   <svg class="d3-plot {{dict.id}}"></svg>
+   <svg class="d3-plot {{data.id}}"></svg>
   </div> 
  <br>
- {% endfor %}
  <div>
  <b>Note</b>: Genome coordinates are inclusive at both ends and start from 1.
  </div>
@@ -45,11 +41,8 @@
  <form role="form" action="" method="post" name="genome_settings">
   {{form.hidden_tag()}}
   <div class="form-group">
-  <label for="patients">Patients</label>
-  <p id="patients">
-    Patients: p1 {{form.p1}} p2 {{form.p2}} p3 {{form.p3}} p4 {{form.p4}} p5 {{form.p5}} p6 {{form.p6}} p7 {{form.p7}} p8 {{form.p8}} p9 {{form.p9}} p10 {{form.p10}}  p11 {{form.p11}}
-    <br>
-  </p>
+   {{form.patient.label}}
+   {{form.patient}}
   </div>
   <button type="submit" class="btn btn-default">Plot</button>
  </form>

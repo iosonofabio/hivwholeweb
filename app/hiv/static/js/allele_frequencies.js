@@ -2,9 +2,9 @@ function update(data, id) {
 
  var datal = data.len;
 
- var margin = {top: 30, right: 30, bottom: 50, left: 80},
+ var margin = {top: 10, right: 30, bottom: 50, left: 80},
      width = 1000 - margin.left - margin.right,
-     height_aft = 350, vpad = 70, height_genome=200,
+     height_aft = 250, vpad = 50, height_genome=200,
      height = height_aft + vpad + height_genome;
 
  var chart_ext = d3.select("."+id)
@@ -262,7 +262,7 @@ function update_genome(data, id, width, height) {
        if ((daft[0] >= d.location[0][0]) & (daft[0] < d.location[0][1])) {
 	return 1;
        } else {
-        return 0.1;
+        return 0.05;
        }
      });
 
