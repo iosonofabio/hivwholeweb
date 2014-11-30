@@ -137,8 +137,7 @@ function update(data, id) {
       .attr("cy", function(d) { return y_vl(d[1]); })
       .attr("r", 6)
       .style("fill", colors.vl)
-      .on("mouseover", function(d) { moverDots("vl", d); })
-      .on("mouseout", function(d) { moutDots("vl", d); });
+      .call(function(d) { plotLine("vl", d); });
 
  chart.append("g")
       .attr("class", "circles CC")
@@ -152,22 +151,16 @@ function update(data, id) {
       .attr("width", 12)
       .attr("height", 12)
       .style("fill", colors.cc)
-      .on("mouseover", function(d) { moverDots("cc", d); })
-      .on("mouseout", function(d) { moutDots("cc", d); });
+      .call(function(d) { plotLine("cc", d); });
 
- function moverDots(dtype, d) {
+ function plotLine(dtype, d) {
      chart.append("path")
          .attr("class", "data-line-" + dtype)
          .attr("d", lineFunction(data[dtype], y[dtype]))
-	 .style("stroke-width", 2)
+	 .style("stroke-width", 3)
 	 .style("stroke", colors[dtype])
-	 .style("opacity", 0.3)
+	 .style("opacity", 0.6)
 	 .style("fill", "none");
- }
-
- function moutDots(dtype, d) {
-   chart.selectAll(".data-line-" + dtype)
-        .remove();
  }
 
  function lineFunction(data, yscale) {
