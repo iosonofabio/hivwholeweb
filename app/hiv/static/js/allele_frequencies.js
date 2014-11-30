@@ -20,7 +20,8 @@ function update(data, id) {
 
  var y = d3.scale.log()
       .domain([0.0009, 1.01])
-      .range([height_aft, 0]);
+      .range([height_aft, 0])
+      .clamp(true);
  
  var x = d3.scale.linear()
       .domain([-10, 1.05 * data.tmax])
@@ -64,7 +65,7 @@ function update(data, id) {
  .interpolate(d3.interpolateRgb)
  .range(["darkblue", "blue", "cyan", "green", "yellow", "orange", "red"]);
 
- chart.selectAll()
+ chart.selectAll(".aft")
       .data(data.aft)
       .enter()
       .append("svg:path")
@@ -75,6 +76,31 @@ function update(data, id) {
       .attr("stroke-width", 2)
       .attr("fill", "none")
       .attr("opacity", 0.5);
+
+ // Add number of templates line if present
+ chart.append("svg:path")
+   .attr("class", "ntemplates")
+   .attr("d", d3.svg.line()
+                .x(function(d) { return x(d[0]); })
+		.y(function(d) { return y(1.0 / d[1]); })
+		.interpolate("monotone")(data.ntemplates)
+		)
+   .attr("stroke", "darkred")
+   .attr("stroke-width", 15)
+   .attr("fill", "none")
+   .attr("opacity", 0.3);
+
+  // Add max depth for sequencing errors
+  chart.append("line")
+      .attr("class", "maxDepth")
+      .attr("x1", x(0))
+      .attr("x2", x.range()[1])
+      .attr("y1", y(2e-3))
+      .attr("y2", y(2e-3))
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 15)
+      .attr("opacity", 0.4);
+
 
   // update the genome
   update_genome(data.genome, id, width, height_genome);
