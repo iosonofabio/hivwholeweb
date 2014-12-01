@@ -26,7 +26,7 @@ Reveal.initialize({
 
 // d3 part below
 
-function create_time1() {
+function createPhysio1() {
 
  var secWidth = $("section").width();
 
@@ -84,11 +84,7 @@ vis.append("line")
 
 }
 
-function delete_time1() {
- d3.select("#d3-plot-time2").selectAll("*").remove();
-}
-
-function create_time2() {
+function createPhysio2() {
 
  var secWidth = $("section").width();
 
@@ -155,8 +151,9 @@ vis.append("defs").append("marker")
 
 
 // FIXME: here an animation would be good, but it's buggy
-var data = [[150, 100], [300, 180], [500, 300],
-            [1500, 10000], [2500, 50000]];
+var data = [[150, 1500], [300, 1200], [500, 1500],
+            [800, 1800], [1100, 1100], [1500, 1750],
+            [1900, 2500], [2100, 5000], [2500, 20000]];
 vis.append("path")
    .attr("marker-end", "url(#arrowhead_red)")
    .attr("d", d3.svg.line()
@@ -169,11 +166,7 @@ vis.append("path")
 
 }
 
-function delete_time2() {
- d3.select("#d3-plot-time2").selectAll("*").remove();
-}
-
-function create_time3() {
+function createPhysio3() {
 
  var secWidth = $("section").width();
 
@@ -281,8 +274,9 @@ vis.append("defs").append("marker")
 
 
 // FIXME: here an animation would be good, but it's buggy
-var data = [[150, 100], [300, 180], [500, 300],
-            [1500, 10000], [2500, 50000]];
+var data = [[150, 1500], [300, 1200], [500, 1500],
+            [800, 1800], [1100, 1100], [1500, 1750],
+            [1900, 2500], [2100, 5000], [2500, 20000]];
 vis.append("path")
    .attr("marker-end", "url(#arrowhead_red)")
    .attr("d", d3.svg.line()
@@ -293,8 +287,9 @@ vis.append("path")
    .attr("stroke", "darkred")
    .attr("fill", "none");
 
-var data_cc = [[150, 800], [400, 750], [800, 600],
-               [1500, 500], [2500, 200]];
+var data_cc = [[150, 800], [400, 750], [800, 700],
+               [1100, 600], [1500, 650],
+               [2100, 500], [2500, 200]];
 vis.append("path")
    .attr("marker-end", "url(#arrowhead_blue)")
    .attr("d", d3.svg.line()
@@ -308,11 +303,7 @@ vis.append("path")
 
 }
 
-function delete_time3() {
- d3.select("#d3-plot-time3").selectAll("*").remove();
-}
-
-function create_virion() {
+function createVirion() {
 
  var secWidth = $("section").width();
 
@@ -748,13 +739,39 @@ function createDiversity() {
         .attr("stroke-width", 5)
         .attr("fill", "none");
 
-     vis.append("rect")
-        .attr("id", "diversityBar")
-        .attr("x", x(6760))
-        .attr("y", height - 25)
-	.attr("width", x(7060) - x(6760))
-	.attr("height", 10)
-	.attr("fill", "darkred");
+     var barPos = [6760, 7060];
+     var divBarGroup = vis.append("g")
+	.datum(barPos)
+        .attr("class", "divBarGroup")
+	.attr("transform", function(d) { return "translate(" + x(d[0]) + ", " + (height - 25) + ")"; });
+
+     divBarGroup.append("rect")
+       .attr("id", "diversityBar")
+       .attr("x", 0)
+       .attr("y", 0)
+       .attr("width", function(d) {return x(d[1]) - x(d[0]); })
+       .attr("height", 10)
+       .attr("fill", "darkred");
+    
+     divBarGroup.append("line")
+      .attr("x1", 2)
+      .attr("x2", 2)
+      .attr("y1", 0)
+      .attr("y2", 25 - height)
+      .attr("stroke", "darkred")
+      .attr("stroke-width", 4)
+      .attr("opacity", 0.3)
+      .style("stroke-dasharray", "7, 3");
+      
+     divBarGroup.append("line")
+      .attr("x1", function(d) { return x(d[1]) - x(d[0]) - 2; })
+      .attr("x2", function(d) { return x(d[1]) - x(d[0]) - 2; })
+      .attr("y1", 0)
+      .attr("y2", 25 - height)
+      .attr("stroke", "darkred")
+      .attr("stroke-width", 4)
+      .attr("opacity", 0.3)
+      .style("stroke-dasharray", "7, 3");
 
     });
 
@@ -773,16 +790,19 @@ function updateDiversity(active) {
        .range([20, width - 20]);
 
  if (active) {
-  d3.select("#diversityBar")
-        .transition()
+  d3.select("g.divBarGroup")
+	.datum([7140])
+	.transition()
 	.duration(1000)
-        .attr("x", x(7150));
+	.attr("transform", function(d) { return "translate(" + x(d[0]) + ", " + (height - 25) + ")"; });
 
  } else {
-  d3.select("#diversityBar")
-        .transition()
+  d3.select("g.divBarGroup")
+	.datum([6760])
+	.transition()
 	.duration(1000)
-        .attr("x", x(6760));
+	.attr("transform", function(d) { return "translate(" + x(d[0]) + ", " + (height - 25) + ")"; });
+
  }
 
 }
@@ -800,26 +820,10 @@ Reveal.addEventListener('fragmenthidden', function(event) {
 });
 
 
-/* Add events later
-Reveal.addEventListener('slidechanged', function( event ) {
-     // event.previousSlide, event.currentSlide, event.indexh, event.indexv
-
- var cs = event.currentSlide,
-     ps = event.previousSlide,
-     plotT1 = document.getElementById("d3-plot-time1");
-
- if (cs.contains(plotT1)) {
-  create_time1();
- } else {
-  delete_time1();
- }
-});
-*/
-
 /* Load everything for now */
-create_time1();
-create_time2();
-create_time3();
-create_virion();
+createPhysio1();
+createPhysio2();
+createPhysio3();
+createVirion();
 createMutSpread();
 createDiversity();
