@@ -239,7 +239,7 @@ function createPhysio3() {
       .attr("dy", "-4em")
       .attr("x", height / 2)
       .style("text-anchor", "middle")
-      .text("CD4+ cells [copies/ml]");
+      .text("CD4+ cells [cells/ml]");
 
  ccTextBox.append("rect")
       .attr("class", "circles ccAxis")

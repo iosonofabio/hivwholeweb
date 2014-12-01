@@ -116,7 +116,7 @@ function update(data, id) {
       .attr("dy", "-4em")
       .attr("x", height / 2)
       .style("text-anchor", "middle")
-      .text("CD4+ counts [copies/ml]");
+      .text("CD4+ counts [cells/ml]");
 
  ccTextBox.append("rect")
       .attr("class", "circles ccAxis")
