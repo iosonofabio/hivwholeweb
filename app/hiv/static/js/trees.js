@@ -78,7 +78,7 @@ function update(text, id, pname) {
  var tree = Newick.parse(text);
  var nodes = cluster.nodes(tree);
  var depth = maxDepth(nodes[0], 0, 0),
-     treeScale = 100 / depth;
+     treeScale = 0.3 * rInternal / depth;
  phylo(nodes[0], 0, treeScale);
 
  var link = vis.selectAll("path.link")
