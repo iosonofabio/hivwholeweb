@@ -8,14 +8,15 @@
 #    start_response(status, response_headers)
 #
 #    return [output]
-
 from flask import Flask
 import backbone
 
 
+# TODO: fix static folder, this requires adapting HTML templates
 hiv = Flask(__name__)
 hiv.config.from_object('config')
 hiv.config['SECTIONS'] = backbone.sections
+hiv.config['DATA_SUBFOLDER'] = 'data'
 
 from . import views
 
