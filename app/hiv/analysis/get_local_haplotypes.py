@@ -12,8 +12,9 @@ def build_msa(haploc, VERBOSE=0, label=''):
     from Bio.Alphabet.IUPAC import ambiguous_dna
 
     seqs = [SeqRecord(Seq(seq, ambiguous_dna),
-                      id=label+'count_'+str(count)+'_#'+str(i),
-                      name=label+'count_'+str(count)+'_#'+str(i))
+                      id=label+'count_'+str(count)+'_rank_'+str(i),
+                      name=label+'count_'+str(count)+'_rank_'+str(i),
+                      description='')
             for i, (seq, count) in enumerate(haploc.most_common())]
 
     from .sequence_utils import align_muscle

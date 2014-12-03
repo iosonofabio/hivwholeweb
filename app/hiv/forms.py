@@ -61,10 +61,10 @@ class PatForm(Form):
 
 class RoiForm(Form):
     # FIXME: allow all fragments, including HXB2 and genomewide
-    fragment = SelectField('Fragment',
+    region = SelectField('Region',
                            choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])
-    start = IntegerField('Start coordinate')
-    end = IntegerField('End coordinate')
+    start = IntegerField('Start')
+    end = IntegerField('End')
 
     # TODO: make dynamic validator that accepts different fragment
     # arguments, e.g. genomewide or HXB2
@@ -90,6 +90,15 @@ class LocalHaplotypeForm(Form):
     patient = SelectField('Patient',
                           choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
     roi = FormField(RoiForm)
+
+
+class PrecompiledHaplotypeForm(Form):
+    patient = SelectField('Patient',
+                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+    region = SelectField('Region',
+                         choices=[('PR', 'PR'),
+                                  ('V3', 'V3'),
+                                  ('psi', 'psi')])
 
 
 class TreeForm(Form):

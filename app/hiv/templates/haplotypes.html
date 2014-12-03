@@ -1,29 +1,85 @@
-{% extends "base.html" %}
+{% extends "plots.html" %}
+{% block head_end %}
+{{ super() }}
+<script type="text/javascript" src="/static/js/haplo.js"></script>
+<script type="text/javascript">
+ function load(pname) {
+  d3.xhr("/genomes/")
+   .header("Content-Type", "application/json")
+   .post(
+     JSON.stringify({patient: pname}),
+     function(error, request) {
+      var data = JSON.parse(request.responseText);
+      update(data.data, pname);
+     }
+  );
+ }
+</script>
+{% endblock %}
+{% block body_attributes %}onload=load("HXB2"){% endblock %}
+
 {% block content %}
  <h1>{{section_name}}</h1>
  {% if show_intro %}
   <h4>
-   <p>Local haplotypes are useful to monitor the joint evolution of all sites within genomic regions of interest, for instance proteins, small RNA structures, or signalling peptides.</p>
+   <p>Local haplotypes are used to study the joint evolution of sites within a genomic region, such as proteins or RNA structures.</p>
   </h4> 
-  <p>They contain linkage information on neighbouring sites within the range of typical insert sizes, i.e. 400 to 500 bp. They are derived directly from the reads without any post-processing beyond trimming.</p>
+  <p>They contain linkage information on neighbouring sites within approximately 400 bp. They are derived directly from the reads without any post-processing beyond trimming.</p>
   <p>Keep in mind that although we tried to minimize the number of PCR cycles, some <i>in vitro</i> recombination is expected.</p>
  {% endif %}
  <br>
  
- <h3>Select options:</h3>
- <form role="form" action="" method="post" name="haplo_settings">
-  {{form.hidden_tag()}}
-  <div class="form-group">
-   {{form.patient.label}}
-   {{form.patient}}
-   {{form.roi.hidden_tag()}}
-   {% for field in form.roi if field.widget.input_type != 'hidden' %}
-   {{ field.label }}
-   {{ field }}
-  {% endfor %}
+ <h3>Choose one option:</h3>
+ <div class="row">
+ <div class="col-md-6">
+  <div class="thumbnail">
+   <h3>Precompiled alignments</h3>
+   <p>These alignments are premade for regions of general interest.</p>
+   <div class="svg-container"><svg id="haploThumbnail" width=400 height=90></svg></div>
+   <form role="form" action="" method="post" name="haplo_precompiled">
+    <div class="form-group">
+    {{formpc.hidden_tag()}}
+    {{formpc.patient.label}}
+    {{formpc.patient}}
+    {{formpc.region.label}}
+    {{formpc.region}}
+    </div>
+    <button type="submit" class="btn btn-default">Download</button>
+   </form>
   </div>
-  <p><b>NOTE</b>: After clicking on "Generate", <b>a few minutes</b> might elapse while we prepare your data. Please be patient.</p>
-  <button type="submit" class="btn btn-default">Generate</button>
- </form>
+ </div>
+ <div class="col-md-6">
+  <div class="thumbnail">
+   <h3>New alignments</h3>
+   <p>Generate alignments for a custom genomic region.</p>
+   <form role="form" action="" method="post" name="haplo_settings">
+    {{form.hidden_tag()}}
+    {{form.roi.hidden_tag()}}
+    <div class="form-group">
+     {{form.patient.label}}
+     {{form.patient}}
+     {{form.roi.region.label}}
+     {{form.roi.region}}
+    </div>
+    <div class="form-group">
+     {{form.roi.start.label}}
+     {{form.roi.start}}
+     {{form.roi.end.label}}
+     {{form.roi.end}}
+    </div>
+    <p><b>NOTE</b>: After clicking on "Generate", <b>a few minutes</b> might elapse while we prepare your data. Please be patient.</p>
+    <button type="submit" class="btn btn-default">Generate</button>
+   </form>
+  </div>
+ </div>
+ </div>
+
+<script type="text/javascript">
+$('#region').change(function() {
+ $("#region option:selected").each(function() {
+  addRegion($(this).text());
+ });
+});
+</script>
 {% endblock %}
 

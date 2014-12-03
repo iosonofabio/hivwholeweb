@@ -3,7 +3,7 @@ from flask import (render_template, flash, redirect, request, jsonify,
                    make_response, abort)
 from . import hiv
 from .forms import (PatFragForm, PatForm, LocalHaplotypeForm, TreeForm,
-                    PatSingleForm, PatFragSingleForm)
+                    PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm)
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
                      NTemplatesModel,
@@ -16,8 +16,25 @@ from .backbone import find_section
 def index():
     return render_template('index.html',
                            title='Home',
-                           section_name='Home',
-                          )
+                           section_name='Home')
+
+
+@hiv.route('/impressum/', methods=['GET'])
+def impressum():
+    return render_template('impressum.html',
+                           title='Impressum')
+
+
+@hiv.route('/contact/', methods=['GET'])
+def contact():
+    return render_template('contact.html',
+                           title='Contact')
+
+
+@hiv.route('/tutorial/', methods=['GET'])
+def tutorial():
+    return render_template('tutorial.html',
+                           title='Tutorial')
 
 
 @hiv.route('/trees/', methods=['GET', 'POST'])
@@ -304,6 +321,7 @@ def propagators():
 def haplotypes():
 
     form = LocalHaplotypeForm()
+    formpc = PrecompiledHaplotypeForm()
     section = find_section(id='haplo')
 
     if request.method == 'GET':
@@ -312,62 +330,52 @@ def haplotypes():
                                title=section['name'],
                                show_intro=show_intro,
                                form=form,
+                               formpc=formpc,
                                section_name=section['name'],
                               )
 
     show_intro = False
-    if not form.validate_on_submit():
+    if (not formpc.validate_on_submit()) and (not form.validate_on_submit()):
         flash('Form incorrectly filled!')
 
         return render_template('haplotypes.html',
                        title=section['name'],
                        show_intro=show_intro,
                        form=form,
+                       formpc=formpc,
                        section_name=section['name'],
                       )
 
-    pname = form.patient.data
-    fragment = form.roi.fragment.data
-    start = form.roi.start.data - 1 #Inclusive coordinates
-    end = form.roi.end.data
-    roi = (fragment, start, end)
+    if formpc.validate_on_submit():
+        pname = formpc.patient.data
+        region = formpc.region.data
+        return redirect('/download/haplotypes_'+pname+'_'+region+'.zip')
 
-    hm = LocalHaplotypeModel(pname, roi)
+    elif form.validate_on_submit():
+        pname = form.patient.data
+        fragment = form.roi.fragment.data
+        start = form.roi.start.data - 1 #Inclusive coordinates
+        end = form.roi.end.data
+        roi = (fragment, start, end)
 
-    # Get the data in a temporary folder/file
-    tmp_folder = '/home/hivwholewebu1/tmp/'
-    fn = hm.get_data(tmp_root_folder=tmp_folder)
+        hm = LocalHaplotypeModel(pname, roi)
 
-    # Read it in...
-    with open(fn, 'r') as f:
-        fstr = f.read()
+        # Get the data in a temporary folder/file
+        tmp_folder = '/home/hivwholewebu1/tmp/'
+        fn = hm.get_data(tmp_root_folder=tmp_folder)
 
-    # ...and delete it
-    hm.clean_temporary_folders()
+        # Read it in...
+        with open(fn, 'r') as f:
+            fstr = f.read()
 
-    # TODO: refine this to show a success page with a download link etc. (that
-    # changes the policies on temporary files, storage use, etc., so watch out)
-    response = make_response(fstr)
-    response.headers["Content-Disposition"] = "attachment; filename=alignments.zip"
-    return response
+        # ...and delete it
+        hm.clean_temporary_folders()
 
-
-@hiv.route('/impressum/', methods=['GET'])
-def impressum():
-    return render_template('impressum.html',
-                           title='Impressum')
-
-
-@hiv.route('/contact/', methods=['GET'])
-def contact():
-    return render_template('contact.html',
-                           title='Contact')
-
-
-@hiv.route('/tutorial/', methods=['GET'])
-def tutorial():
-    return render_template('tutorial.html',
-                           title='Tutorial')
+        # TODO: refine this to show a success page with a download link etc. (that
+        # changes the policies on temporary files, storage use, etc., so watch out)
+        response = make_response(fstr)
+        response.headers["Content-Disposition"] = "attachment; filename=alignments.zip"
+        return response
 
 
 # Proxy view factory for static files, for download
@@ -427,5 +435,16 @@ def data_proxy(path):
         format = fields[4]
         fn = sf+'/divdiv/'+dstype+'_'+pname+'_'+fragment+'.'+format
         return hiv.send_static_file(fn)
+
+    elif dtype == 'haplotypes':
+        if len(fields) < 4:
+            abort(404)
+
+        pname = fields[1]
+        region = fields[2]
+        format = fields[3]
+        fn = sf+'/alignments/alignments_'+pname+'_'+region+'.'+format
+        return hiv.send_static_file(fn)
+
 
     abort(404)
