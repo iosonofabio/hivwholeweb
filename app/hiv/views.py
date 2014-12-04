@@ -186,26 +186,23 @@ def coverage():
         data = {'data': CoverageModel(pname).get_data()}
         return jsonify(**data)
 
-    form = PatForm()
+    form = PatSingleForm()
     if request.method == 'GET':
         show_intro = True
-        pnames = ['p1']
+        pname = 'p1'
     else:
         show_intro = False
-        pnames = ['p'+str(i+1) for i in xrange(11)
-                  if getattr(form, 'p'+str(i+1)).data]
+        pname = form.patient.data
         if not form.validate_on_submit():
             flash('Select at least one patient!')
 
-    dicts = []
-    for pname in pnames:
-        dicts.append({'pname': pname,
-                      'name': pname,
-                      'id': pname})
+    data = {'pname': pname,
+            'name': pname,
+            'id': pname}
 
     return render_template('coverage.html',
                            title='Coverage',
-                           dicts=dicts,
+                           data=data,
                            form=form,
                            show_intro=show_intro,
                            section_name='Coverage',
