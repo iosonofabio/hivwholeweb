@@ -10,7 +10,7 @@ function update(data, id) {
        .datum(data);
 
   var x = d3.scale.linear()
-           .domain([0, data.len + 50])
+           .domain([1, data.len + 50])
 	   .range([0, width])
  
   vis.append("line")
@@ -44,26 +44,27 @@ function addRegion(name) {
   .style("opacity", 0)
   .remove();
 
+ // NOTE: we get regions in 0 - (max+1) coordinates a la Python, we convert them 1+ both included.
  var regionGroup = vis.selectAll(".regionGroup")
   .data(data.features)
   .enter()
   .append("g")
   .filter(function(d) { return d.name == name; })
   .attr("class", "regionGroup")
-  .attr("transform", function(d) { return "translate(" + x(d.location[0][0]) + "," + 20 + ")"; })
+  .attr("transform", function(d) { return "translate(" + x(d.location[0][0] + 1) + "," + 20 + ")"; })
   .style("opacity", 0);
 
  regionGroup.append("rect")
   .attr("x", 0)
   .attr("y", -20)
-  .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
+  .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0] + 1); })
   .attr("height", 20)
   .style("fill", "steelblue")
   .style("opacity", 0.5)
   .style("stroke", "none");
 
  regionGroup.append("text")
-  .text(function(d) { return "HXB2: " + d.location[0][0] + " - " + d.location[0][1]; })
+  .text(function(d) { return "HXB2: " + (d.location[0][0] + 1) + " - " + d.location[0][1]; })
   .attr("x", function(d) { return x(0.5 * (d.location[0][1] - d.location[0][0])); })
   .attr("y", 20)
   .style("text-anchor", "middle");

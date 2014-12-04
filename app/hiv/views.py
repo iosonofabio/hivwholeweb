@@ -3,7 +3,8 @@ from flask import (render_template, flash, redirect, request, jsonify,
                    make_response, abort)
 from . import hiv
 from .forms import (PatFragForm, PatForm, LocalHaplotypeForm, TreeForm,
-                    PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm)
+                    PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm,
+                    PatFragGWForm)
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
                      NTemplatesModel,
@@ -378,6 +379,36 @@ def haplotypes():
         return response
 
 
+@hiv.route(find_section(id='consensi')['url'], methods=['GET', 'POST'])
+def consensi():
+    form = PatFragGWForm()
+    section = find_section(id='consensi')
+
+    if request.method == 'GET':
+        show_intro = True
+        return render_template('consensi.html',
+                       title='Consensus sequences',
+                       form=form,
+                       show_intro=show_intro,
+                       section_name=section['name'],
+                      )
+
+
+    if not form.validate_on_submit():
+        show_intro = False
+        flash('Select one fragment and one patient!')
+        return render_template('consensi.html',
+                       title='Consensus sequences',
+                       form=form,
+                       show_intro=show_intro,
+                       section_name=section['name'],
+                      )
+
+    pname = form.patient.data
+    fragment = form.fragment.data
+    return redirect('/download/consensi_'+pname+'_'+fragment+'.fasta')
+
+
 # Proxy view factory for static files, for download
 # NOTE: this is slightly redundant as one can directly access the
 # static files, but allows us for abstraction if needed, by switching
@@ -446,5 +477,14 @@ def data_proxy(path):
         fn = sf+'/alignments/alignments_'+pname+'_'+region+'.'+format
         return hiv.send_static_file(fn)
 
+    elif dtype == 'consensi':
+        if len(fields) < 4:
+            abort(404)
+
+        pname = fields[1]
+        fragment = fields[2]
+        format = fields[3]
+        fn = sf+'/alignments/consensi_alignment_'+pname+'_'+fragment+'.'+format
+        return hiv.send_static_file(fn)
 
     abort(404)
