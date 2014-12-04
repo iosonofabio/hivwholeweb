@@ -17,7 +17,8 @@ function update(data, id) {
  var margin = {top: 10, right: 60, bottom: 150, left: 80},
      width = 0.9 * div_width - margin.left - margin.right,
      height_cov = 250, vpad = 20, height_genome = 200,
-     height = height_cov + vpad + height_genome;
+     height = $('.'+id).height() - margin.top - margin.bottom,
+     height_cov = height - vpad - height_genome;
 
  var datal = data.cov.length;
  var covmax = get_ymax(data.cov);

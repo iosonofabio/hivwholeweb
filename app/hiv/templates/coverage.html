@@ -82,9 +82,11 @@
  {% endif %}
   <h3>{{data.name}}</h3>
   <div class="svg-container">
-   <svg class="d3-plot {{data.id}}"></svg>
+   <svg class="d3-plot {{data.id}}" height="600"></svg>
   </div>
  <br>
+
+ <b>Legend</b>: the red bar is the estimate of the number of template molecules to PCR (if available). Coverage beyond this level is mostly oversequencing.
 
  <h3>Select options:</h3>
  <form role="form" action="" method="post" name="coverage_settings">
