@@ -354,10 +354,10 @@ def haplotypes():
 
     elif form.validate_on_submit():
         pname = form.patient.data
-        fragment = form.roi.fragment.data
+        region = form.roi.region.data
         start = form.roi.start.data - 1 #Inclusive coordinates
         end = form.roi.end.data
-        roi = (fragment, start, end)
+        roi = (region, start, end)
 
         hm = LocalHaplotypeModel(pname, roi)
 
