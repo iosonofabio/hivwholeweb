@@ -1,6 +1,6 @@
 function update(data, id) {
 
- var margin = {'top': 20, 'bottom': 10, 'left': 20, 'right': 20},
+ var margin = {'top': 20, 'bottom': 10, 'left': 40, 'right': 40},
      width = $('#haploThumbnail').width() - margin.left - margin.right,
      height = $('#haploThumbnail').height() - margin.top - margin.bottom;
 
@@ -27,7 +27,7 @@ function update(data, id) {
 
 
 function addRegion(name) {
- var margin = {'top': 10, 'bottom': 10, 'left': 20, 'right': 20},
+ var margin = {'top': 10, 'bottom': 10, 'left': 40, 'right': 40},
      width = $('#haploThumbnail').width() - margin.left - margin.right,
      height = $('#haploThumbnail').height() - margin.top - margin.bottom;
 

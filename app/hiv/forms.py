@@ -96,8 +96,8 @@ class PrecompiledHaplotypeForm(Form):
     patient = SelectField('Patient',
                           choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
     region = SelectField('Region',
-                         choices=[('PR', 'PR'),
-                                  ('V3', 'V3'),
+                         choices=[('V3', 'V3'),
+                                  ('PR', 'PR'),
                                   ('psi', 'psi')])
 
 
