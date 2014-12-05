@@ -221,6 +221,7 @@ class AlleleFrequencyModel(object):
         alpha = npz['alpha']
 
         aft = []
+        times_set = set()
         for pos in xrange(act.shape[2]):
             act_pos = act[:, :, pos]
             cov_pos = act_pos.sum(axis=1)
@@ -238,9 +239,11 @@ class AlleleFrequencyModel(object):
                 af = aft_pos[:, ai]
                 af[af < 2e-3] = 1e-3
                 aft.append([pos, alpha[ai], zip(times[ind], af)])
+                times_set |= set(times[ind])
             
         data = {'aft': aft,
                 'tmax': times.max(),
+                'times': sorted(times_set),
                 'len': act.shape[2]}
         return data
 
