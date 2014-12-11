@@ -146,7 +146,7 @@ function update(text, id, pname, region) {
       .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (r - 170 + 8) + ")rotate(" + (d.x < 180 ? 0 : 180) + ")"; })
       .text(function(d) {
        // local trees have the sequences attached
-       if (region[0] == 'F') {
+       if (region.indexOf('minor') == -1) {
         return d.name.replace(/_/g, ' ');
        } else {
 	return d.name.split('_').slice(1).join(" ");

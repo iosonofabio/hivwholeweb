@@ -2,9 +2,8 @@ from re import split as resplit
 from flask import (render_template, flash, redirect, request, jsonify,
                    make_response, abort)
 from . import hiv
-from .forms import (PatFragForm, PatForm, LocalHaplotypeForm, TreeForm,
-                    PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm,
-                    PatFragGWForm)
+from .forms import (LocalHaplotypeForm, TreeForm, ConsensiForm,
+                    PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm)
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
                      NTemplatesModel,
@@ -378,7 +377,7 @@ def haplotypes():
 
 @hiv.route(find_section(id='consensi')['url'], methods=['GET', 'POST'])
 def consensi():
-    form = PatFragGWForm()
+    form = ConsensiForm()
     section = find_section(id='consensi')
 
     if request.method == 'GET':

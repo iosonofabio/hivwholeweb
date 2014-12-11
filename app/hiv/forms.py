@@ -107,7 +107,8 @@ class TreeForm(Form):
                           choices=[['all'] * 2] + [['p'+str(i)] * 2 for i in xrange(1, 12)])
     region = SelectField('Region',
                           choices=([['F'+str(i)] * 2 for i in xrange(1, 7)] +
-                                   [[reg] *2 for reg in _regions]),
+                                   [[reg] *2 for reg in _regions] +
+                                   [[reg+'_minor', reg+' minor'] for reg in _regions]),
                         )
 
 
@@ -123,9 +124,11 @@ class PatFragSingleForm(Form):
                            choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])
 
 
-class PatFragGWForm(Form):
+class ConsensiForm(Form):
+    _regions = ('V3', 'PR', 'psi')
     patient = SelectField('Patient',
                           choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
     fragment = SelectField('Fragment',
                            choices=([['genomewide', 'genomewide']] +
+                                    [[reg] *2 for reg in _regions] +
                                     [['F'+str(i)] * 2 for i in xrange(1, 7)]))
