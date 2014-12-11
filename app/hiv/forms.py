@@ -108,7 +108,7 @@ class TreeForm(Form):
     region = SelectField('Region',
                           choices=([['F'+str(i)] * 2 for i in xrange(1, 7)] +
                                    [[reg] *2 for reg in _regions] +
-                                   [[reg+'_minor', reg+' minor'] for reg in _regions]),
+                                   [[reg+'minor', reg+' minor'] for reg in _regions]),
                         )
 
 
