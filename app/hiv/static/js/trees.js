@@ -6,25 +6,32 @@ function project(d) {
   return [r * Math.cos(a), r * Math.sin(a)];
 }
 
-function maxDepth(n, offset, maxOffset) {
-  var tmp;
-  if (n.length != null) offset += n.length;
-  if (offset > maxOffset) maxOffset = offset;
+function maxDepth(n, maxOffset) {
+  if (n.parent == null) n.depthScaled = n.length;
+  else n.depthScaled = n.parent.depthScaled + n.length;
+
+  // If an internal node, maxOffset is given by children
   if (n.children) {
+    var i;
     for(i=0; i < n.children.length; i++) {
-      tmp = maxDepth(n.children[i], offset, maxOffset);
+      var tmp = maxDepth(n.children[i], maxOffset);
       if (tmp > maxOffset) maxOffset = tmp;
     }
+
+  // if terminal node, just checks itself
+  } else {
+   if (n.depthScaled > maxOffset) {
+    maxOffset = n.depthScaled;
+   }
   }
   return maxOffset;
 }
 
-function phylo(n, offset, treeScale) {
-  if (n.length != null) offset += treeScale * n.length;
-  n.y = offset;
+function phyloScale(n, treeScale) {
+  n.y = n.depthScaled * treeScale;
   if (n.children)
     n.children.forEach(function(n) {
-      phylo(n, offset, treeScale);
+      phyloScale(n, treeScale);
     });
 }
 
@@ -48,7 +55,7 @@ function stepAnno(d, r) {
     "L" + t[0] + "," + t[1]);
 }
 
-function update(text, id, pname) {
+function update(text, id, pname, region) {
 
  var maxAngle = 360;
  var div_width = +($("#phylogram_"+id).width()),
@@ -74,12 +81,18 @@ function update(text, id, pname) {
     .children(function(d) { return d.branchset; })
     .separation(function(a, b) { return 1; });
 
- // FIXME: check the scale!!
  var tree = Newick.parse(text);
  var nodes = cluster.nodes(tree);
- var depth = maxDepth(nodes[0], 0, 0),
-     treeScale = 0.3 * rInternal / depth;
- phylo(nodes[0], 0, treeScale);
+ var depth = maxDepth(nodes[0], 0),
+     treeScale = 0.9 * rInternal / depth,
+     barLength = 30.0,
+     barLengthData = (30.0 / treeScale).toPrecision(1);
+ 
+ // adjust the bar to calibration
+ barLength = treeScale * barLengthData;
+
+ // add scaled depths to the tree
+ phyloScale(nodes[0], treeScale);
 
  var link = vis.selectAll("path.link")
       .data(cluster.links(nodes))
@@ -91,13 +104,6 @@ function update(text, id, pname) {
       .attr("stroke", "black")
       .attr("stroke-width", 2);
 
- var barLengthData;
- if (id.indexOf("all") != -1) {
-  barLengthData = 0.02;
- } else {
-  barLengthData = 0.005;
- }
- var barLength = treeScale * barLengthData;
  var bar = vis.append("g")
               .attr("class", "lengthbar")
 	      .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
@@ -133,11 +139,19 @@ function update(text, id, pname) {
       .style("stroke-dasharray", ("3, 3"))
       .attr("stroke-width", 2);
 
+  // leaf labels
   label.append("text")
       .attr("dy", ".31em")
       .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
       .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (r - 170 + 8) + ")rotate(" + (d.x < 180 ? 0 : 180) + ")"; })
-      .text(function(d) { return d.name.replace(/_/g, ' '); })
+      .text(function(d) {
+       // local trees have the sequences attached
+       if (region[0] == 'F') {
+        return d.name.replace(/_/g, ' ');
+       } else {
+	return d.name.split('_').slice(1).join(" ");
+       }
+      })
       .on("mouseover", mover)
       .on("mouseout", mout);
 

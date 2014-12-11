@@ -20,13 +20,13 @@ tmp_folder = [tmp_folder_short, tmp_folder_full]
 
 
 class TreeModel(object):
-    def __init__(self, pname, fragment):
+    def __init__(self, pname, region):
         self.pname = pname
-        self.fragment = fragment
+        self.region = region
 
 
     def get_filename(self, full=True):
-        fn = 'consensi_tree_'+self.pname+'_'+self.fragment+'.newick'
+        fn = 'consensi_tree_'+self.pname+'_'+self.region+'.newick'
         return data_folder[full]+'trees/'+fn
 
     

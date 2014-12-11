@@ -102,10 +102,13 @@ class PrecompiledHaplotypeForm(Form):
 
 
 class TreeForm(Form):
+    _regions = ('V3', 'PR', 'psi')
     patient = SelectField('Patient',
                           choices=[['all'] * 2] + [['p'+str(i)] * 2 for i in xrange(1, 12)])
-    fragment = SelectField('Fragment',
-                           choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])
+    region = SelectField('Region',
+                          choices=([['F'+str(i)] * 2 for i in xrange(1, 7)] +
+                                   [[reg] *2 for reg in _regions]),
+                        )
 
 
 class PatSingleForm(Form):

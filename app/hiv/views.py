@@ -42,7 +42,7 @@ def tutorial():
 def trees():
     if request.json:
         req = request.json
-        tree = TreeModel(req['patient'], req['fragment']).get_newick_string()
+        tree = TreeModel(req['patient'], req['region']).get_newick_string()
         data = {'newick': tree}
         return jsonify(**data)
 
@@ -50,18 +50,18 @@ def trees():
     if request.method == 'GET':
         show_intro = True
         pname = 'all'
-        fragment = 'F1'
+        region = 'F1'
     else:
         show_intro = False
         pname = form.patient.data
-        fragment = form.fragment.data
+        region = form.region.data
         if not form.validate_on_submit():
-            flash('Select one fragment and one patient!')
+            flash('Select one region and one patient!')
 
     data = {'pname': pname,
-            'fragment': fragment,
-            'name': pname+', '+fragment,
-            'id': pname+'_'+fragment}
+            'region': region,
+            'name': pname+', '+region,
+            'id': pname+'_'+region}
 
     return render_template('trees.html',
                            title='Phylogenetic trees',
