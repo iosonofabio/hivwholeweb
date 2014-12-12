@@ -33,8 +33,10 @@
             {% for section in config.SECTIONS %}{% if section.url %}{% if section_name == section.name %}
 	        <li class="active"><a href="{{section.url}}">{{section.name}}</a></li>
 	       {% endif %}{% endif %}{% endfor %}
-	    <li><a href="/contact/">Contact</a></li>
           </ul>
+          <ul class="nav navbar-nav navbar-right">
+	   <li><a href="/contact/">Contact</a></li>
+	  </ul>
 	</div>
       </div>
     </div>
