@@ -26,6 +26,39 @@ function update(data, id) {
 }
 
 
+function moveRegion(name) {
+
+ var margin = {'top': 10, 'bottom': 10, 'left': 40, 'right': 40},
+     width = $('#haploThumbnail').width() - margin.left - margin.right,
+     height = $('#haploThumbnail').height() - margin.top - margin.bottom;
+
+ var vis = d3.select("#haploThumbnailVis");
+ var data = vis.datum();
+
+ var x = d3.scale.linear()
+          .domain([0, data.len + 50])
+          .range([0, width]);
+
+ var datum = getFeature(data, name);
+ var regionGroup = vis.select("g.regionGroup");
+
+ // NOTE: these transitions should take place at the same time, but that's laborious to code
+ regionGroup.select("rect")
+  .transition()
+  .duration(100)
+  .attr("width", x(datum.location[0][1]) - x(datum.location[0][0] + 1));
+
+ regionGroup.select("text")
+  .text("HXB2: " + (datum.location[0][0] + 1) + " - " + datum.location[0][1])
+  .attr("x", x(0.5 * (datum.location[0][1] - datum.location[0][0])));
+
+ regionGroup.transition()
+  .duration(900)
+  .attr("transform", "translate(" + x(datum.location[0][0] + 1) + "," + 20 + ")");
+
+}
+
+
 function addRegion(name) {
  var margin = {'top': 10, 'bottom': 10, 'left': 40, 'right': 40},
      width = $('#haploThumbnail').width() - margin.left - margin.right,
@@ -36,36 +69,27 @@ function addRegion(name) {
 
  var x = d3.scale.linear()
           .domain([0, data.len + 50])
-          .range([0, width])
-
- vis.selectAll(".regionGroup")
-  .transition()
-  .duration(300)
-  .style("opacity", 0)
-  .remove();
+          .range([0, width]);
 
  // NOTE: we get regions in 0 - (max+1) coordinates a la Python, we convert them 1+ both included.
- var regionGroup = vis.selectAll(".regionGroup")
-  .data(data.features)
-  .enter()
-  .append("g")
-  .filter(function(d) { return d.name == name; })
+ var datum = getFeature(data, name);
+ var regionGroup = vis.append("g")
   .attr("class", "regionGroup")
-  .attr("transform", function(d) { return "translate(" + x(d.location[0][0] + 1) + "," + 20 + ")"; })
+  .attr("transform", "translate(" + x(datum.location[0][0] + 1) + "," + 20 + ")")
   .style("opacity", 0);
 
  regionGroup.append("rect")
   .attr("x", 0)
   .attr("y", -20)
-  .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0] + 1); })
+  .attr("width", x(datum.location[0][1]) - x(datum.location[0][0] + 1))
   .attr("height", 20)
   .style("fill", "steelblue")
   .style("opacity", 0.5)
   .style("stroke", "none");
 
  regionGroup.append("text")
-  .text(function(d) { return "HXB2: " + (d.location[0][0] + 1) + " - " + d.location[0][1]; })
-  .attr("x", function(d) { return x(0.5 * (d.location[0][1] - d.location[0][0])); })
+  .text("HXB2: " + (datum.location[0][0] + 1) + " - " + datum.location[0][1])
+  .attr("x", x(0.5 * (datum.location[0][1] - datum.location[0][0])))
   .attr("y", 20)
   .style("text-anchor", "middle");
 
@@ -74,3 +98,13 @@ function addRegion(name) {
   .style("opacity", 1);
   
 }
+
+function getFeature(data, name) {
+ var i;
+ for(i=0; i < data.features.length; i++) {
+  if(data.features[i].name == name) {
+   return data.features[i];
+  }
+ }
+}
+

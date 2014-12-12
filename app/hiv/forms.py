@@ -12,7 +12,8 @@ from wtforms.validators import Required
 
 
 # Globals
-_regions = ('V3', 'PR', 'psi')
+_regions = ('V3', 'PR', 'psi', 'vpr', 'vpu', 'p15', 'p17',
+            'p6', 'p2', 'p1', 'p7', 'RRE')
 
 
 
