@@ -83,7 +83,16 @@ class PatFragSingleForm(Form):
 class ConsensiForm(Form):
     patient = SelectField('Patient',
                           choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
-    fragment = SelectField('Fragment',
-                           choices=([['genomewide', 'genomewide']] +
-                                    [[reg] *2 for reg in _regions] +
-                                    [['F'+str(i)] * 2 for i in xrange(1, 7)]))
+    region = SelectField('Region',
+                          choices=([['genomewide', 'genomewide']] +
+                                   [[reg] *2 for reg in _regions] +
+                                   [['F'+str(i)] * 2 for i in xrange(1, 7)]))
+
+
+class RegionFragForm(Form):
+    patient = SelectField('Patient',
+                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+    region = SelectField('Fragment',
+                          choices=([['F'+str(i)] * 2 for i in xrange(1, 7)] +
+                                   [[reg] *2 for reg in _regions]))
+

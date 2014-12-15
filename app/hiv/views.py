@@ -2,7 +2,7 @@ from re import split as resplit
 from flask import (render_template, flash, redirect, request, jsonify,
                    make_response, abort)
 from . import hiv
-from .forms import (LocalHaplotypeForm, TreeForm, ConsensiForm,
+from .forms import (LocalHaplotypeForm, TreeForm, ConsensiForm, RegionFragForm,
                     PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm)
 from .models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
                      GenomeModel, AlleleFrequencyModel, SFSModel,
@@ -112,31 +112,31 @@ def n_templates():
         abort(403)
 
 
-@hiv.route('/divdiv/', methods=['GET', 'POST'])
+@hiv.route(find_section(id='divdiv')['url'], methods=['GET', 'POST'])
 def divdiv():
     if request.json:
         req = request.json
         pname = request.json['patient']
-        fragment = request.json['fragment']
-        data = {'data': DivdivModel(pname, fragment).get_data()}
+        region = request.json['region']
+        data = {'data': DivdivModel(pname, region).get_data()}
         return jsonify(**data)
 
-    form = PatFragSingleForm()
+    form = RegionFragForm()
     if request.method == 'GET':
         show_intro = True
         pname = 'p1'
-        fragment = 'F1'
+        region = 'F1'
     else:
         show_intro = False
         pname = form.patient.data
-        fragment = form.fragment.data
+        region = form.region.data
         if not form.validate_on_submit():
-            flash('Select a fragment and a patient!')
+            flash('Select a region and a patient!')
 
     data = {'pname': pname,
-            'fragment': fragment,
-            'name': pname+', '+fragment,
-            'id': pname+'_'+fragment}
+            'region': region,
+            'name': pname+', '+region,
+            'id': pname+'_'+region}
 
     return render_template('divdiv.html',
                            title='Divergence and diversity',
@@ -145,6 +145,7 @@ def divdiv():
                            show_intro=show_intro,
                            section_name='Divergence and diversity',
                           )
+
 
 @hiv.route(find_section(id='genome')['url'], methods=['GET', 'POST'])
 def genomes():
@@ -176,6 +177,36 @@ def genomes():
                            show_intro=show_intro,
                            section_name=section['name'],
                           )
+
+
+@hiv.route(find_section(id='consensi')['url'], methods=['GET', 'POST'])
+def consensi():
+    form = ConsensiForm()
+    section = find_section(id='consensi')
+
+    if request.method == 'GET':
+        show_intro = True
+        return render_template('consensi.html',
+                       title='Consensus sequences',
+                       form=form,
+                       show_intro=show_intro,
+                       section_name=section['name'],
+                      )
+
+
+    if not form.validate_on_submit():
+        show_intro = False
+        flash('Select one region and one patient!')
+        return render_template('consensi.html',
+                       title='Consensus sequences',
+                       form=form,
+                       show_intro=show_intro,
+                       section_name=section['name'],
+                      )
+
+    pname = form.patient.data
+    region = form.region.data
+    return redirect('/download/consensi_'+pname+'_'+region+'.fasta')
 
 
 @hiv.route('/coverage/', methods=['GET', 'POST'])
@@ -373,36 +404,6 @@ def haplotypes():
         response = make_response(fstr)
         response.headers["Content-Disposition"] = "attachment; filename=alignments.zip"
         return response
-
-
-@hiv.route(find_section(id='consensi')['url'], methods=['GET', 'POST'])
-def consensi():
-    form = ConsensiForm()
-    section = find_section(id='consensi')
-
-    if request.method == 'GET':
-        show_intro = True
-        return render_template('consensi.html',
-                       title='Consensus sequences',
-                       form=form,
-                       show_intro=show_intro,
-                       section_name=section['name'],
-                      )
-
-
-    if not form.validate_on_submit():
-        show_intro = False
-        flash('Select one fragment and one patient!')
-        return render_template('consensi.html',
-                       title='Consensus sequences',
-                       form=form,
-                       show_intro=show_intro,
-                       section_name=section['name'],
-                      )
-
-    pname = form.patient.data
-    fragment = form.fragment.data
-    return redirect('/download/consensi_'+pname+'_'+fragment+'.fasta')
 
 
 # Proxy view factory for static files, for download

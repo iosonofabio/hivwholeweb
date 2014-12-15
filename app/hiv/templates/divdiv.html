@@ -3,11 +3,11 @@
 {{ super() }}
 <script type="text/javascript" src="/static/js/divdiv.js"></script>
 <script type="text/javascript">
- function load_single(id, pname, fragment) {
+ function load_single(id, pname, region) {
   d3.xhr("/divdiv/")
    .header("Content-Type", "application/json")
    .post(
-     JSON.stringify({patient: pname, fragment: fragment}),
+     JSON.stringify({patient: pname, region: region}),
      function(error, request) {
       var data = JSON.parse(request.responseText);
       update(data.data, id);
@@ -16,7 +16,7 @@
  }
 
  function load() {
-  load_single("{{data.id}}", "{{data.pname}}", "{{data.fragment}}");
+  load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}");
  }
 </script>
 {% endblock %}
@@ -34,8 +34,8 @@
   </div> 
  <br>
 
- <a role="button" class="btn btn-default" href="/download/divdiv_dg_{{data.pname}}_{{data.fragment}}.dat">Download divergence</a>
- <a role="button" class="btn btn-default" href="/download/divdiv_ds_{{data.pname}}_{{data.fragment}}.dat">Download diversity</a>
+ <a role="button" class="btn btn-default" href="/download/divdiv_dg_{{data.pname}}_{{data.region}}.dat">Download divergence</a>
+ <a role="button" class="btn btn-default" href="/download/divdiv_ds_{{data.pname}}_{{data.region}}.dat">Download diversity</a>
  
  <h3>Select options:</h3>
  <form role="form" action="" method="post" name="divdiv_settings">
@@ -43,8 +43,8 @@
   <div class="form-group">
    {{form.patient.label}}
    {{form.patient}}
-   {{form.fragment.label}}
-   {{form.fragment}}
+   {{form.region.label}}
+   {{form.region}}
   </div>
   <button type="submit" class="btn btn-default">Plot</button>
  </form>

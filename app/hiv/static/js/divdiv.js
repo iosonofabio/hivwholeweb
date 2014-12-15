@@ -50,7 +50,7 @@ function update(data, id) {
  var dsmin = get_ymin(data.ds);
 
  var y = d3.scale.log()
-      .domain([1e-3, 0.5])
+      .domain([1e-5, 0.5])
       .range([height, 0]);
 
  var x = d3.scale.linear()
