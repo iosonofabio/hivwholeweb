@@ -2,21 +2,22 @@
 {% extends "no-sidebar.html" %}
 {% block contentwrapper %}
 
-<div id="wrapper">
- <div id="sidebar-wrapper">
-  <ul class="sidebar-nav">
-   {% for section in config.SECTIONS %}{% if section.url %}{% if section_name == section.name %}
-   <li class="active"><a href="{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
-   {% else %}
-   <li><a href="{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
-   {% endif %}{% endif %}{% endfor %}
-  </ul>
- </div>
- <div id="page-content-wrapper">
+<div class="container-fluid">
+ <div class="row">
+  <div class="col-sm-4 col-md-3 sidebar">
+   <ul class="nav nav-sidebar affix">
+    {% for section in config.SECTIONS %}{% if section.url %}{% if section_name == section.name %}
+    <li class="active"><a href="{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
+    {% else %}
+    <li><a href="{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
+    {% endif %}{% endif %}{% endfor %}
+   </ul>
+  </div>
+  <div class="col-sm-6 col-sm-offset-4 col-md-9 col-md-offset-0 main">
   <!-- see above for inheritance from base as an alternative -->
   {{ super() }}
-
- </div> <!-- page-content-wrapper -->
-</div> <!-- wrapper -->
+  </div> 
+ </div> 
+</div>
 
 {% endblock %}

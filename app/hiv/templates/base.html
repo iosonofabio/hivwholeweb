@@ -9,15 +9,14 @@
     {% else %}
       <title>Intrapatient HIV evolution</title>
     {% endif %}
-    <!-- Custom styles for this template -->
     <link href="/static/css/starter-template.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/bootstrap-3.2.0-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/components/bootstrap/dist/css/bootstrap.min.css">
     <script src="/static/components/jquery/dist/jquery.min.js"></script>
     {% block head_end %}{% endblock %}
   </head>
 
   <body {% block body_attributes %}{% endblock %}>
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
@@ -39,18 +38,16 @@
 	  </ul>
 	</div>
       </div>
-    </div>
+    </nav>
 
     {% block contentwrapper %}{% block content %}{% endblock %}{% endblock %}
 
-    <div id="footer">
+    <div class="footer navbar-fixed-bottom">
       <div class="container-fluid">
 	<p class="text-muted">Fabio Zanini, Richard Neher, <i>et al.</i>, 2014.<span class="pull-right"><a href="/impressum/">Impressum</a></span></p>
       </div>
     </div>
 
-
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/static/bootstrap-3.2.0-dist/js/bootstrap.min.js"></script>
+    <script src="/static/components/bootstrap/dist/js/bootstrap.min.js"></script>
   </body>
 </html>
