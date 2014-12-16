@@ -1,0 +1,22 @@
+<!-- Maybe inheriting directly from base.html would be better -->
+{% extends "no-sidebar.html" %}
+{% block contentwrapper %}
+
+<div id="wrapper">
+ <div id="sidebar-wrapper">
+  <ul class="sidebar-nav">
+   {% for section in config.SECTIONS %}{% if section.url %}{% if section_name == section.name %}
+   <li class="active"><a href="{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
+   {% else %}
+   <li><a href="{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
+   {% endif %}{% endif %}{% endfor %}
+  </ul>
+ </div>
+ <div id="page-content-wrapper">
+  <!-- see above for inheritance from base as an alternative -->
+  {{ super() }}
+
+ </div> <!-- page-content-wrapper -->
+</div> <!-- wrapper -->
+
+{% endblock %}

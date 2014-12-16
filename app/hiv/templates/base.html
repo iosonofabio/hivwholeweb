@@ -18,7 +18,7 @@
 
   <body {% block body_attributes %}{% endblock %}>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
+      <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -41,27 +41,14 @@
       </div>
     </div>
 
-    <!-- TODO: maybe we want container-fluid here? -->
-    <div class="container">
-      <div class="starter-template">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }} </li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-      </div>
-    </div>
+    {% block contentwrapper %}{% block content %}{% endblock %}{% endblock %}
 
-    <div class="footer">
-      <div class="container">
+    <div id="footer">
+      <div class="container-fluid">
 	<p class="text-muted">Fabio Zanini, Richard Neher, <i>et al.</i>, 2014.<span class="pull-right"><a href="/impressum/">Impressum</a></span></p>
       </div>
     </div>
+
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/static/bootstrap-3.2.0-dist/js/bootstrap.min.js"></script>
