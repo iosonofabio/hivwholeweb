@@ -16,7 +16,7 @@ function update(data, id) {
 
  var margin = {top: 10, right: 80, bottom: 60, left: 80},
      width = 0.9 * div_width - margin.left - margin.right,
-     height = 500 - margin.top - margin.bottom;
+     height = 330 - margin.top - margin.bottom;
 
  var tmax = get_tmax(data);
  var vlmax = get_ymax(data.vl);
@@ -100,7 +100,7 @@ function update(data, id) {
   vlTextBox.append("circle")
       .attr("class", "circles vlAxis")
       .attr("cy", "-5.1em")
-      .attr("cx", -0.75 * height)
+      .attr("cx", -0.85 * height)
       .attr("r", 7)
       .style("fill", colors.vl);
 
@@ -121,7 +121,7 @@ function update(data, id) {
  ccTextBox.append("rect")
       .attr("class", "circles ccAxis")
       .attr("y", "-4.8em")
-      .attr("x", 0.2 * height)
+      .attr("x", 0.1 * height)
       .attr("width", 14)
       .attr("height", 14)
       .style("fill", colors.cc);

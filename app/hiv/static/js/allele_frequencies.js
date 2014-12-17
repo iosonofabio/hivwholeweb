@@ -4,7 +4,7 @@ function update(data, id) {
 
  var div_width = $('.svg-container').width();
 
- var margin = {top: 70, right: 50, bottom: 50, left: 80},
+ var margin = {top: 45, right: 50, bottom: 50, left: 80},
      width = div_width - margin.left - margin.right,
      height = $('.'+id).height() - margin.top - margin.bottom,
      vpad = 50, height_genome=200,

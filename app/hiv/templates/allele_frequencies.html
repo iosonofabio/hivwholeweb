@@ -86,12 +86,10 @@
    <svg class="d3-plot {{data.id}}" height="700"></svg>
   </div>
 
- <h3>Select options:</h3>
- <form role="form" action="" method="post" name="aft_settings">
+ <form role="form" action="" method="post" name="aft_settings" class="form-inline">
   {{form.hidden_tag()}}
   <div class="form-group">
-   {{form.patient.label}}
-   {{form.patient}}
+   {{form.patient.label}} {{form.patient}}
   </div>
   <button type="submit" class="btn btn-default">Plot</button>
   </form>

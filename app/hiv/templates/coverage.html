@@ -84,12 +84,12 @@
   <div class="svg-container">
    <svg class="d3-plot {{data.id}}" height="600"></svg>
   </div>
- <br>
 
- <b>Legend</b>: the red bar is the estimate of the number of template molecules to PCR (if available). Coverage beyond this level is mostly oversequencing.
+  <p padding="10px">
+  <b>Legend</b>: the red bar is the estimate of the number of template molecules to PCR (if available). Coverage beyond this level is mostly oversequencing.
+  </p>
 
- <h3>Select options:</h3>
- <form role="form" action="" method="post" name="coverage_settings">
+ <form role="form" action="" method="post" name="coverage_settings" class="form-inline">
   {{form.hidden_tag()}}
   <div class="form-group">
    {{form.patient.label}}

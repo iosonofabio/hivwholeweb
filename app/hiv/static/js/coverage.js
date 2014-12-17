@@ -84,7 +84,7 @@ function update(data, id) {
       .append("text")
       .attr("transform", "rotate(-90)")
       .attr("dy", "-4.5em")
-      .attr("x", -height / 2)
+      .attr("x", -height_cov / 2)
       .style("text-anchor", "middle")
       .text("Coverage");
 

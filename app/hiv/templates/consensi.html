@@ -6,14 +6,13 @@
    Consensus sequence track the evolution of HIV in terms of major variants.
   </h4>
  {% endif %}
- <h3>Select options:</h3>
- <form role="form" action="" method="post" name="consensi_settings">
+ <form role="form" action="" method="post" name="consensi_settings" class="form-horizontal">
   {{form.hidden_tag()}}
   <div class="form-group">
-   {{form.patient.label}}
-   {{form.patient}}
-   {{form.region.label}}
-   {{form.region}}
+   {{form.patient.label}} {{form.patient}}
+  </div>
+  <div class="form-group">
+   {{form.region.label}} {{form.region}}
   </div>
   <button type="submit" class="btn btn-default">Download sequences</button>
  </form>

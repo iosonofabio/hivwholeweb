@@ -32,17 +32,19 @@
   <div class="svg-container">
    <svg class="d3-plot {{data.id}}"></svg>
   </div> 
- <br>
 
+ <div class="btn-group btn-pad">
  <a role="button" class="btn btn-default" href="/download/divdiv_dg_{{data.pname}}_{{data.region}}.dat">Download divergence</a>
  <a role="button" class="btn btn-default" href="/download/divdiv_ds_{{data.pname}}_{{data.region}}.dat">Download diversity</a>
+ </div>
  
- <h3>Select options:</h3>
- <form role="form" action="" method="post" name="divdiv_settings">
+ <form role="form" action="" method="post" name="divdiv_settings" class="form-inline">
   {{form.hidden_tag()}}
   <div class="form-group">
    {{form.patient.label}}
    {{form.patient}}
+  </div>
+  <div class="form-group">
    {{form.region.label}}
    {{form.region}}
   </div>

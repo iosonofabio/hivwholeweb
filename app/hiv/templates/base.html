@@ -35,19 +35,23 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
 	   <li><a href="/contact/">Contact</a></li>
+	   <li><a href="/impressum/">Impressum</a></li>
 	  </ul>
 	</div>
       </div>
     </nav>
 
     {% block contentwrapper %}{% block content %}{% endblock %}{% endblock %}
-
+    {% block footerwrapper %}
     <div class="footer navbar-fixed-bottom">
       <div class="container-fluid">
-	<p class="text-muted">Fabio Zanini, Richard Neher, <i>et al.</i>, 2014.<span class="pull-right"><a href="/impressum/">Impressum</a></span></p>
+       <ul class="nav navbar-nav navbar-right">
+	<li class="text-muted">Fabio Zanini, Richard Neher, <i>et al.</i>, 2014.</li>
+       </ul>
       </div>
     </div>
+    {% endblock %}
 
-    <script src="/static/components/bootstrap/dist/js/bootstrap.min.js"></script>
-  </body>
+  <script src="/static/components/bootstrap/dist/js/bootstrap.min.js"></script>
+ </body>
 </html>

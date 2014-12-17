@@ -39,9 +39,9 @@ function update(data, id) {
 
  var div_width = $('.svg-container').width();
 
- var margin = {top: 10, right: 80, bottom: 60, left: 80},
+ var margin = {top: 5, right: 80, bottom: 40, left: 80},
      width = 0.9 * div_width - margin.left - margin.right,
-     height = 500 - margin.top - margin.bottom;
+     height = 330 - margin.top - margin.bottom;
 
  var tmax = get_tmax(data);
  var dgmax = get_ymax(data.dg);
@@ -133,7 +133,7 @@ function update(data, id) {
  dgTextBox.append("circle")
       .attr("class", "circles dgAxis")
       .attr("cy", "-5.1em")
-      .attr("cx", -0.65 * height)
+      .attr("cx", -0.75 * height)
       .attr("r", 7)
       .style("fill", colors.dg);
 
@@ -154,7 +154,7 @@ function update(data, id) {
  dsTextBox.append("rect")
       .attr("class", "circles dsAxis")
       .attr("y", "-5.8em")
-      .attr("x", 0.35 * height)
+      .attr("x", 0.25 * height)
       .attr("width", 14)
       .attr("height", 14)
       .style("fill", colors.ds);

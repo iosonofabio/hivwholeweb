@@ -34,14 +34,17 @@ function load() {
  <div id='phylogram_{{data.id}}'></div>
  <br>
 
- <a role="button" class="btn btn-default" href="/download/tree_{{data.pname}}_{{data.region}}.newick">Download tree</a>
+ <div class="btn-pad">
+  <a role="button" class="btn btn-default" href="/download/tree_{{data.pname}}_{{data.region}}.newick">Download tree</a>
+ </div>
  
- <h3>Select options:</h3>
- <form role="form" action="" method="post" name="tree_settings">
+ <form role="form" action="" method="post" name="tree_settings" class="form-inline">
   {{form.hidden_tag()}}
   <div class="form-group">
    {{form.patient.label}}
    {{form.patient}}
+  </div>
+  <div class="form-group">
    {{form.region.label}}
    {{form.region}}
   </div>
