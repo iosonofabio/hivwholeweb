@@ -12,7 +12,15 @@ function load_single(id, pname, region) {
     JSON.stringify({patient: pname, region: region}),
     function(error, request) {
      var treejson = JSON.parse(request.responseText);
-     update(treejson.newick, id, pname, region);
+     var data = {
+      tree: Newick.parse(treejson.newick),
+      id: id,
+      pname: pname,
+      region: region,
+      chartType: "radial"
+     };
+
+     update(data);
     }
  );
 }
