@@ -55,16 +55,12 @@ body {
   transition: all 0.5s ease;
 }
 
-.nav-sidebar.toggled {
- margin-left: -270px;
-}
-
 .nav-sidebar > li > a {
   padding-right: 10px;
   padding-left: 10px;
 }
 
-@media (min-width: 767px) {
+@media (min-width: 768px) {
   .affix {
       position:fixed;
   }
@@ -86,8 +82,16 @@ body {
     padding-left: 40px;
   }
 }
-.main.toggled {
- margin-left: -135px;
+
+/* toggle sidebar only on big screens */
+@media (min-width: 768px) {
+  .nav-sidebar.toggled {
+     margin-left: -270px;
+    }
+  
+  .main.toggled {
+   margin-left: -135px;
+  }
 }
 
 .centered {
