@@ -5,7 +5,7 @@
 <script type="text/javascript" src="/static/js/d3.phylogram.js/d3.phylogram.js"></script>
 <script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
-function load_single(id, pname, region) {
+function load_single(id, pname, region, chartType) {
  d3.xhr("/trees/")
   .header("Content-Type", "application/json")
   .post(
@@ -17,7 +17,7 @@ function load_single(id, pname, region) {
       id: id,
       pname: pname,
       region: region,
-      chartType: "radial"
+      chartType: chartType,
      };
 
      update(data);
@@ -26,7 +26,7 @@ function load_single(id, pname, region) {
 }
 
 function load() {
- return load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}");
+ load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}", "radial");
 }
 </script>
 {% endblock %}
@@ -39,6 +39,10 @@ function load() {
   </h4>
  {% endif %}
  <h3>{{data.name}}</h3>
+ <div class="btn-group btn-pad">
+  <button class="btn btn-default active" type="radio" name="plotType" id="switchRadial" autocomplete="off">Radial</button>
+  <button class="btn btn-default" type="radio" name="plotType" id="switchRectangular" autocomplete="off">Horizontal</label>
+ </div>
  <div id='phylogram_{{data.id}}'></div>
  <br>
 
@@ -58,4 +62,18 @@ function load() {
   </div>
   <button type="submit" class="btn btn-default">Plot</button>
  </form>
+
+ <script>
+  // Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken
+  $('#switchRectangular').on('click', function () {
+   $('#switchRadial').removeClass('active');
+   $(this).addClass('active');
+   update({id: "{{data.id}}", chartType: "rectangular"});
+  })
+  $('#switchRadial').on('click', function () {
+   $('#switchRectangular').removeClass('active');
+   $(this).addClass('active');
+   update({id: "{{data.id}}", chartType: "radial"});
+  })
+ </script>
 {% endblock %}
