@@ -35,7 +35,7 @@ function genomeChart() {
         margin = {top: 3, right: 60, bottom: 42, left: 60},
         width = svgWidth - margin.left - margin.right,
         height = svgHeight - margin.top - margin.bottom,
-        height_block = 20, vpad_block = 5;
+        heightBlock = 20, vpadBlock = 5;
 
     function chart(selection) {
         // GENOME CHART FUNCTION
@@ -57,7 +57,7 @@ function genomeChart() {
     
             // add tooltip
             vis.call(tip);
-    
+
             var genome = data.genome,
                 id = data.id,
                 features = genome.features;
@@ -95,7 +95,214 @@ function genomeChart() {
              .attr({"class": "bBox",
                     "x1": x(-50), "x2": x(genome.len + 50),
                     "y1": -height, "y2": -height});
+
+            // plot the various bars
+            plotAllFeatures();
+
+            function plotAllFeatures() {
+                plotFeatureGroup("fragment", 0);
+                plotFeatureGroup("protein", 75);
+                plotFeatureGroup("gene-single", 75);
+                plotFeatureGroup("gene-exon1", 75);
+                plotFeatureGroup("gene-exon2", 75);
+                plotFeatureGroup("RNA_structure", 170);
+                plotFeatureGroup("other", 170);
+            }
+
+            function clickFeature(d) {
+                var self = d3.select(this);
+                
+                // TODO: use transitions, but they have to be simultaneous which requires some Chinese-boxing
+
+                if (!(self.classed("zoomed"))) {
+                    var start = d.location[0][0],
+                        end = d.location[0][1];
+
+                    // delete boxes fully outside of window
+                    vis.selectAll(".featurebox")
+                        .filter(function(dOther) { return (dOther.location[0][0] >= end) | (dOther.location[0][1] <= start); })
+                        .remove();
+
+                    // in case exon lines are being shown, stop
+                    vis.selectAll(".exon-line").remove();
+
+                    // change the x scale
+                    var boxWidth = end - start,
+                        scalePad = 0.005 * boxWidth;
+                    x.domain([-scalePad + start, end + scalePad]);
+                    xAxis.scale(x);
+                    xAxisObj.call(xAxis);
+
+                    // move, resize, and recenter boxes
+                    function zoomIn(d) {
+                        var self = d3.select(this);
+                            openLeft = d.location[0][0] < start,
+                            openRight = d.location[0][1] > end,
+                            startSelf = d3.max([start, d.location[0][0]]),
+                            endSelf = d3.min([end, d.location[0][1]]);
+                    
+                        // move feature group
+                        var boxy = +(self.attr("transform").split(",")[1].split(")")[0]);
+                        self.attr("transform", "translate(" + x(startSelf) + "," + boxy + ")");
+
+                        // resize rectangle
+                        self.select("rect")
+                            .attr("width", x(endSelf) - x(startSelf));
+
+                        // leave borders open for features that are not fully in the zoom
+                        // NOTE: this is a VERY DIRTY trick due to lacking SVG features
+                        if (openLeft & (!openRight))
+                            self.select("rect")
+                                .attr("stroke-dasharray",
+                                      self.select("rect").attr("width") +
+                                      ", 0, " +
+                                      self.select("rect").attr("height") +
+                                      ", 0, " +
+                                      self.select("rect").attr("width") +
+                                      ", " +
+                                      self.select("rect").attr("height")
+                                     );
+                        if (openRight & (!openLeft))
+                            self.select("rect")
+                                .attr("stroke-dasharray",
+                                      self.select("rect").attr("width") +
+                                      ", " +
+                                      self.select("rect").attr("height") +
+                                      ", " +
+                                      self.select("rect").attr("width") +
+                                      ", 0, " +
+                                      self.select("rect").attr("height")
+                                     );
+                        if (openRight & openLeft)
+                            self.select("rect")
+                                .attr("stroke-dasharray",
+                                      self.select("rect").attr("width") +
+                                      ", " +
+                                      self.select("rect").attr("height") +
+                                      ", " +
+                                      self.select("rect").attr("width") +
+                                      ", " +
+                                      self.select("rect").attr("height")
+                                     );
+
+                        // center text
+                        self.select("text")
+                            .attr("x", 0.5 * (x(endSelf) - x(startSelf)));
+
+                        self.classed("zoomed", true);
+
+                    }
+                    vis.selectAll(".featurebox")
+                        .each(zoomIn);
     
+                } else {
+                    // Restoring could be done more stylish, but it's ok
+                    vis.selectAll(".featurebox").remove();
+                    
+                    // restore the x scale
+                    x.domain([-50, genome.len + 50]);
+                    xAxis.scale(x);
+                    xAxisObj.call(xAxis);
+
+                    plotAllFeatures();
+                }
+            }        
+
+            function moverFeature(d) {
+                // change color
+                var rect = d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect");
+                
+                rect.style("fill", "darkred");  
+      
+                // show tooltip
+                tip.show(d);
+
+                // show line connecting the exons
+                var exons = [];
+                if (d.name.indexOf('exon 1') != -1)
+                    exons = ["exon-1", "exon-2"];
+                else if (d.name.indexOf('exon 2') != -1)
+                    exons = ["exon-2", "exon-1"];
+    
+                if (exons.length > 0) {
+                    var rect2 = d3.select("#" + d.name.replace(/[ ']/g, "-").replace(exons[0], exons[1]) + "rect");
+                    // within zoom views, the other exon might be missing
+                    if (rect2.empty())
+                        return;
+
+                    var d2 = rect2.data()[0];
+                    var box2 = d3.select('#' + d.name.replace(/[ ']/g, "-").replace(exons[0], exons[1]) + "-box");
+                    // NOTE: we extract the y coordinate from the affine transformation STRING!
+                    var boxy = +(d3.select(this).attr("transform").split(",")[1].split(")")[0]);
+                    var box2y = +(box2.attr("transform").split(",")[1].split(")")[0]);
+      
+                    vis.append('line')
+                        .attr("class", "exon-line")
+                        .attr("x1", 0.5 * (x(d.location[0][1]) + x(d.location[0][0])))
+                        .attr("x2", 0.5 * (x(d2.location[0][1]) + x(d2.location[0][0])))
+                        .attr("y1", boxy + 0.5 * heightBlock)
+                        .attr("y2", box2y + 0.5 * heightBlock)
+                        .style("opacity", 0.7)
+                        .style("stroke", "darkred")
+                        .style("stroke-width", 2);
+
+                }
+            }
+    
+            function moutFeature(d) {
+                // change color back
+                d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect")
+                    .style("fill", "steelblue");
+      
+                // hide tooltip
+                tip.hide(d);   
+      
+                // hide exon line
+                if ((d.name.indexOf('exon 1') != -1) | (d.name.indexOf('exon 2') != -1))
+                  vis.selectAll(".exon-line").remove();
+            }
+      
+            function plotFeatureGroup(groupname, dy) {
+                var group = getFeatureGroup(groupname);
+                var fea = vis.selectAll("." + groupname)
+                    .data(group)
+                    .enter()
+                    .append("g")
+                    .attr("class", "featurebox " + groupname)
+                    .attr("id", function(d) { return d.name.replace(/[ ']/g, "-") + "-box"; })
+                    .attr("transform", function(d) { return "translate(" + x(d.location[0][0]) +
+                          "," + (dy + heightFeature(d)) + ")"; })
+                    .on('mouseover', moverFeature)
+                    .on('mouseout', moutFeature)
+                    .on("click", function() { d3.event.stopPropagation(); })
+                    .on('click.zoom', clickFeature);
+    
+                var fearect = fea.append("rect")
+                    .attr("class", "featurerect")
+                    .attr("id", function(d) { return d.name.replace(/[ ']/g, "-") + "rect"; })
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
+                    .attr("height", 20)
+                    .style("fill", "steelblue")
+                    .style("fill-opacity", 0.5)
+                    .style("stroke-width", 1)
+                    .style("stroke", "black");
+      
+                // show text only of longer things (that's why we have a tooltip)
+                // FIXME: use a criterion that is more zoom-friendly
+                fea.append("text")
+                    .attr("x", function(d) { return 0.5 * (x(d.location[0][1]) - x(d.location[0][0])); })
+                    .attr("y", 15)
+                    .text(function(d) {
+                        if ((d.location[0][1] - d.location[0][0]) > 350)
+                            return d.name;
+                        else
+                            return "";
+                    })
+                    .style("text-anchor", "middle");
+            }
+
             function getFeatureGroup(groupname) {
                 var group = [];
                 var gname = "";
@@ -127,125 +334,32 @@ function genomeChart() {
                 return group;
             }
     
-            function height_feature(feature) {
+            function heightFeature(feature) {
                 if (feature.type == "fragment")
-                    return height_fragment(feature);
+                    return heightFragment(feature);
                 else if ((feature.type == "protein") | (feature.type == "gene"))
-                    return height_inframe(feature); 
+                    return heightInframe(feature); 
                 else
                     return 0;
-            }
     
-            function height_fragment(fragment) {
-                var fn = +(fragment.name[1]);
-                var height = vpad_block;
-                if ((fn % 2) == 0)
-                    height += height_block + vpad_block;
-                return height;
-            }
-    
-            function height_inframe(feature) {
-                var frame;
-                if (['tat exon 2', 'rev exon 2'].indexOf(feature.name) != -1)
-                    frame = (+(feature.location[0][1]) - (+genome.framestart)) % 3;
-               else
-                 frame = (+(feature.location[0][0]) - (+genome.framestart)) % 3; 
-               return frame * (height_block + vpad_block);
-            }
-    
-            function moverFeature(d) {
-                // change color
-                var rect = d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect");
-      
-                rect.style("fill", "darkred");  
-      
-                // show tooltip
-                tip.show(d);
-      
-                // show line connecting the exons
-                var exons = [];
-                if (d.name.indexOf('exon 1') != -1)
-                    exons = ["exon-1", "exon-2"];
-                else if (d.name.indexOf('exon 2') != -1)
-                    exons = ["exon-2", "exon-1"];
-    
-                if (exons.length > 0) {
-                    var rect2 = d3.select("#" + d.name.replace(/[ ']/g, "-").replace(exons[0], exons[1]) + "rect");
-                    var d2 = rect2.data()[0];
-                    var box2 = d3.select('#' + d.name.replace(/[ ']/g, "-").replace(exons[0], exons[1]) + "-box");
-                    // FIXME: rewrite (?): we extract the y coordinate from the affine transformation STRING!
-                    var boxy = +(d3.select(this).attr("transform").split(",")[1].split(")")[0]);
-                    var box2y = +(box2.attr("transform").split(",")[1].split(")")[0]);
-      
-                    vis.append('line')
-                        .attr("class", "exon-line")
-                        .attr("x1", 0.5 * (x(d.location[0][1]) + x(d.location[0][0])))
-                        .attr("x2", 0.5 * (x(d2.location[0][1]) + x(d2.location[0][0])))
-                        .attr("y1", boxy + 0.5 * height_block)
-                        .attr("y2", box2y + 0.5 * height_block)
-                        .style("opacity", 0.7)
-                        .style("stroke", "darkred")
-                        .style("stroke-width", 2);
+                function heightFragment(fragment) {
+                    var fn = +(fragment.name[1]);
+                    var height = vpadBlock;
+                    if ((fn % 2) == 0)
+                        height += heightBlock + vpadBlock;
+                    return height;
                 }
-            }
     
-            function moutFeature(d) {
-                // change color back
-                d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect")
-                    .style("fill", "steelblue");
-      
-                // hide tooltip
-                tip.hide(d);   
-      
-                // hide exon line
-                if ((d.name.indexOf('exon 1') != -1) | (d.name.indexOf('exon 2') != -1))
-                  vis.selectAll(".exon-line").remove();
+                function heightInframe(feature) {
+                    var frame;
+                    if (['tat exon 2', 'rev exon 2'].indexOf(feature.name) != -1)
+                        frame = (+(feature.location[0][1]) - (+genome.framestart)) % 3;
+                   else
+                     frame = (+(feature.location[0][0]) - (+genome.framestart)) % 3; 
+                   return frame * (heightBlock + vpadBlock);
+                }
+
             }
-      
-            function plot_group(groupname, dy) {
-                var group = getFeatureGroup(groupname);
-                var fea = vis.selectAll()
-                    .data(group)
-                    .enter()
-                    .append("g")
-                    .attr("class", "featurebox " + groupname)
-                    .attr("id", function(d) { return d.name.replace(/[ ']/g, "-") + "-box"; })
-                    .attr("transform", function(d) { return "translate(" + x(d.location[0][0]) + "," + (dy + height_feature(d)) + ")";})
-                    .on('mouseover', moverFeature)
-                    .on('mouseout', moutFeature);
-    
-                var fearect = fea.append("rect")
-                    .attr("class", "featurerect")
-                    .attr("id", function(d) { return d.name.replace(/[ ']/g, "-") + "rect"; })
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
-                    .attr("height", 20)
-                    .style("fill", "steelblue")
-                    .style("fill-opacity", 0.5)
-                    .style("stroke-width", 1)
-                    .style("stroke", "black");
-      
-                // show text only of longer things (that's why we have a tooltip)
-                fea.append("text")
-                    .attr("x", function(d) { return 0.5 * (x(d.location[0][1]) - x(d.location[0][0])); })
-                    .attr("y", 15)
-                    .text(function(d) {
-                        if ((d.location[0][1] - d.location[0][0]) > 350)
-                            return d.name;
-                        else
-                            return "";
-                    })
-                    .style("text-anchor", "middle");
-            }
-    
-            plot_group("fragment", 0);
-            plot_group("protein", 75);
-            plot_group("gene-single", 75);
-            plot_group("gene-exon1", 75);
-            plot_group("gene-exon2", 75);
-            plot_group("RNA_structure", 170);
-            plot_group("other", 170);
     
         });
     
