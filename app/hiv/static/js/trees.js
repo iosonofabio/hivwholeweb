@@ -74,9 +74,9 @@ function treeChart() {
         chartType = "radial";
 
     function chart(selection) {
+        // TREE CHART FUNCTION
         selection.each(function (data) {
         
-            // TREE CHART FUNCTION
             var tree = data.tree,
                 id = data.id,
                 pname = data.pname,

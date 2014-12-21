@@ -10,7 +10,8 @@
       JSON.stringify({patient: pname}),
       function(error, request) {
        var data = JSON.parse(request.responseText);
-       update(data.data, id);
+       data = {id: id, pname: pname, genome: data.data};
+       update(data);
       }
    );
  }
