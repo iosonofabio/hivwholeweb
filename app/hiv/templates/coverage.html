@@ -33,9 +33,10 @@
 }
 
 </style>
+<script src="/static/js/genome.js"></script>
 <script type="text/javascript" src="/static/js/coverage.js"></script>
 <script type="text/javascript">
-  function load_single(id, pname) {
+  function load_single(id, pname, callback) {
    d3.xhr("/coverage/")
     .header("Content-Type", "application/json")
     .post(
@@ -61,14 +62,15 @@
 	      data = data.data;
 	      data.genome = data_gn.data;
 	      data.ntemplates = data_ntemplates.data.ntemplates;
-	      update(data, id);
+	      data.id = id;
+	      callback(data);
 	   });
         });
      });
   }
 
  function load() {
-  load_single("{{data.id}}", "{{data.pname}}");
+  load_single("{{data.id}}", "{{data.pname}}", updateCoverage);
  }
 </script>
 {% endblock %}

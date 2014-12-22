@@ -19,10 +19,11 @@ function genomeChart() {
         margin = {top: 3, right: 60, bottom: 42, left: 60},
         width = svgWidth - margin.left - margin.right,
         height = svgHeight - margin.top - margin.bottom,
+        vpadBlockTop = 5,
         vpadBlock = 5,
         nBlocks = 6,
         fontSize = 5; // px
-        heightBlock = ((height - vpadBlock) / nBlocks) - vpadBlock;
+        heightBlock = ((height - vpadBlockTop) / nBlocks) - vpadBlock;
         // NOTE: each group might take more than one block in height
         featureHierarchy = {
             "fragment": 0,
@@ -31,7 +32,8 @@ function genomeChart() {
             "RNA_structure": 5,
             "other": 5,
         },
-        drawBorderTop = true;
+        drawBorderTop = true,
+        resizeSvg = true;
 
     function chart(selection) {
         // GENOME CHART FUNCTION
@@ -43,9 +45,10 @@ function genomeChart() {
                  .html(function(d) { return d.name + ": " + (+d.location[0][0] + 1) + ", " + d.location[0][1]; });
     
             // outer chart with genometric zoom upon resizing
-            var svg = d3.select(this)
-                .attr("preserveAspectRatio", "xMinYMin meet")
-                .attr("viewBox", "0 0 " + svgWidth + " " + svgHeight);
+            var svg = d3.select(this);
+            if (resizeSvg)
+                svg.attr("preserveAspectRatio", "xMinYMin meet")
+                    .attr("viewBox", "0 0 " + svgWidth + " " + svgHeight);
       
             // internal chart, only the bars
             var vis = svg.append("g")
@@ -58,9 +61,12 @@ function genomeChart() {
                 id = data.id,
                 features = genome.features;
     
-            var x = d3.scale.linear()
-                 .domain([-50, genome.len + 50])
-                 .range([20, width - 20]);
+            if (typeof xScale != "undefined")
+                var x = xScale;
+            else
+                var x = d3.scale.linear()
+                     .domain([-50, genome.len + 50])
+                     .range([20, width - 20]);
     
             var xAxis = d3.svg.axis()
                 .scale(x)
@@ -262,7 +268,8 @@ function genomeChart() {
       
             function plotFeatureGroup(groupname) {
                 var group = getFeatureGroup(groupname),
-                    heightGroup = vpadBlock + (vpadBlock + heightBlock) * featureHierarchy[groupname.split("-")[0]];
+                    heightGroup = vpadBlockTop + (vpadBlock + heightBlock) * 
+                        featureHierarchy[groupname.split("-")[0]];
                 var fea = vis.selectAll("." + groupname)
                     .data(group)
                     .enter()
@@ -383,13 +390,40 @@ function genomeChart() {
         if (!arguments.length) return svgHeight;
         svgHeight = _;
         height = svgHeight - margin.top - margin.bottom;
-        heightBlock = ((height - vpadBlock) / nBlocks) - vpadBlock;
+        heightBlock = ((height - vpadBlockTop) / nBlocks) - vpadBlock;
+        return chart;
+    };
+
+    chart.height = function (_) {
+        if (!arguments.length) return height;
+        height = _;
+        svgHeight = height + margin.top + margin.bottom;
+        heightBlock = ((height - vpadBlockTop) / nBlocks) - vpadBlock;
+        return chart;
+    };
+
+    chart.vpadBlockTop = function (_) {
+        if (!arguments.length) return vpadBlockTop;
+        vpadBlockTop = _;
+        heightBlock = ((height - vpadBlockTop) / nBlocks) - vpadBlock;
         return chart;
     };
 
     chart.drawBorderTop = function (_) {
         if (!arguments.length) return drawBorderTop;
         drawBorderTop = _;
+        return chart;
+    }
+
+    chart.resizeSvg = function (_) {
+        if (!arguments.length) return resizeSvg;
+        resizeSvg = _;
+        return chart;
+    }
+
+    chart.xScale = function (_) {
+        if (!arguments.length) return xScale;
+        xScale = _;
         return chart;
     }
 

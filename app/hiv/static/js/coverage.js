@@ -10,8 +10,9 @@ function get_ymax(data) {
  return ymax;
 }
 
-function update(data, id) {
+function updateCoverage(data) {
 
+ var id = data.id;
  var div_width = $('.svg-container').width();
 
  var margin = {top: 10, right: 60, bottom: 150, left: 80},
