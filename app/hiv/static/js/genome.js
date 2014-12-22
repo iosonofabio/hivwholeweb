@@ -1,21 +1,5 @@
-function getNumberFeatureTypes(features) {
-  featuresNew = [];
-  var found = 0;
-  for(i = 0; i < features.length; i++) {
-   found = 0;
-   for(j = 0; j < featuresNew.length; j++) {
-    if (featuresNew[j] == features[i].type) {
-     found = 1;
-    }
-   }
-   if (found == 0) {
-    featuresNew.push(features[i].type);
-   }
-  }
-  return featuresNew.length; 
- }
-
-function update(data) {
+// FIXME: some genes overlap by one base, it's a slight coordinate problem
+function updateGenome(data) {
 
     var divWidth = $('.svg-container').width(),
         svg = d3.select("."+data.id);
@@ -31,11 +15,23 @@ function update(data) {
 function genomeChart() {
 
     var svgWidth = 400,
-        svgHeight = 245,
+        svgHeight = 290,
         margin = {top: 3, right: 60, bottom: 42, left: 60},
         width = svgWidth - margin.left - margin.right,
         height = svgHeight - margin.top - margin.bottom,
-        heightBlock = 20, vpadBlock = 5;
+        vpadBlock = 5,
+        nBlocks = 6,
+        fontSize = 5; // px
+        heightBlock = ((height - vpadBlock) / nBlocks) - vpadBlock;
+        // NOTE: each group might take more than one block in height
+        featureHierarchy = {
+            "fragment": 0,
+            "gene": 2,
+            "protein": 2,
+            "RNA_structure": 5,
+            "other": 5,
+        },
+        drawBorderTop = true;
 
     function chart(selection) {
         // GENOME CHART FUNCTION
@@ -91,22 +87,24 @@ function genomeChart() {
              .attr({"class": "bBox",
                     "x1": x(genome.len + 50), "x2": x(genome.len + 50),
                     "y1": 0, "y2": -height});
-            xAxisObj.append("line")
-             .attr({"class": "bBox",
-                    "x1": x(-50), "x2": x(genome.len + 50),
-                    "y1": -height, "y2": -height});
+            if (drawBorderTop) {
+                xAxisObj.append("line")
+                 .attr({"class": "bBox",
+                        "x1": x(-50), "x2": x(genome.len + 50),
+                        "y1": -height, "y2": -height});
+            }
 
             // plot the various bars
             plotAllFeatures();
 
             function plotAllFeatures() {
-                plotFeatureGroup("fragment", 0);
-                plotFeatureGroup("protein", 75);
-                plotFeatureGroup("gene-single", 75);
-                plotFeatureGroup("gene-exon1", 75);
-                plotFeatureGroup("gene-exon2", 75);
-                plotFeatureGroup("RNA_structure", 170);
-                plotFeatureGroup("other", 170);
+                plotFeatureGroup("fragment");
+                plotFeatureGroup("protein");
+                plotFeatureGroup("gene-single");
+                plotFeatureGroup("gene-exon1");
+                plotFeatureGroup("gene-exon2");
+                plotFeatureGroup("RNA_structure");
+                plotFeatureGroup("other");
             }
 
             function clickFeature(d) {
@@ -262,8 +260,9 @@ function genomeChart() {
                   vis.selectAll(".exon-line").remove();
             }
       
-            function plotFeatureGroup(groupname, dy) {
-                var group = getFeatureGroup(groupname);
+            function plotFeatureGroup(groupname) {
+                var group = getFeatureGroup(groupname),
+                    heightGroup = vpadBlock + (vpadBlock + heightBlock) * featureHierarchy[groupname.split("-")[0]];
                 var fea = vis.selectAll("." + groupname)
                     .data(group)
                     .enter()
@@ -271,7 +270,7 @@ function genomeChart() {
                     .attr("class", "featurebox " + groupname)
                     .attr("id", function(d) { return d.name.replace(/[ ']/g, "-") + "-box"; })
                     .attr("transform", function(d) { return "translate(" + x(d.location[0][0]) +
-                          "," + (dy + heightFeature(d)) + ")"; })
+                          "," + (heightGroup + heightFeature(d)) + ")"; })
                     .on('mouseover', moverFeature)
                     .on('mouseout', moutFeature)
                     .on("click", function() { d3.event.stopPropagation(); })
@@ -283,7 +282,7 @@ function genomeChart() {
                     .attr("x", 0)
                     .attr("y", 0)
                     .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
-                    .attr("height", 20)
+                    .attr("height", heightBlock)
                     .style("fill", "steelblue")
                     .style("fill-opacity", 0.5)
                     .style("stroke-width", 1)
@@ -293,7 +292,7 @@ function genomeChart() {
                 // FIXME: use a criterion that is more zoom-friendly
                 fea.append("text")
                     .attr("x", function(d) { return 0.5 * (x(d.location[0][1]) - x(d.location[0][0])); })
-                    .attr("y", 15)
+                    .attr("y", heightBlock / 2 + fontSize)
                     .text(function(d) {
                         if ((d.location[0][1] - d.location[0][0]) > 350)
                             return d.name;
@@ -344,7 +343,7 @@ function genomeChart() {
     
                 function heightFragment(fragment) {
                     var fn = +(fragment.name[1]);
-                    var height = vpadBlock;
+                    var height = 0;
                     if ((fn % 2) == 0)
                         height += heightBlock + vpadBlock;
                     return height;
@@ -374,18 +373,25 @@ function genomeChart() {
     };
 
     chart.svgWidth = function (_) {
-        if (!arguments.length) return width;
+        if (!arguments.length) return svgWidth;
         svgWidth = _;
         width = svgWidth - margin.left - margin.right;
         return chart;
     };
 
     chart.svgHeight = function (_) {
-        if (!arguments.length) return height;
+        if (!arguments.length) return svgHeight;
         svgHeight = _;
         height = svgHeight - margin.top - margin.bottom;
+        heightBlock = ((height - vpadBlock) / nBlocks) - vpadBlock;
         return chart;
     };
+
+    chart.drawBorderTop = function (_) {
+        if (!arguments.length) return drawBorderTop;
+        drawBorderTop = _;
+        return chart;
+    }
 
     return chart;
 
