@@ -51,19 +51,17 @@ function updateCoverage(data) {
          .tickSize(width, 0, 0)
          .tickFormat("");
    
-    var chart_ext = d3.select("."+id)
+    var svg = d3.select("."+id)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.bottom + margin.top);
    
-    var chart = chart_ext.append("g")
+    var chart = svg.append("g")
          .attr("id", "main-chart"+id)
          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
    
     var charts = {"cov": chart.append("g")
                       .attr("id", "cov-chart"+id),
-                  "genome": chart.append("g")
-                      .attr("class", "d3-chart genome-chart"+id)
-                      .attr("transform", "translate(0," + (height_cov + vpad) + ")")};
+                  };
    
     // Draw the grid lines (they should stay behind)
     charts.cov.append("g")
@@ -243,6 +241,7 @@ function updateCoverage(data) {
     
     }
 
+    // add reusable, dynamic genome chart
     var gChart = genomeChart().resizeSvg(false)
         .drawBorderTop(false)
         .margin({left: margin.left, right: margin.right, bottom: margin.bottom,
@@ -253,7 +252,7 @@ function updateCoverage(data) {
         .zoomCallbacks({'zoomin': {'middle': zoomIn},
                         'zoomout': {'post': zoomOut}});
 
-    chart_ext.datum(data)
+    svg.datum(data)
         .call(gChart);
 
 } 
