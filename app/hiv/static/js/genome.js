@@ -1,4 +1,4 @@
-// FIXME: some genes overlap by one base, it's a slight coordinate problem
+// FIXME: some genes overlap (p2/p6?)
 function updateGenome(data) {
 
     var divWidth = $('.svg-container').width(),
@@ -33,7 +33,10 @@ function genomeChart() {
             "other": 5,
         },
         drawBorderTop = true,
-        resizeSvg = true;
+        resizeSvg = true,
+        x = "undefined",
+        /* pre, post callbacks for reusability */
+        zoomCallbacks = {};
 
     function chart(selection) {
         // GENOME CHART FUNCTION
@@ -61,10 +64,8 @@ function genomeChart() {
                 id = data.id,
                 features = genome.features;
     
-            if (typeof xScale != "undefined")
-                var x = xScale;
-            else
-                var x = d3.scale.linear()
+            if (x == "undefined")
+                x = d3.scale.linear()
                      .domain([-50, genome.len + 50])
                      .range([20, width - 20]);
     
@@ -87,16 +88,16 @@ function genomeChart() {
             // add the rest of the rectangle box
             xAxisObj.append("line")
              .attr({"class": "bBox",
-                    "x1": x(-50), "x2": x(-50),
+                    "x1": x.range()[0], "x2": x.range()[0],
                     "y1": 0, "y2": -height});
             xAxisObj.append("line")
              .attr({"class": "bBox",
-                    "x1": x(genome.len + 50), "x2": x(genome.len + 50),
+                    "x1": x.range()[1], "x2": x.range()[1],
                     "y1": 0, "y2": -height});
             if (drawBorderTop) {
                 xAxisObj.append("line")
                  .attr({"class": "bBox",
-                        "x1": x(-50), "x2": x(genome.len + 50),
+                        "x1": x.range()[0], "x2": x.range()[1],
                         "y1": -height, "y2": -height});
             }
 
@@ -120,7 +121,11 @@ function genomeChart() {
 
                 if (!(self.classed("zoomed"))) {
                     var start = d.location[0][0],
-                        end = d.location[0][1];
+                        end = d.location[0][1],
+                        zoomData = {'start': start, 'end': end};
+
+                    if (("zoomin" in zoomCallbacks) & ("pre" in zoomCallbacks.zoomin))
+                        zoomCallbacks.zoomin.pre(zoomData);
 
                     // delete boxes fully outside of window
                     vis.selectAll(".featurebox")
@@ -136,6 +141,9 @@ function genomeChart() {
                     x.domain([-scalePad + start, end + scalePad]);
                     xAxis.scale(x);
                     xAxisObj.call(xAxis);
+
+                    if (("zoomin" in zoomCallbacks) & ("middle" in zoomCallbacks.zoomin))
+                        zoomCallbacks.zoomin.middle(zoomData);
 
                     // move, resize, and recenter boxes
                     function zoomIn(d) {
@@ -198,8 +206,14 @@ function genomeChart() {
                     }
                     vis.selectAll(".featurebox")
                         .each(zoomIn);
+
+                    if (("zoomin" in zoomCallbacks) & ("post" in zoomCallbacks.zoomin))
+                        zoomCallbacks.zoomin.post(zoomData);
     
                 } else {
+                    if (("zoomout" in zoomCallbacks) & ("pre" in zoomCallbacks.zoomout))
+                        zoomCallbacks.zoomout.pre();
+    
                     // Restoring could be done more stylish, but it's ok
                     vis.selectAll(".featurebox").remove();
                     
@@ -209,6 +223,10 @@ function genomeChart() {
                     xAxisObj.call(xAxis);
 
                     plotAllFeatures();
+
+                    if (("zoomout" in zoomCallbacks) & ("post" in zoomCallbacks.zoomout))
+                        zoomCallbacks.zoomout.post();
+    
                 }
             }        
 
@@ -394,6 +412,13 @@ function genomeChart() {
         return chart;
     };
 
+    chart.width = function (_) {
+        if (!arguments.length) return width;
+        width = _;
+        svgWidth = width + margin.left + margin.right;
+        return chart;
+    };
+
     chart.height = function (_) {
         if (!arguments.length) return height;
         height = _;
@@ -421,9 +446,15 @@ function genomeChart() {
         return chart;
     }
 
-    chart.xScale = function (_) {
-        if (!arguments.length) return xScale;
-        xScale = _;
+    chart.x = function (_) {
+        if (!arguments.length) return x;
+        x = _;
+        return chart;
+    }
+
+    chart.zoomCallbacks = function (_) {
+        if (!arguments.length) return zoomCallbacks;
+        zoomCallbacks = _;
         return chart;
     }
 
