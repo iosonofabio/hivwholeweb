@@ -1,17 +1,4 @@
-function get_ymax(data) {
- var ymax = d3.max(data[0][1]);
- var ytmp;
- for (i = 1; i < data.length; i++) {
-   ytmp = d3.max(data[i][1]);
-   if (ytmp > ymax) {
-    ymax = ytmp;
-   }
- }
- return ymax;
-}
-
 function updateCoverage(data) {
-
     var id = data.id;
     var div_width = $('.svg-container').width();
    
@@ -67,17 +54,7 @@ function updateCoverage(data) {
     charts.cov.append("g")
         .attr("class", "grid")
         .call(yAxisGrid);
-   
-    //charts.cov.append("g")
-    //     .attr("class", "d3-axis")
-    //     .attr("transform", "translate(0," + height + ")")
-    //     .call(xAxis)
-    //     .append("text")
-    //     .attr("x", width / 2)
-    //     .attr("y", 40)
-    //     .style("text-anchor", "middle")
-    //     .text("Position [bp]");
-     
+        
     charts.cov.append("g")
          .attr("class", "d3-axis")
          .call(yAxis)
@@ -245,7 +222,8 @@ function updateCoverage(data) {
     var gChart = genomeChart().resizeSvg(false)
         .drawBorderTop(false)
         .margin({left: margin.left, right: margin.right, bottom: margin.bottom,
-            top: margin.top + height_cov + vpad})
+            top: margin.top + height_cov})
+        .vpadBlockTop(vpad)
         .width(width)
         .height(height_genome)
         .x(x)
@@ -254,5 +232,18 @@ function updateCoverage(data) {
 
     svg.datum(data)
         .call(gChart);
+
+
+    function get_ymax(data) {
+        var ymax = d3.max(data[0][1]);
+        var ytmp;
+        for (i = 1; i < data.length; i++) {
+            ytmp = d3.max(data[i][1]);
+            if (ytmp > ymax)
+                ymax = ytmp;
+        }
+        return ymax;
+    }
+
 
 } 
