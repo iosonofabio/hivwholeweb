@@ -1,7 +1,6 @@
 <!-- Maybe inheriting directly from base.html would be better -->
 {% extends "no-sidebar.html" %}
 {% block contentwrapper %}
-
 <div class="container-fluid">
  <div class="row">
   <div class="col-sm-4 col-md-3 sidebar">
@@ -19,28 +18,30 @@
   </div> 
  </div> 
 </div>
-
 {% endblock %}
+
 {% block footerwrapper %}
-    <div class="footer navbar-fixed-bottom">
-      <div class="container-fluid">
-       <ul class="nav navbar-nav">
-	<li class="text-muted hidden-xs" id="sidebar-toggle">Toggle sidebar</li>
-       </ul>
-       <ul class="nav navbar-nav navbar-right">
-	<li class="text-muted">Fabio Zanini, Richard Neher, <i>et al.</i>, 2014.</li>
-       </ul>
-      </div>
-    </div>
+<div class="footer navbar-fixed-bottom">
+ <div class="container-fluid">
+  <ul class="nav navbar-nav">
+   <li class="text-muted hidden-xs" id="sidebar-toggle">Toggle sidebar</li>
+  </ul>
+  <ul class="nav navbar-nav navbar-right">
+   <li class="text-muted">Fabio Zanini, Richard Neher, <i>et al.</i>, 2014.</li>
+  </ul>
+ </div>
+</div>
 
-  <!-- Toggle sidebar button -->
-  <script type="text/javascript">
-  $("#sidebar-toggle").click(function(e) {
-        console.log("hej!");
-        e.preventDefault();
-        $(".nav-sidebar").toggleClass("toggled");
-        $(".main").toggleClass("toggled");
-    });
-  </script>
-
+<!-- Toggle sidebar button -->
+<script type="text/javascript">
+$("#sidebar-toggle").click(function(e) {
+      e.preventDefault();
+      // FIXME: we'd need a more robust mechanism here, but replotting is not very
+      // flexible and the sidebar is memoryless for now. We could make it stateful
+      // by including it in every GET/POST request, but it's cumbersome and should
+      // probably be done by cookies instead.
+      $(".sidebar").toggleClass("toggled");
+      $(".main").toggleClass("toggled");
+  });
+</script>
 {% endblock %}

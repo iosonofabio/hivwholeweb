@@ -1,18 +1,15 @@
 function updateAlleleFrequencies(data) {
-    var datal = data.len,
-        id = data.id;
-   
     var div_width = $('.svg-container').width();
    
     var margin = {top: 45, right: 50, bottom: 50, left: 80},
         width = div_width - margin.left - margin.right,
-        height = $('.'+id).height() - margin.top - margin.bottom,
+        height = $('.'+data.id).height() - margin.top - margin.bottom,
         vpad = 50, height_genome=200,
         heightAft = (height - height_genome - vpad - vpad) / 2,
         currentTime = data.times[0],
         zoomArea = [-1, 10000];
    
-    var svg = d3.select("."+id)
+    var svg = d3.select("."+data.id)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.bottom + margin.top);
    
@@ -20,20 +17,11 @@ function updateAlleleFrequencies(data) {
          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
    
     var visAft = vis.append("g")
-         .attr("class", "d3-chart aft-chart"+id);
+         .attr("class", "d3-chart aft-chart"+data.id);
    
     var visAfg = vis.append("g")
-         .attr("class", "d3-chart afg-chart"+id)
+         .attr("class", "d3-chart afg-chart"+data.id)
          .attr("transform", "translate(0," + (heightAft + 1.5 * vpad) + ")");
-   
-    var visGenome = vis.append("g")
-             .attr("class", "d3-chart genome-chart"+id)
-             .attr("transform", "translate(0," + (2 * heightAft + 2 * vpad) + ")");
-   
-    var y = d3.scale.log()
-         .domain([0.0009, 0.9991])
-         .range([heightAft, 0])
-         .clamp(true);
    
     var x = d3.scale.linear()
          .domain([-0.05 * data.genome.len, 1.05 * data.genome.len])
@@ -49,48 +37,11 @@ function updateAlleleFrequencies(data) {
         .range([xT(data.times[0]), xT(data.times[data.times.length - 1])])
         .clamp(true);
    
-    var xAxis = d3.svg.axis()
-        .scale(xT)
-        .orient("bottom");
-    
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
-   
-    var yAxisRight = d3.svg.axis()
-        .scale(y)
-        .orient("right");
-   
-    visAft.append("g")
-         .attr("class", "d3-axis")
-         .attr("transform", "translate(0," + heightAft + ")")
-         .call(xAxis)
-         .append("text")
-         .attr("x", width / 2)
-         .attr("y", 40)
-         .style("text-anchor", "middle")
-         .text("Time from infection [days]");
-     
-    visAft.append("g")
-         .attr("class", "d3-axis")
-         .call(yAxis)
-         .append("text")
-         .attr("transform", "rotate(-90)")
-         .attr("dy", "-4.5em")
-         .attr("x", -(heightAft) / 2)
-         .style("text-anchor", "middle")
-         .text("Frequency");
-   
-    visAft.append("g")
-         .attr("class", "d3-axis")
-         .attr("transform", "translate(" + width + ",0)")
-         .call(yAxisRight);
-   
-    var aftLine = d3.svg.line()
-        .x(function(d) { return xT(d[0]); })
-        .y(function(d) { return y(d[1]); })
-        .interpolate('monotone');
-   
+    var y = d3.scale.log()
+         .domain([0.0009, 0.9991])
+         .range([heightAft, 0])
+         .clamp(true);
+
     var colors = d3.scale.linear()
         .domain([0, data.len / 4, data.len / 3,
                 data.len / 2, 2 * data.len / 3,
@@ -99,45 +50,12 @@ function updateAlleleFrequencies(data) {
         .range(["darkblue", "blue", "cyan",
                "green", "yellow",
                "orange", "red"]);
-   
-    visAft.selectAll(".aft")
-         .data(data.aft)
-         .enter()
-         .append("svg:path")
-         .attr("class", "aft")
-         .attr("id", function(d, i) { return "aft-" + (i+1); })
-         .attr("d", function(d) { return aftLine(d[2]); })
-         .attr("stroke", function(d) { return colors(d[0]); })
-         .attr("stroke-width", 2)
-         .attr("fill", "none")
-         .attr("opacity", 0.5);
-   
-    // Add number of templates line if present
-    visAft.append("svg:path")
-      .attr("class", "ntemplates")
-      .attr("d", d3.svg.line()
-                   .x(function(d) { return xT(d[0]); })
-   		.y(function(d) { return y(1.0 / d[1]); })
-   		.interpolate("monotone")(data.ntemplates)
-   		)
-      .attr("stroke", "darkred")
-      .attr("stroke-width", 15)
-      .attr("fill", "none")
-      .attr("opacity", 0.3);
-   
-    // Add max depth for sequencing errors
-    visAft.append("line")
-        .attr("class", "maxDepth")
-        .attr("x1", xT(0))
-        .attr("x2", x.range()[1])
-        .attr("y1", y(2e-3))
-        .attr("y2", y(2e-3))
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 15)
-        .attr("opacity", 0.4);
+       
+    // make trajectories
+    visAft.datum(data)
+        .call(chartAlleleFrequencyTime);
 
-
-    // update the allele frequencies along the genome
+    // scatter plot along genome
     visAfg.datum(data)
         .call(chartAlleleFrequencyGenome);
 
@@ -167,6 +85,21 @@ function updateAlleleFrequencies(data) {
     }
 
     function updatePlots() {
+        updateAft();
+        updateAfg();
+    }
+
+    function updateAft() {
+        vis.selectAll(".aft")
+            .attr("opacity", function(daft) {
+                if ((daft[0] >= zoomArea[0]) & (daft[0] < zoomArea[1]))
+                    return 0.5;
+                else
+                    return 0;
+            });
+    }
+
+    function updateAfg() {
         // remove and recreate allele frequencies along the genome
         vis.select(".afg")
             .selectAll(".afg_point")
@@ -188,25 +121,113 @@ function updateAlleleFrequencies(data) {
             .attr("fill", function(d) { return colors(d[0]); })
             .attr("stroke", "grey")
             .attr("stroke-width", 0.3);
+    
+    }
 
-        // make only lines in the zoom area visible
-        vis.selectAll(".aft")
-            .attr("opacity", function(daft) {
-                if ((daft[0] >= zoomArea[0]) & (daft[0] < zoomArea[1]))
-                    return 0.5;
-                else
-                    return 0;
-            });
+    function chartAlleleFrequencyTime(selection) {
+        selection.each(function (data) {
+            var vis = d3.select(this);
+       
+            var y = d3.scale.log()
+                 .domain([0.0009, 0.9991])
+                 .range([heightAft, 0])
+                 .clamp(true);
+
+            // Make x axis
+            var xAxis = d3.svg.axis()
+                .scale(xT)
+                .orient("bottom");
+
+            vis.append("g")
+                 .attr("class", "d3-axis")
+                 .attr("transform", "translate(0," + heightAft + ")")
+                 .call(xAxis)
+                 .append("text")
+                 .attr("x", width / 2)
+                 .attr("y", 40)
+                 .style("text-anchor", "middle")
+                 .text("Time from infection [days]");
+            
+            // Make y axes
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
+
+            var yAxisRight = d3.svg.axis()
+                .scale(y)
+                .orient("right");
+
+            vis.append("g")
+                 .attr("class", "d3-axis")
+                 .call(yAxis)
+                 .append("text")
+                 .attr("transform", "rotate(-90)")
+                 .attr("dy", "-4.5em")
+                 .attr("x", -(heightAft) / 2)
+                 .style("text-anchor", "middle")
+                 .text("Frequency");
+   
+            vis.append("g")
+                 .attr("class", "d3-axis")
+                 .attr("transform", "translate(" + width + ",0)")
+                 .call(yAxisRight);
+
+            // plot allele frequency trajectories with colors
+            var aftLine = d3.svg.line()
+                .x(function(d) { return xT(d[0]); })
+                .y(function(d) { return y(d[1]); })
+                .interpolate('monotone');
+   
+            visAft.selectAll(".aft")
+                 .data(data.aft)
+                 .enter()
+                 .append("svg:path")
+                 .attr("class", "aft")
+                 .attr("id", function(d, i) { return "aft-" + (i+1); })
+                 .attr("d", function(d) { return aftLine(d[2]); })
+                 .attr("stroke", function(d) { return colors(d[0]); })
+                 .attr("stroke-width", 2)
+                 .attr("fill", "none")
+                 .attr("opacity", 0.5);
+
+            // Add number of templates line if present
+            var templateLine = d3.svg.line()
+                .x(function(d) { return xT(d[0]); })
+                .y(function(d) { return y(1.0 / d[1]); })
+                .interpolate("monotone");
+
+            visAft.append("svg:path")
+              .attr("class", "ntemplates")
+              .attr("d", templateLine(data.ntemplates))
+              .attr("stroke", "darkred")
+              .attr("stroke-width", 15)
+              .attr("fill", "none")
+              .attr("opacity", 0.3);
+   
+            // Add max depth for sequencing errors
+            visAft.append("line")
+                .attr("class", "maxDepth")
+                .attr("x1", xT(0))
+                .attr("x2", x.range()[1])
+                .attr("y1", y(2e-3))
+                .attr("y2", y(2e-3))
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 15)
+                .attr("opacity", 0.4);
+   
+        });
     }
 
     function chartAlleleFrequencyGenome(selection) {
         selection.each(function (data) {
+            var vis = d3.select(this);
        
             var y = d3.scale.log()
                  .domain([0.0009, 0.9991])
                  .range([heightAft, 0])
                  .clamp(true);
        
+            // Make y axes and grid
             var yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left");
@@ -221,7 +242,24 @@ function updateAlleleFrequencies(data) {
                  .tickSize(width, 0, 0)
                  .tickFormat("");
        
-            var vis = d3.select(this);
+            vis.append("g")
+                .attr("class", "grid")
+                .call(yAxisGrid);
+       
+            vis.append("g")
+                .attr("class", "d3-axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("dy", "-4.5em")
+                .attr("x", -(heightAft) / 2)
+                .style("text-anchor", "middle")
+                .text("Frequency");
+       
+            vis.append("g")
+                .attr("class", "d3-axis")
+                .attr("transform", "translate(" + width + ",0)")
+                .call(yAxisRight);
        
             // add slider
             vis.append("g")
@@ -294,26 +332,7 @@ function updateAlleleFrequencies(data) {
        
             }
             // end of slider
-       
-            vis.append("g")
-                .attr("class", "grid")
-                .call(yAxisGrid);
-       
-            vis.append("g")
-                .attr("class", "d3-axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("dy", "-4.5em")
-                .attr("x", -(heightAft) / 2)
-                .style("text-anchor", "middle")
-                .text("Frequency");
-       
-            vis.append("g")
-                .attr("class", "d3-axis")
-                .attr("transform", "translate(" + width + ",0)")
-                .call(yAxisRight);
-       
+              
             // Initial data
             vis.append("g")
                  .attr("class", "circles afg")

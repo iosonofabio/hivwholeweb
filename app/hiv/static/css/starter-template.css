@@ -38,6 +38,13 @@ body {
     overflow-x: hidden;
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
     border-right: 0;
+
+  /* transition speed when toggle */
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+
   }
 }
 
@@ -48,11 +55,6 @@ body {
   background-color: #181818;
   height: 100%;
 
-  /* transition speed when toggle */
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  transition: all 0.5s ease;
 }
 
 .nav-sidebar > li > a {
@@ -85,12 +87,12 @@ body {
 
 /* toggle sidebar only on big screens */
 @media (min-width: 768px) {
-  .nav-sidebar.toggled {
+  .sidebar.toggled {
      margin-left: -270px;
     }
   
   .main.toggled {
-   margin-left: -135px;
+    margin-left: 50px;
   }
 }
 
