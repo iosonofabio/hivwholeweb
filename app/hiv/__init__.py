@@ -18,5 +18,9 @@ hiv.config.from_object('config')
 hiv.config['SECTIONS'] = backbone.sections
 hiv.config['DATA_SUBFOLDER'] = 'data'
 
+from .blueprints.tutorial import tutorial
+hiv.register_blueprint(tutorial, url_prefix='/tutorial')
+
+
 from . import views
 

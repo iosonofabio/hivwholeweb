@@ -31,12 +31,6 @@ def contact():
                            title='Contact')
 
 
-@hiv.route('/tutorial/', methods=['GET'])
-def tutorial():
-    return render_template('tutorial.html',
-                           title='Tutorial')
-
-
 @hiv.route('/trees/', methods=['GET', 'POST'])
 def trees():
     if request.json:
