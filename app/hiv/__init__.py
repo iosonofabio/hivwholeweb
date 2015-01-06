@@ -21,6 +21,9 @@ hiv.config['DATA_SUBFOLDER'] = 'data'
 from .blueprints.tutorial import tutorial
 hiv.register_blueprint(tutorial, url_prefix='/tutorial')
 
+from .blueprints.welcome import welcome
+hiv.register_blueprint(welcome, url_prefix='/welcome')
+
 
 from . import views
 
