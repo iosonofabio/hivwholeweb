@@ -11,18 +11,23 @@ function load_single(id, pname, region, chartType) {
   .post(
     JSON.stringify({patient: pname, region: region}),
     function(error, request) {
-     var treejson = JSON.parse(request.responseText);
-     var data = {
-      tree: Newick.parse(treejson.newick),
-      id: id,
-      pname: pname,
-      region: region,
-      chartType: chartType,
-     };
+     var data = JSON.parse(request.responseText);
+     data.id = id;
+     data.pname = pname;
+     data.region = region;
+     data.chartType = chartType;
 
-     update(data);
-    }
- );
+     var treeFormat = 'newick';
+     if (treeFormat == 'newick') {
+      data.tree = Newick.parse(data.tree);
+      update(data);
+     } else {
+      d3.json(data.tree, function(error, tree) {
+       data.tree = tree;      
+       update(data);
+      });     
+     }
+    });
 }
 
 function load() {

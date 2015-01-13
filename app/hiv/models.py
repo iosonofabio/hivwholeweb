@@ -25,13 +25,13 @@ class TreeModel(object):
         self.region = region
 
 
-    def get_filename(self, full=True):
-        fn = 'consensi_tree_'+self.pname+'_'+self.region+'.newick'
+    def get_filename(self, full=True, format='newick'):
+        fn = 'consensi_tree_'+self.pname+'_'+self.region+'.'+format
         return data_folder[full]+'trees/'+fn
 
     
     def get_newick_string(self):
-        fn = self.get_filename()
+        fn = self.get_filename(format='newick')
         with open(fn, 'r') as f:
             tree = f.read().rstrip('\n')
             # NOTE: Adding an artificial root creates a long branch.
@@ -39,6 +39,10 @@ class TreeModel(object):
             if float(root_dist) > 0.01:
                 tree = tree[:tree.rfind(':')]+'0.001;'
         return tree
+
+
+    def get_json_filename(self):
+        return self.get_filename(full=False, format='json')
 
 
 class PhysioModel(object):

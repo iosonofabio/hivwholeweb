@@ -35,8 +35,17 @@ def contact():
 def trees():
     if request.json:
         req = request.json
-        tree = TreeModel(req['patient'], req['region']).get_newick_string()
-        data = {'newick': tree}
+        tree = TreeModel(req['patient'], req['region'])
+
+        # Newick returns the string, JSON returns a JSON
+        data = {}
+        if ('treeFormat' in req) and (req['treeFormat'].lower() == 'json'):
+            data['tree'] = tree.get_json_filename()
+        else:
+            data['tree'] = tree.get_newick_string()
+
+        print data
+
         return jsonify(**data)
 
     form = TreeForm()
