@@ -3,8 +3,8 @@
  * Author: Fabio Zanini
  */
 function maxDepth(n, maxOffset) {
-  if (n.parent == null) n.depthScaled = n.length;
-  else n.depthScaled = n.parent.depthScaled + n.length;
+  if (n.parent == null) n.depthScaled = n.branch_length;
+  else n.depthScaled = n.parent.depthScaled + n.branch_length;
 
   // If an internal node, maxOffset is given by children
   if (n.children) {
@@ -32,10 +32,10 @@ function phyloScale(n, treeScale) {
 }
 
 function getNumberTerminals(n, number) {
-    if (n.branchset) {
+    if (n.children) {
         var i;
-        for(i=0; i < n.branchset.length; i++) {
-            number += getNumberTerminals(n.branchset[i], 0);
+        for(i=0; i < n.children.length; i++) {
+            number += getNumberTerminals(n.children[i], 0);
         }
     } else
         number += 1;
@@ -89,11 +89,11 @@ function treeChart() {
             var svg = div.append("svg");
 
             // Set the outer dimensions.
+            //svg.attr("width", width + margin.left + margin.right)
+            //   .attr("height", height + margin.top + margin.bottom)
             //responsive SVG needs these 2 attributes and no width and height attr
             svg.attr("preserveAspectRatio", "xMinYMin meet")
                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom));
-            //svg.attr("width", width + margin.left + margin.right)
-            //   .attr("height", height + margin.top + margin.bottom)
 
             if (chartType == "radial")
                 makeRadial();
@@ -114,13 +114,15 @@ function treeChart() {
                 var cluster = d3.layout.cluster()
                    .size([maxAngle, 1])
                    .sort(null)
-                   .value(function(d) { return d.length; })
-                   .children(function(d) { return d.branchset; })
+                   .value(function(d) { return d.branch_length; })
+                   .children(function(d) { return d.children; })
                    .separation(function(a, b) { return 1; });
-           
+
                 var nodes = cluster.nodes(tree);
                 var depth = maxDepth(nodes[0], 0),
                     treeScale = 0.9 * rInternal / depth;
+
+                console.log(nodes);
                 
                 // adjust the bar to calibration
                 var barLengthData = (30.0 / treeScale).toPrecision(1),
@@ -141,8 +143,8 @@ function treeChart() {
            
                 // scale bar
                 var bar = vis.append("g")
-                             .attr("class", "lengthbar")
-                          .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
+                    .attr("class", "lengthbar")
+                    .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
            
                 bar.selectAll(".lengthbar")
                    .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
@@ -156,10 +158,10 @@ function treeChart() {
                    .style("stroke-width", 2);
            
                 bar.append("text")
-                 .attr("x", -barLength / 2)
-                 .attr("y", 25)
-                 .text(barLengthData)
-                 .attr("text-anchor", "middle");
+                   .attr("x", -barLength / 2)
+                   .attr("y", 25)
+                   .text(barLengthData)
+                   .attr("text-anchor", "middle");
            
                 // line connecting the leaves to their labels
                 var label = vis.selectAll(".anno")
@@ -184,6 +186,7 @@ function treeChart() {
                          return "rotate(" + (d.x - 90) + ")translate(" + (r - 170 + 8) + 
                              ")rotate(" + (d.x < 180 ? 0 : 180) + ")"; })
                      .text(function(d) {
+                      d.name = "" + d.name;
                       // local trees have the sequences attached
                       if (region.indexOf('minor') == -1) {
                        return d.name.replace(/_/g, ' ');
@@ -250,8 +253,8 @@ function treeChart() {
                 var cluster = d3.layout.cluster()
                    .size([height, 0.85 * width])
                    .sort(null)
-                   .value(function(d) { return d.length; })
-                   .children(function(d) { return d.branchset; })
+                   .value(function(d) { return d.branch_length; })
+                   .children(function(d) { return d.children; })
                    .separation(function(a, b) { return 1; });
            
                 var nodes = cluster.nodes(tree);
@@ -277,8 +280,8 @@ function treeChart() {
 
                 // scale bar
                 var bar = vis.append("g")
-                             .attr("class", "lengthbar")
-                             .attr("transform", "translate(" + 50 + "," + (height - 20) + ")");
+                    .attr("class", "lengthbar")
+                    .attr("transform", "translate(" + 50 + "," + (height - 20) + ")");
            
                 bar.selectAll(".lengthbar")
                    .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
@@ -297,7 +300,7 @@ function treeChart() {
                    .text(barLengthData)
                    .attr("text-anchor", "middle");
 
-                // dashed lines going from leaf to label
+                // line connecting the leaves to their labels
                 var label = vis.selectAll(".anno")
                      .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
                      .enter()
