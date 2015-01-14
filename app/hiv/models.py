@@ -532,7 +532,7 @@ class PatientTableModel(object):
         table = []
         fieldinds = []
         with open(fn, 'r') as f:
-            headerfields = f.readline().rstrip('\n').split()
+            headerfields = f.readline().rstrip('\n').split('\t')
             for field in headerfields:
                 fieldinds.append(field) 
 
@@ -541,7 +541,7 @@ class PatientTableModel(object):
 
             for line in f:
                 tline = {}
-                fieldsline = line.rstrip('\n').split()
+                fieldsline = line.rstrip('\n').split('\t')
                 if len(fieldsline) == 0:
                     continue
                 tline = {fieldinds[ifi]: field for ifi, field in enumerate(fieldsline)}
