@@ -515,3 +515,36 @@ class LocalHaplotypeModel(object):
         self.store_alignments(alis, fn_out)
 
         return fn_out
+
+
+class PatientTableModel(object):
+
+    def get_table_filename(self, full=True):
+        '''Get the filename of the patient table'''
+	fn = 'patients.csv'
+	return data_folder[full]+'tables/'+fn
+
+
+    def get_table(self):
+        '''Read the table from file'''
+        fn = self.get_table_filename(full=True)
+
+        table = []
+        fieldinds = []
+        with open(fn, 'r') as f:
+            headerfields = f.readline().rstrip('\n').split()
+            for field in headerfields:
+                fieldinds.append(field) 
+
+            # Second header line, empty
+            f.readline()
+
+            for line in f:
+                tline = {}
+                fieldsline = line.rstrip('\n').split()
+                if len(fieldsline) == 0:
+                    continue
+                tline = {fieldinds[ifi]: field for ifi, field in enumerate(fieldsline)}
+                table.append(tline)
+
+        return table
