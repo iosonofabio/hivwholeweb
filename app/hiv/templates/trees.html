@@ -1,17 +1,15 @@
 {% extends "plots.html" %}
 {% block head_end %}
 {{ super() }}
-<script type="text/javascript" src="/static/js/d3.phylogram.js/newick.js"></script>
 <script type="text/javascript" src="/static/js/d3.phylogram.js/d3.phylogram.js"></script>
 <script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
 function load_single(id, pname, region, chartType) {
  // FIXME: use only json trees (global ones and minor vars are missing)
- var treeFormat = 'json';
  d3.xhr("/trees/")
   .header("Content-Type", "application/json")
   .post(
-    JSON.stringify({patient: pname, region: region, treeFormat: treeFormat}),
+    JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
     function(error, request) {
      var data = JSON.parse(request.responseText);
      data.id = id;
@@ -19,15 +17,10 @@ function load_single(id, pname, region, chartType) {
      data.region = region;
      data.chartType = chartType;
 
-     if (treeFormat == 'newick') {
-      data.tree = Newick.parse(data.tree);
+     d3.json(data.tree, function(error, tree) {
+      data.tree = tree;      
       update(data);
-     } else {
-      d3.json(data.tree, function(error, tree) {
-       data.tree = tree;      
-       update(data);
-      });     
-     }
+     });     
     });
 }
 

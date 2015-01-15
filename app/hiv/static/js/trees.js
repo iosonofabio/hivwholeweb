@@ -76,7 +76,15 @@ function treeChart() {
     function chart(selection) {
         // TREE CHART FUNCTION
         selection.each(function (data) {
-        
+
+            // tooltip (needs to be initialized)
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .html(function(d) {
+                    var node = d.target;
+                    return "Mutations on this branch: "+node.muts;
+                });
+
             var tree = data.tree,
                 id = data.id,
                 pname = data.pname,
@@ -110,7 +118,12 @@ function treeChart() {
                     rLeaves = rInternal - 100,
                     vis = svg.append("g")
                              .attr("transform", "translate(" + (margin.top + r) + "," + (margin.left + r) + ")");
-           
+
+
+                // activate tip on visualized svg
+                vis.call(tip);
+
+                // build d3 tree
                 var cluster = d3.layout.cluster()
                    .size([maxAngle, 1])
                    .sort(null)
@@ -122,8 +135,6 @@ function treeChart() {
                 var depth = maxDepth(nodes[0], 0),
                     treeScale = 0.9 * rInternal / depth;
 
-                console.log(nodes);
-                
                 // adjust the bar to calibration
                 var barLengthData = (30.0 / treeScale).toPrecision(1),
                     barLength = treeScale * barLengthData;
@@ -131,6 +142,7 @@ function treeChart() {
                 // add scaled depths to the tree
                 phyloScale(nodes[0], treeScale);
            
+                // links
                 var link = vis.selectAll("path.link")
                      .data(cluster.links(nodes))
                      .enter()
@@ -139,7 +151,9 @@ function treeChart() {
                      .attr("d", stepRadial)
                      .attr("fill", "none")
                      .attr("stroke", "black")
-                     .attr("stroke-width", 2);
+                     .attr("stroke-width", 2)
+                     .on("mouseover", moverLinksRadial)
+                     .on("mouseout", moutLinksRadial);
            
                 // scale bar
                 var bar = vis.append("g")
@@ -197,6 +211,16 @@ function treeChart() {
                      .on("mouseover", moverRadial)
                      .on("mouseout", moutRadial);
            
+                function moverLinksRadial(d) {
+                    tip.show(d);
+                    moverRadial(d.target);
+                }
+           
+                function moutLinksRadial(d) {
+                    tip.hide(d);   
+                    moutRadial(d.target);
+                }
+
                 function moverRadial(d) {
                   var t = projectRadial(d);
                   vis.append("circle")
@@ -249,6 +273,9 @@ function treeChart() {
                 var vis = svg.append("g")
                              .attr("transform", "translate(" + (margin.top) + "," + (margin.left) + ")");
 
+                // activate tip on visualized svg
+                vis.call(tip);
+
                 // note: at present, x and y are swapped to keep consistency with the radial layout
                 var cluster = d3.layout.cluster()
                    .size([height, 0.85 * width])
@@ -268,6 +295,7 @@ function treeChart() {
                 // add scaled depths to the tree
                 phyloScale(nodes[0], treeScale);
                 
+                // links
                 var link = vis.selectAll("path.link")
                      .data(cluster.links(nodes))
                      .enter()
@@ -276,7 +304,9 @@ function treeChart() {
                      .attr("d", stepRectangular)
                      .attr("fill", "none")
                      .attr("stroke", "black")
-                     .attr("stroke-width", 2);
+                     .attr("stroke-width", 2)
+                     .on("mouseover", moverLinksRectangular)
+                     .on("mouseout", moutLinksRectangular);
 
                 // scale bar
                 var bar = vis.append("g")
@@ -330,6 +360,18 @@ function treeChart() {
                      .on("mouseover", moverRectangular)
                      .on("mouseout", moutRectangular);
            
+
+                function moverLinksRectangular(d) {
+                    tip.show(d);
+                    moverRectangular(d.target);
+                }
+           
+                function moutLinksRectangular(d) {
+                    tip.hide(d);
+                    moutRectangular(d.target);
+                }
+
+
                 function moverRectangular(d) {
                   vis.append("circle")
                       .attr("class", "highlight")
@@ -338,8 +380,7 @@ function treeChart() {
                       .attr("r", 8)
                       .style("stroke", "steelblue")
                       .style("stroke-width", 3)
-                      .style("fill", "none");
-                
+                      .style("fill", "none"); 
                 }
            
                 function moutRectangular(d) {
