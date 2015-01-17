@@ -47,6 +47,8 @@ function update(data) {
     var div = d3.select("#phylogram_"+data.id),
         divWidth = +($("#phylogram_"+data.id).width());
 
+    console.log(data);
+
     // if this function is called with some useful data, bind it to the DOM
     if ("tree" in data)
         div.datum(data)
@@ -81,8 +83,15 @@ function treeChart() {
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .html(function(d) {
-                    var node = d.target;
-                    return "Mutations on this branch: "+node.muts;
+                    var node = d.target,
+                        msg = "Mutations on this branch: ";
+                        
+                    if (node.muts.length > 0)
+                        msg = msg + node.muts;
+                    else
+                        msg = msg + "(none)"
+
+                    return msg;
                 });
 
             var tree = data.tree,
@@ -110,7 +119,7 @@ function treeChart() {
 
             // RADIAL CHART
             function makeRadial() {
-            
+
                 // Create inner chart, centered in the center of the circle
                 var maxAngle = 360,
                     r = width / 2,
@@ -131,7 +140,11 @@ function treeChart() {
                    .children(function(d) { return d.children; })
                    .separation(function(a, b) { return 1; });
 
+                //FIXME
+                console.log(tree);
+
                 var nodes = cluster.nodes(tree);
+            
                 var depth = maxDepth(nodes[0], 0),
                     treeScale = 0.9 * rInternal / depth;
 
@@ -360,7 +373,6 @@ function treeChart() {
                      .on("mouseover", moverRectangular)
                      .on("mouseout", moutRectangular);
            
-
                 function moverLinksRectangular(d) {
                     tip.show(d);
                     moverRectangular(d.target);
