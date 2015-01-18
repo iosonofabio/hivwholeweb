@@ -25,7 +25,7 @@ function load_single(id, pname, region, chartType) {
 }
 
 function load() {
- load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}", "radial");
+ load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}", "rectangular");
 }
 </script>
 {% endblock %}
@@ -39,8 +39,8 @@ function load() {
  {% endif %}
  <h3>{{data.name}}</h3>
  <div class="btn-group btn-pad">
-  <button class="btn btn-default active" type="radio" name="plotType" id="switchRadial" autocomplete="off">Radial</button>
-  <button class="btn btn-default" type="radio" name="plotType" id="switchRectangular" autocomplete="off">Horizontal</label>
+  <button class="btn btn-default" type="radio" name="plotType" id="switchRadial" autocomplete="off">Radial</button>
+  <button class="btn btn-default active" type="radio" name="plotType" id="switchRectangular" autocomplete="off">Horizontal</label>
  </div>
  <div id='treeDiv{{data.id}}'><svg id='treeSvg{{data.id}}'></svg></div>
  <br>
