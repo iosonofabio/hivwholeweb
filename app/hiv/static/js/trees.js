@@ -2,56 +2,14 @@
  * Plot phylogenetic trees with radial or rectangular representation
  * Author: Fabio Zanini
  */
-function maxDepth(n, maxOffset) {
-  if (n.parent == null) n.depthScaled = n.branch_length;
-  else n.depthScaled = n.parent.depthScaled + n.branch_length;
-
-  // If an internal node, maxOffset is given by children
-  if (n.children) {
-    var i;
-    for(i=0; i < n.children.length; i++) {
-      var tmp = maxDepth(n.children[i], maxOffset);
-      if (tmp > maxOffset) maxOffset = tmp;
-    }
-
-  // if terminal node, just checks itself
-  } else {
-   if (n.depthScaled > maxOffset) {
-    maxOffset = n.depthScaled;
-   }
-  }
-  return maxOffset;
-}
-
-function phyloScale(n, treeScale) {
-  n.y = n.depthScaled * treeScale;
-  if (n.children)
-    n.children.forEach(function(n) {
-      phyloScale(n, treeScale);
-    });
-}
-
-function getNumberTerminals(n, number) {
-    if (n.children) {
-        var i;
-        for(i=0; i < n.children.length; i++) {
-            number += getNumberTerminals(n.children[i], 0);
-        }
-    } else
-        number += 1;
-    return number;
-}
-
 // NOTE: this function is ready for callbacks, they have to set data = {id: <id>, chartType: <chartType>}
 function update(data) {
-    var div = d3.select("#phylogram_"+data.id),
-        divWidth = +($("#phylogram_"+data.id).width());
-
-    console.log(data);
+    var svg = d3.select("#treeSvg"+data.id),
+        divWidth = +($("#treeDiv"+data.id).width());
 
     // if this function is called with some useful data, bind it to the DOM
     if ("tree" in data)
-        div.datum(data)
+        svg.datum(data)
 
     var chart = treeChart().svgWidth(0.9 * divWidth)
                            .chartType(data.chartType);
@@ -59,9 +17,18 @@ function update(data) {
     if (data.chartType == "radial")
         chart.svgHeight(0.9 * divWidth);
     else
-        chart.svgHeight(15 * getNumberTerminals(div.datum().tree, 0));
+        chart.svgHeight(15 * getNumberTerminals(svg.datum().tree, 0));
 
-    div.call(chart);
+    svg.call(chart);
+
+    function getNumberTerminals(n, number) {
+        if (n.children)
+            for(var i=0; i < n.children.length; i++)
+                number += getNumberTerminals(n.children[i], 0);
+        else
+            number += 1;
+        return number;
+    }
 
 }
 
@@ -75,8 +42,8 @@ function treeChart() {
         height = svgHeight - margin.top - margin.bottom,
         chartType = "radial";
 
+    // TREE CHART FUNCTION
     function chart(selection) {
-        // TREE CHART FUNCTION
         selection.each(function (data) {
 
             // tooltip (needs to be initialized)
@@ -100,10 +67,8 @@ function treeChart() {
                 region = data.region;
            
             // Create outer chart (SVG) and make sure there are no other ones
-            // TODO: recycle charts
-            var div = d3.select(this);
-            div.selectAll("svg").remove();
-            var svg = div.append("svg");
+            var svg = d3.select(this);
+            svg.selectAll("*").remove();
 
             // Set the outer dimensions.
             //svg.attr("width", width + margin.left + margin.right)
@@ -137,23 +102,22 @@ function treeChart() {
                    .size([maxAngle, 1])
                    .sort(null)
                    .value(function(d) { return d.branch_length; })
-                   .children(function(d) { return d.children; })
                    .separation(function(a, b) { return 1; });
 
-                //FIXME
-                console.log(tree);
-
                 var nodes = cluster.nodes(tree);
+
+                // calculate depth of all nodes
+                setDepths(nodes[0]);
             
-                var depth = maxDepth(nodes[0], 0),
+                var depth = d3.max(nodes, function(d){ return d.depthScaled; }),
                     treeScale = 0.9 * rInternal / depth;
 
                 // adjust the bar to calibration
                 var barLengthData = (30.0 / treeScale).toPrecision(1),
                     barLength = treeScale * barLengthData;
-           
-                // add scaled depths to the tree
-                phyloScale(nodes[0], treeScale);
+
+                // add scaled depths (in pixels) to the tree
+                nodes.map(function(n) {n.y = n.depthScaled * treeScale; });
            
                 // links
                 var link = vis.selectAll("path.link")
@@ -294,19 +258,22 @@ function treeChart() {
                    .size([height, 0.85 * width])
                    .sort(null)
                    .value(function(d) { return d.branch_length; })
-                   .children(function(d) { return d.children; })
                    .separation(function(a, b) { return 1; });
            
                 var nodes = cluster.nodes(tree);
-                var depth = maxDepth(nodes[0], 0),
+
+                // calculate depth of all nodes
+                setDepths(nodes[0]);
+            
+                var depth = d3.max(nodes, function(d){ return d.depthScaled; }),
                     treeScale = cluster.size()[1] / depth;
-                
+
                 // adjust the bar to calibration
                 var barLengthData = (30.0 / treeScale).toPrecision(1),
                     barLength = treeScale * barLengthData;
-           
-                // add scaled depths to the tree
-                phyloScale(nodes[0], treeScale);
+
+                // add scaled depths (in pixels) to the tree
+                nodes.map(function(n) {n.y = n.depthScaled * treeScale; });
                 
                 // links
                 var link = vis.selectAll("path.link")
@@ -417,6 +384,17 @@ function treeChart() {
             }
 
         });
+
+        // NOTE: node.depth is a d3 construct to get the integer depth
+        // so we use depthScaled
+        function setDepths(n) {
+            if (n.parent == null) n.depthScaled = n.branch_length;
+            else n.depthScaled = n.parent.depthScaled + n.branch_length;
+            if (n.children)
+                for (var i=0; i < n.children.length; i++)
+                    setDepths(n.children[i]);        
+        }
+
     }
 
     chart.margin = function (_) {
