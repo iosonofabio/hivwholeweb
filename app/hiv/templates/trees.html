@@ -3,7 +3,7 @@
 {{ super() }}
 <script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
-function load_single(id, pname, region, chartType) {
+function load_single(id, pname, region) {
  d3.xhr("/trees/")
   .header("Content-Type", "application/json")
   .post(
@@ -13,7 +13,6 @@ function load_single(id, pname, region, chartType) {
      data.id = id;
      data.pname = pname;
      data.region = region;
-     data.chartType = chartType;
 
      var treefn = data.tree;
 
@@ -25,7 +24,7 @@ function load_single(id, pname, region, chartType) {
 }
 
 function load() {
- load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}", "rectangular");
+ load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}");
 }
 </script>
 {% endblock %}
@@ -38,15 +37,26 @@ function load() {
   </h4>
  {% endif %}
  <h3>{{data.name}}</h3>
- <div class="btn-group btn-pad">
-  <button class="btn btn-default" type="radio" name="plotType" id="switchRadial" autocomplete="off">Radial</button>
-  <button class="btn btn-default active" type="radio" name="plotType" id="switchRectangular" autocomplete="off">Horizontal</label>
+ <div class="col-xs-8 col-sm-6">
+  <span>Representation:</span>
+  <div class="btn-group btn-pad">
+   <button class="btn btn-default" type="radio" name="plotType" id="switchRadial" autocomplete="off">Radial</button>
+   <button class="btn btn-default active" type="radio" name="plotType" id="switchRectangular" autocomplete="off">Horizontal</label>
+  </div>
+ </div>
+ <div class="col-xs-6 col-sm-4">
+  <span>Link color:</span>
+  <div class="btn-group btn-pad">
+   <button class="btn btn-default active" type="radio" name="plotColorLink" id="switchColorLinkBlack" autocomplete="off">Black</button>
+   <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkDate" autocomplete="off">Date</label>
+  </div>
  </div>
  <div id='treeDiv{{data.id}}'><svg id='treeSvg{{data.id}}'></svg></div>
  <br>
 
+ <p><b>Note</b>: if a color map is used, colors range from blue to red with increasing numbers.</p>
  <div class="btn-pad">
-  <a role="button" class="btn btn-default" href="/download/tree_{{data.pname}}_{{data.region}}.newick">Download tree</a>
+  <a role="button" class="btn btn-default" href="/download/tree_{{data.pname}}_{{data.region}}.json">Download tree</a>
  </div>
  
  <form role="form" action="" method="post" name="tree_settings" class="form-inline">
@@ -64,15 +74,29 @@ function load() {
 
  <script>
   // Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken
+  // FIXME: in order to make the various menu play nicely with each other,
+  //we need to read the DOM active classes from the JS update()
   $('#switchRectangular').on('click', function () {
    $('#switchRadial').removeClass('active');
    $(this).addClass('active');
-   update({id: "{{data.id}}", chartType: "rectangular"});
-  })
+   update({id: "{{data.id}}"});
+  });
   $('#switchRadial').on('click', function () {
    $('#switchRectangular').removeClass('active');
    $(this).addClass('active');
-   update({id: "{{data.id}}", chartType: "radial"});
-  })
+   update({id: "{{data.id}}"});
+  });
+
+  $('#switchColorLinkBlack').on('click', function () {
+   $('#switchColorLinkDate').removeClass('active');
+   $(this).addClass('active');
+   update({id: "{{data.id}}"});
+  });
+  $('#switchColorLinkDate').on('click', function () {
+   $('#switchColorLinkBlack').removeClass('active');
+   $(this).addClass('active');
+   update({id: "{{data.id}}"});
+  });
+
  </script>
 {% endblock %}

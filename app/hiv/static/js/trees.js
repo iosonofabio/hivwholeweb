@@ -11,13 +11,18 @@ function update(data) {
     if ("tree" in data)
         svg.datum(data)
 
-    var chart = treeChart().svgWidth(0.9 * divWidth)
-                           .chartType(data.chartType);
+    var chart = treeChart().svgWidth(0.9 * divWidth);
 
-    if (data.chartType == "radial")
+    // Figure out settings from the DOM, e.g. coloring and chart type
+    if ($("#switchRadial").hasClass("active")) {
+        chart.chartType("radial");
         chart.svgHeight(0.9 * divWidth);
-    else
+    } else
         chart.svgHeight(15 * getNumberTerminals(svg.datum().tree, 0));
+
+    if ($("#switchColorLinkDate").hasClass("active"))
+        chart.colorLinkType("date");
+
 
     svg.call(chart);
 
@@ -40,26 +45,18 @@ function treeChart() {
         margin = {top: 5, bottom: 5, left: 5, right: 5},
         width = svgWidth - margin.left - margin.right,
         height = svgHeight - margin.top - margin.bottom,
-        chartType = "radial";
+        chartType = "rectangular",
+        colorLinkType = "black";
 
     // TREE CHART FUNCTION
     function chart(selection) {
         selection.each(function (data) {
 
-            // tooltip (needs to be initialized)
-            var tip = d3.tip()
-                .attr('class', 'd3-tip')
-                .html(function(d) {
-                    var node = d.target,
-                        msg = "Mutations on this branch: ";
-                        
-                    if (node.muts.length > 0)
-                        msg = msg + node.muts;
-                    else
-                        msg = msg + "(none)"
-
-                    return msg;
-                });
+            var colorMap = d3.scale.linear()
+                .interpolate(d3.interpolateRgb)
+                .domain([0, 0.25, 0.33, 0.5, 0.67, 0.75, 1])
+                .range(["darkblue", "blue", "cyan", "green",
+                        "yellow", "orange", "red"]);
 
             var tree = data.tree,
                 id = data.id,
@@ -77,6 +74,66 @@ function treeChart() {
             svg.attr("preserveAspectRatio", "xMinYMin meet")
                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom));
 
+
+            // calculate depth of all nodes
+            setDepths(tree, 0);
+            var depth = getMaxTree(tree, function(d) { return d.depthScaled; });
+
+            // set coloring functions
+            if (colorLinkType == "black") {
+                var colorLinkFunc = function(d) { return "black"; }
+            
+                var tooltipFunc = function(d) {
+                    var node = d.target,
+                    msg = "Mutations on this branch: ";
+                            
+                    if (node.muts.length > 0)
+                        msg = msg + node.muts;
+                    else
+                        msg = msg + "(none)"
+
+                    return msg;
+                    };
+
+            } else {
+                setNTerminals(tree);
+                setDSI(tree);
+
+                var dsiMax = getMaxTree(tree, function(d) { return d.DSI; }),
+                    colorLinkFunc = function(d) {
+                        var dsi = d.target.DSI;
+                        if (dsi != "undefined")
+                            return colorMap(dsi / dsiMax);
+                        else
+                            return "grey";
+                    };
+
+                var tooltipFunc = function(d) {
+                        var node = d.target,
+                        msg = ("Days since infection: " + node.DSI.toFixed(0) + "</br>" +
+                            "Mutations on this branch: ");
+                            
+                        if (node.muts.length > 0)
+                            msg = msg + node.muts;
+                        else
+                            msg = msg + "(none)"
+
+                        return msg;
+                    };
+            }
+
+            // tooltip
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .html(tooltipFunc);
+
+            // prepare cluster representation
+            var cluster = d3.layout.cluster()
+               .sort(null)
+               .value(function(d) { return d.branch_length; })
+               .separation(function(a, b) { return 1; });
+
+            // plot the chart
             if (chartType == "radial")
                 makeRadial();
             else
@@ -97,19 +154,9 @@ function treeChart() {
                 // activate tip on visualized svg
                 vis.call(tip);
 
-                // build d3 tree
-                var cluster = d3.layout.cluster()
-                   .size([maxAngle, 1])
-                   .sort(null)
-                   .value(function(d) { return d.branch_length; })
-                   .separation(function(a, b) { return 1; });
+                cluster.size([maxAngle, 1]);
 
-                var nodes = cluster.nodes(tree);
-
-                // calculate depth of all nodes
-                setDepths(nodes[0]);
-            
-                var depth = d3.max(nodes, function(d){ return d.depthScaled; }),
+                var nodes = cluster.nodes(tree),
                     treeScale = 0.9 * rInternal / depth;
 
                 // adjust the bar to calibration
@@ -127,7 +174,7 @@ function treeChart() {
                      .attr("class", "link")
                      .attr("d", stepRadial)
                      .attr("fill", "none")
-                     .attr("stroke", "black")
+                     .attr("stroke", colorLinkFunc)
                      .attr("stroke-width", 2)
                      .on("mouseover", moverLinksRadial)
                      .on("mouseout", moutLinksRadial);
@@ -254,27 +301,18 @@ function treeChart() {
                 vis.call(tip);
 
                 // note: at present, x and y are swapped to keep consistency with the radial layout
-                var cluster = d3.layout.cluster()
-                   .size([height, 0.85 * width])
-                   .sort(null)
-                   .value(function(d) { return d.branch_length; })
-                   .separation(function(a, b) { return 1; });
+                cluster.size([height, 0.85 * width]);
            
-                var nodes = cluster.nodes(tree);
-
-                // calculate depth of all nodes
-                setDepths(nodes[0]);
-            
-                var depth = d3.max(nodes, function(d){ return d.depthScaled; }),
+                var nodes = cluster.nodes(tree),
                     treeScale = cluster.size()[1] / depth;
+
+                // add scaled depths (in pixels) to the tree
+                nodes.map(function(n) {n.y = n.depthScaled * treeScale; });
 
                 // adjust the bar to calibration
                 var barLengthData = (30.0 / treeScale).toPrecision(1),
                     barLength = treeScale * barLengthData;
 
-                // add scaled depths (in pixels) to the tree
-                nodes.map(function(n) {n.y = n.depthScaled * treeScale; });
-                
                 // links
                 var link = vis.selectAll("path.link")
                      .data(cluster.links(nodes))
@@ -283,7 +321,7 @@ function treeChart() {
                      .attr("class", "link")
                      .attr("d", stepRectangular)
                      .attr("fill", "none")
-                     .attr("stroke", "black")
+                     .attr("stroke", colorLinkFunc)
                      .attr("stroke-width", 2)
                      .on("mouseover", moverLinksRectangular)
                      .on("mouseout", moutLinksRectangular);
@@ -387,12 +425,48 @@ function treeChart() {
 
         // NOTE: node.depth is a d3 construct to get the integer depth
         // so we use depthScaled
-        function setDepths(n) {
-            if (n.parent == null) n.depthScaled = n.branch_length;
-            else n.depthScaled = n.parent.depthScaled + n.branch_length;
+        function setDepths(n, parentDepth) {
+            n.depthScaled = parentDepth + n.branch_length;
             if (n.children)
                 for (var i=0; i < n.children.length; i++)
-                    setDepths(n.children[i]);        
+                    setDepths(n.children[i], n.depthScaled);        
+        }
+
+        function getMaxTree(n, accessor) {
+            if (n.children)
+                return d3.max(n.children, function (d) { return getMaxTree(d, accessor); });
+            else
+                return accessor(n);
+        }
+
+        function setNTerminals(n) {
+            if (n.children) {
+                n.children.map(setNTerminals);
+                n.nTerminals = d3.sum(n.children, function(d) { return d.nTerminals; });
+            } else
+                n.nTerminals = 1;
+        }
+
+        // Get weighted mean of DSIs of terminal nodes
+        function setDSI(n) {
+            if (n.children) {
+                n.children.map(setDSI);
+                var dsicum = d3.sum(n.children, function (d) {
+                    var dsi = d.DSI;
+                    if (dsi == "undefined")
+                        return 0;
+                    return dsi * d.nTerminals;
+                });
+                var childrencum = d3.sum(n.children, function(d) {
+                    if (d.DSI == "undefined")
+                        return 0;
+                    return d.nTerminals;
+                });
+                if (childrencum == 0)
+                    n.DSI = "undefined";
+                else
+                    n.DSI = dsicum / childrencum;
+            }
         }
 
     }
@@ -422,6 +496,12 @@ function treeChart() {
     chart.chartType = function (_) {
         if (!arguments.length) return chartType;
         chartType = _;
+        return chart;
+    };
+
+    chart.colorLinkType = function (_) {
+        if (!arguments.length) return colorLinkType;
+        colorLinkType = _;
         return chart;
     };
 
