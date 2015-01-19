@@ -3,33 +3,40 @@
 {{ super() }}
 <!-- display message if javascript is disabled -->
 <noscript>
-    <div class="noscript">
-	You don't have JavaScript activated. For full functionality of our site JavaScript is needed to be enabled.<br>
-	<a href="http://www.enable-javascript.com/" target="_blank">How to enable JavaScript?</a>
+    <div class="bg-danger" style="margin-left:50px; margin-right:50px; margin-top:20px;
+   margin-bottom:20px; padding-top:20px; padding-left:20px; padding-bottom:20px">
+		<p class="text-danger"><strong>Warning:</strong> You don't have JavaScript activated. For full functionality of our site JavaScript has to be enabled.</p>
+		<a href="http://www.enable-javascript.com/" target="_blank">How to enable JavaScript?</a>
     </div>
 </noscript>
 {% endblock %}
 {% block content %}
-<h1>Introduction</h1>
-<p style="text-align:justify; margin-left:50px; margin-right:50px">
+<div class="container" style="padding-top:20px">
+    <div class="jumbotron">
+		<h2><b>HIV EVO</b></h2>
+		<p style="text-align:justify; margin-left:50px; margin-right:50px">
 We study genetic evolution of HIV during chronic infection on eleven patients, with nine time points per patient spanning a decade. The virus was sequenced whole-genome with a coverage of several thousand. We built this website as a resource for the HIV research community.<br>
-If it is the first time you are visiting this page we recommend to get started with our <a href="/tutorial/">tutorial</a>.<br>
+<!--If it is the first time you are visiting this page we recommend to get started with our <a href="/tutorial/">tutorial</a>.<br>
 For getting an overview on our data provided on this site per patient, go to the next section containing patient specific data.<br>
-Advanced users might take a look on our download section to get the complete datasets.
-</p>
+Advanced users might take a look on our download section to get the complete datasets.-->
+		</p>
+	</div>
+	<div class="row">
+		<h3><span class="glyphicon glyphicon-user"></span> Patients</h3>
 <hr>
-<h4>Patients</h4>
-<div class="container-fluid">
-<div style="margin-left:50px; margin-right:50px" class="row">
-	<div class="span4">
+<div class="well">
+<b>How to get started:</b><br>
+Select a patient in the following table or in the tree on the right to get more specific data. Click <a href="/patient1/">here</a> to show data of patient p1. 
+</div>
+		<div class="col-xs-6">
 <table class="table table-condensed">
 <thead>
 <tr>
-<th>patient</th>
-<th>subtype</th>
-<th>&#35; samples</th>
-<th>1st sample</th>
-<th>last sample</th>
+<th rowspan = "2">patient</th>
+<th rowspan = "2">subtype</th>
+<th rowspan = "2">&#35; samples</th>
+<th rowspan = "2">1st sample</th>
+<th rowspan = "2">last sample</th>
 </tr>
 </thead>
 <tbody>
@@ -41,6 +48,7 @@ Advanced users might take a look on our download section to get the complete dat
 </tr>
 {% for row in patientTable %}
 <tr>
+<!-- TODO patient needs to get clickable! -->
 <td>{{row['Patient']}}</td>
 <td>{{row['Subtype']}}</td>
 <td>{{row['# samples']}}</td>
@@ -50,17 +58,24 @@ Advanced users might take a look on our download section to get the complete dat
 {% endfor %}
 </tbody>
 </table>
+		</div>
+		<div class="col-xs-6">
+		<!-- Insert tree here -->
+		tree
+		</div>
+	<div class="row">
+		<div class="col-xs-12">
+		<h4>Populationgenetics and Evolution</h4>
+		bla
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+		<h4>Data access</h4>
+		bla
+		</div>
+	</div>
 </div>
-<div class="span3 offset2">image</div>
-</div>
-</div>
-
-<hr>
-<h4>Populationgenetics and Evolution</h4>
-bla
-<hr>
-<h4>Data access</h4>
-bla
 {% endblock %}
 
 
