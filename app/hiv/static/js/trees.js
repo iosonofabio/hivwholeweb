@@ -75,30 +75,18 @@ function treeChart() {
                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom));
 
 
-            // calculate depth of all nodes
+            // calculate various properties of all nodes
             setDepths(tree, 0);
+            setNTerminals(tree);
+            setDSI(tree);
+
             var depth = getMaxTree(tree, function(d) { return d.depthScaled; });
 
             // set coloring functions
             if (colorLinkType == "black") {
                 var colorLinkFunc = function(d) { return "black"; }
             
-                var tooltipFunc = function(d) {
-                    var node = d.target,
-                    msg = "Mutations on this branch: ";
-                            
-                    if (node.muts.length > 0)
-                        msg = msg + node.muts;
-                    else
-                        msg = msg + "(none)"
-
-                    return msg;
-                    };
-
             } else {
-                setNTerminals(tree);
-                setDSI(tree);
-
                 var dsiMax = getMaxTree(tree, function(d) { return d.DSI; }),
                     colorLinkFunc = function(d) {
                         var dsi = d.target.DSI;
@@ -106,19 +94,6 @@ function treeChart() {
                             return colorMap(dsi / dsiMax);
                         else
                             return "grey";
-                    };
-
-                var tooltipFunc = function(d) {
-                        var node = d.target,
-                        msg = ("Days since infection: " + node.DSI.toFixed(0) + "</br>" +
-                            "Mutations on this branch: ");
-                            
-                        if (node.muts.length > 0)
-                            msg = msg + node.muts;
-                        else
-                            msg = msg + "(none)"
-
-                        return msg;
                     };
             }
 
@@ -467,6 +442,49 @@ function treeChart() {
                 else
                     n.DSI = dsicum / childrencum;
             }
+        }
+
+        // Tooltip function
+        function tooltipFunc(d) {
+            var n = d.target,
+                msg = "";
+
+            if (!(n.children)) {
+                var pname =  n.name.split('_')[0];
+                if (pname[0] == "p")
+                    msg = msg + "Patient: " + pname + "</br>";
+            
+                if (isNumeric(n.CD4))
+                    msg = msg + "CD4+ cell count [cells/ml]: " + n.CD4 + "</br>";
+
+                if (isNumeric(n.VL))
+                    msg = msg + "Viral load [virions/ml]: " + n.VL + "</br>";
+
+            }   
+
+            if (isNumeric(n.DSI))
+                msg = msg + "Day since infection: " + n.DSI.toFixed(0) + "</br>";
+
+            msg = msg + "Mutations on this branch: ";
+            if (n.muts.length > 0) {
+                var muts = n.muts.split(" "),
+                    nMuts = muts.length,
+                    nMutsPerLine = 10,
+                    nMutLines = Math.ceil(nMuts / nMutsPerLine);
+                
+                if (nMutLines == 1)
+                    msg = msg + n.muts;
+                else {
+                    msg = msg + "</br>";
+                    for(var i=0; i < nMutLines - 1; i++)
+                        msg = msg + muts.slice(i * nMutsPerLine, (i+1) * nMutsPerLine).join(" ") + "</br>";
+                    msg = msg + muts.slice((nMutLines - 1) * nMutsPerLine, nMuts).join(" ");
+                
+                }
+            } else
+                msg = msg + "(none)"
+
+            return msg;
         }
 
     }

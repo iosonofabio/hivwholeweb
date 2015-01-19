@@ -10,9 +10,9 @@
  <link rel="stylesheet" href="/static/css/d3-tip.css">
  <script type="text/javascript" src="/static/components/d3-tip/index.js"></script>
 
- <!-- nice IE has no way of finding a string in a list of strings (!) -->
  <!-- maybe we have to put the snippet directly into single scripts, let's hope not -->
  <script type="text/javascript">
+  <!-- nice IE has no way of finding a string in a list of strings (!) -->
   if (!Array.prototype.indexOf) {
      Array.prototype.indexOf = function(item) {
         var i = this.length;
@@ -22,5 +22,11 @@
         return -1;
      }
   }
+
+
+ <!-- JavaScript has no intrinsic way to determine numeric -->
+ function isNumeric(n) {
+   return !isNaN(parseFloat(n)) && isFinite(n);
+ }
  </script>
 {% endblock %}
