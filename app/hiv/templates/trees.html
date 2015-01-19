@@ -49,6 +49,7 @@ function load() {
   <div class="btn-group btn-pad">
    <button class="btn btn-default active" type="radio" name="plotColorLink" id="switchColorLinkBlack" autocomplete="off">Black</button>
    <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkDate" autocomplete="off">Date</label>
+   <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkSubtype" autocomplete="off">Subtype</label>
   </div>
  </div>
  <div id='treeDiv{{data.id}}'><svg id='treeSvg{{data.id}}'></svg></div>
@@ -74,8 +75,6 @@ function load() {
 
  <script>
   // Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken
-  // FIXME: in order to make the various menu play nicely with each other,
-  //we need to read the DOM active classes from the JS update()
   $('#switchRectangular').on('click', function () {
    $('#switchRadial').removeClass('active');
    $(this).addClass('active');
@@ -89,11 +88,19 @@ function load() {
 
   $('#switchColorLinkBlack').on('click', function () {
    $('#switchColorLinkDate').removeClass('active');
+   $('#switchColorLinkSubtype').removeClass('active');
    $(this).addClass('active');
    update({id: "{{data.id}}"});
   });
   $('#switchColorLinkDate').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
+   $('#switchColorLinkSubtype').removeClass('active');
+   $(this).addClass('active');
+   update({id: "{{data.id}}"});
+  });
+  $('#switchColorLinkSubtype').on('click', function () {
+   $('#switchColorLinkBlack').removeClass('active');
+   $('#switchColorLinkDate').removeClass('active');
    $(this).addClass('active');
    update({id: "{{data.id}}"});
   });

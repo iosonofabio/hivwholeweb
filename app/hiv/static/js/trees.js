@@ -22,7 +22,8 @@ function update(data) {
 
     if ($("#switchColorLinkDate").hasClass("active"))
         chart.colorLinkType("date");
-
+    else if ($("#switchColorLinkSubtype").hasClass("active"))
+        chart.colorLinkType("subtype");
 
     svg.call(chart);
 
@@ -80,22 +81,33 @@ function treeChart() {
             setNTerminals(tree);
             setDSI(tree);
 
-            var depth = getMaxTree(tree, function(d) { return d.depthScaled; });
+            var depth = Math.max(1e-7, getMaxTree(tree, function(d) { return d.depthScaled; })),
+                dsiMax = getMaxTree(tree, function(d) { return d.DSI; });
 
-            // set coloring functions
-            if (colorLinkType == "black") {
+            // set link coloring function
+            if (colorLinkType == "date")
+                var colorLinkFunc = function(d) {
+                    var dsi = d.target.DSI;
+                    if (dsi != "undefined")
+                        return colorMap(dsi / dsiMax);
+                    else
+                        return "grey";
+                }
+            else if (colorLinkType == "subtype")
+                var colorLinkFunc = function(d) {
+                    var n = d.target;
+                    // NOTE: colors from colorbrewer dark2
+                    if (n.subtype === 'B')
+                        return "#7570b3";
+                    else if (n.subtype === 'C')
+                        return "#d95f02";
+                    else if (n.subtype === 'AE')
+                        return "#1b9e77"
+                    else
+                        return "grey";
+                }
+            else
                 var colorLinkFunc = function(d) { return "black"; }
-            
-            } else {
-                var dsiMax = getMaxTree(tree, function(d) { return d.DSI; }),
-                    colorLinkFunc = function(d) {
-                        var dsi = d.target.DSI;
-                        if (dsi != "undefined")
-                            return colorMap(dsi / dsiMax);
-                        else
-                            return "grey";
-                    };
-            }
 
             // tooltip
             var tip = d3.tip()
@@ -129,14 +141,42 @@ function treeChart() {
                 // activate tip on visualized svg
                 vis.call(tip);
 
-                cluster.size([maxAngle, 1]);
-
-                var nodes = cluster.nodes(tree),
-                    treeScale = 0.9 * rInternal / depth;
-
                 // adjust the bar to calibration
-                var barLengthData = (30.0 / treeScale).toPrecision(1),
-                    barLength = treeScale * barLengthData;
+                var treeScale = 0.9 * rInternal / depth;
+
+                if (depth > 1e-6) {
+                    var barLengthData = (30.0 / treeScale).toPrecision(1),
+                        barLength = treeScale * barLengthData;
+
+                    // set the bar text, should be the same as the data except in degenerate trees
+                    var barLengthText = String(barLengthData);
+
+                    // scale bar
+                    var bar = vis.append("g")
+                        .attr("class", "lengthbar")
+                        .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
+           
+                    bar.selectAll(".lengthbar")
+                       .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
+                       .enter()
+                       .append("svg:line")
+                       .attr("x1", function(d) { return d[0]; })
+                       .attr("x2", function(d) { return d[1]; })
+                       .attr("y1", function(d) { return d[2]; })
+                       .attr("y2", function(d) { return d[3]; })
+                       .style("stroke", "black")
+                       .style("stroke-width", 2);
+           
+                    bar.append("text")
+                       .attr("x", -barLength / 2)
+                       .attr("y", 25)
+                       .text(barLengthText)
+                       .attr("text-anchor", "middle");
+                }
+
+                // set up the d3 cluster
+                cluster.size([maxAngle, 1]);
+                var nodes = cluster.nodes(tree);
 
                 // add scaled depths (in pixels) to the tree
                 nodes.map(function(n) {n.y = n.depthScaled * treeScale; });
@@ -153,28 +193,6 @@ function treeChart() {
                      .attr("stroke-width", 2)
                      .on("mouseover", moverLinksRadial)
                      .on("mouseout", moutLinksRadial);
-           
-                // scale bar
-                var bar = vis.append("g")
-                    .attr("class", "lengthbar")
-                    .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
-           
-                bar.selectAll(".lengthbar")
-                   .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
-                   .enter()
-                   .append("svg:line")
-                   .attr("x1", function(d) { return d[0]; })
-                   .attr("x2", function(d) { return d[1]; })
-                   .attr("y1", function(d) { return d[2]; })
-                   .attr("y2", function(d) { return d[3]; })
-                   .style("stroke", "black")
-                   .style("stroke-width", 2);
-           
-                bar.append("text")
-                   .attr("x", -barLength / 2)
-                   .attr("y", 25)
-                   .text(barLengthData)
-                   .attr("text-anchor", "middle");
            
                 // line connecting the leaves to their labels
                 var label = vis.selectAll(".anno")
@@ -196,17 +214,11 @@ function treeChart() {
                      .attr("dy", ".31em")
                      .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
                      .attr("transform", function(d) {
-                         return "rotate(" + (d.x - 90) + ")translate(" + (r - 170 + 8) + 
-                             ")rotate(" + (d.x < 180 ? 0 : 180) + ")"; })
-                     .text(function(d) {
-                      d.name = "" + d.name;
-                      // local trees have the sequences attached
-                      if (region.indexOf('minor') == -1) {
-                       return d.name.replace(/_/g, ' ');
-                      } else {
-                    return d.name.split('_').slice(1).join(" ");
-                      }
+                         return ("rotate(" + (d.x - 90) + 
+                                 ")translate(" + (r - 170 + 8) + 
+                                 ")rotate(" + (d.x < 180 ? 0 : 180) + ")");
                      })
+                     .text(leafLabelFunc)
                      .on("mouseover", moverRadial)
                      .on("mouseout", moutRadial);
            
@@ -275,19 +287,48 @@ function treeChart() {
                 // activate tip on visualized svg
                 vis.call(tip);
 
+                // set up d3 cluster
                 // note: at present, x and y are swapped to keep consistency with the radial layout
-                cluster.size([height, 0.85 * width]);
+                cluster.size([height, 0.93 * width]);
+
+                // adjust the bar to calibration
+                var treeScale = cluster.size()[1] / depth;
+
+                if (depth > 1e-6) {
+                    var barLengthData = (30.0 / treeScale).toPrecision(1),
+                        barLength = treeScale * barLengthData;
+
+                    // set the bar text, should be the same as the data except in degenerate trees
+                    var barLengthText = String(barLengthData);
+
+                    // scale bar
+                    var bar = vis.append("g")
+                        .attr("class", "lengthbar")
+                        .attr("transform", "translate(" + 50 + "," + (height - 20) + ")");
            
-                var nodes = cluster.nodes(tree),
-                    treeScale = cluster.size()[1] / depth;
+                    bar.selectAll(".lengthbar")
+                       .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
+                       .enter()
+                       .append("svg:line")
+                       .attr("x1", function(d) { return d[0]; })
+                       .attr("x2", function(d) { return d[1]; })
+                       .attr("y1", function(d) { return d[2]; })
+                       .attr("y2", function(d) { return d[3]; })
+                       .style("stroke", "black")
+                       .style("stroke-width", 2);
+           
+                    bar.append("text")
+                       .attr("x", -barLength / 2)
+                       .attr("y", 25)
+                       .text(barLengthText)
+                       .attr("text-anchor", "middle");
+                }
+
+                var nodes = cluster.nodes(tree);
 
                 // add scaled depths (in pixels) to the tree
                 nodes.map(function(n) {n.y = n.depthScaled * treeScale; });
-
-                // adjust the bar to calibration
-                var barLengthData = (30.0 / treeScale).toPrecision(1),
-                    barLength = treeScale * barLengthData;
-
+                
                 // links
                 var link = vis.selectAll("path.link")
                      .data(cluster.links(nodes))
@@ -300,28 +341,6 @@ function treeChart() {
                      .attr("stroke-width", 2)
                      .on("mouseover", moverLinksRectangular)
                      .on("mouseout", moutLinksRectangular);
-
-                // scale bar
-                var bar = vis.append("g")
-                    .attr("class", "lengthbar")
-                    .attr("transform", "translate(" + 50 + "," + (height - 20) + ")");
-           
-                bar.selectAll(".lengthbar")
-                   .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
-                   .enter()
-                   .append("svg:line")
-                   .attr("x1", function(d) { return d[0]; })
-                   .attr("x2", function(d) { return d[1]; })
-                   .attr("y1", function(d) { return d[2]; })
-                   .attr("y2", function(d) { return d[3]; })
-                   .style("stroke", "black")
-                   .style("stroke-width", 2);
-           
-                bar.append("text")
-                   .attr("x", -barLength / 2)
-                   .attr("y", 25)
-                   .text(barLengthData)
-                   .attr("text-anchor", "middle");
 
                 // line connecting the leaves to their labels
                 var label = vis.selectAll(".anno")
@@ -343,15 +362,11 @@ function treeChart() {
                      .attr("dy", ".31em")
                      .attr("text-anchor", "end")
                      .attr("transform", function(d) { return "translate(" + width + "," + d.x + ")"; })
-                     .text(function(d) {
-                        // local trees have the sequences attached
-                        if (region.indexOf('minor') == -1)
-                            return d.name.replace(/_/g, ' ');
-                        else
-                            return d.name.split('_').slice(1).join(" ");
-                     })
+                     .text(leafLabelFunc)
                      .on("mouseover", moverRectangular)
                      .on("mouseout", moutRectangular);
+
+
            
                 function moverLinksRectangular(d) {
                     tip.show(d);
@@ -385,21 +400,23 @@ function treeChart() {
                     return (
                         "M" + d.source.y + "," + d.source.x +
                         "V" + d.target.x +
-                        "H" + d.target.y);
+                        "H" + d.target.y
+                    );
                 }
 
                 function stepAnnoRectangular(d) {
-                  return (
-                    "M" + d.y + "," + d.x +
-                    "H" + (10 + depth * treeScale));
+                    // FIXME: the depth is a trick, we should allocate space for the labels and subtract 
+                    return (
+                        "M" + d.y + "," + d.x +
+                        "H" + (10 + depth * treeScale)
+                    );
                 }
 
             }
 
         });
 
-        // NOTE: node.depth is a d3 construct to get the integer depth
-        // so we use depthScaled
+        // NOTE: node.depth is a d3 construct to get the integer depth, we use depthScaled
         function setDepths(n, parentDepth) {
             n.depthScaled = parentDepth + n.branch_length;
             if (n.children)
@@ -450,7 +467,7 @@ function treeChart() {
                 msg = "";
 
             if (!(n.children)) {
-                var pname =  n.name.split('_')[0];
+                var pname =  String(n.name).split('_')[0];
                 if (pname[0] == "p")
                     msg = msg + "Patient: " + pname + "</br>";
             
@@ -460,7 +477,10 @@ function treeChart() {
                 if (isNumeric(n.VL))
                     msg = msg + "Viral load [virions/ml]: " + n.VL + "</br>";
 
-            }   
+            }
+
+            if (n.subtype !== "undefined")
+                msg = msg + "Subtype: " + n.subtype + "</br>";
 
             if (isNumeric(n.DSI))
                 msg = msg + "Day since infection: " + n.DSI.toFixed(0) + "</br>";
@@ -485,6 +505,16 @@ function treeChart() {
                 msg = msg + "(none)"
 
             return msg;
+        }
+
+        function leafLabelFunc(d) {
+            var name = String(d.name);
+            
+            // local trees have the sequences attached
+            if (String(region).indexOf('minor') == -1)
+               return name.replace(/_/g, ' ');
+            else
+               return name.split('_').slice(1).join(" ");
         }
 
     }
