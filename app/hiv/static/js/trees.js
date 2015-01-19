@@ -14,16 +14,19 @@ function update(data) {
     var chart = treeChart().svgWidth(0.9 * divWidth);
 
     // Figure out settings from the DOM, e.g. coloring and chart type
-    if ($("#switchRadial").hasClass("active")) {
-        chart.chartType("radial");
-        chart.svgHeight(0.9 * divWidth);
-    } else
+    if ($("#switchRectangular").hasClass("active")) {
+        chart.chartType("rectangular");
         chart.svgHeight(15 * getNumberTerminals(svg.datum().tree, 0));
+    } else
+        chart.svgHeight(0.9 * divWidth);
 
     if ($("#switchColorLinkDate").hasClass("active"))
         chart.colorLinkType("date");
     else if ($("#switchColorLinkSubtype").hasClass("active"))
         chart.colorLinkType("subtype");
+
+    if (data.leafLabels === false)
+        chart.leafLabels(false);
 
     svg.call(chart);
 
@@ -46,8 +49,9 @@ function treeChart() {
         margin = {top: 5, bottom: 5, left: 5, right: 5},
         width = svgWidth - margin.left - margin.right,
         height = svgHeight - margin.top - margin.bottom,
-        chartType = "rectangular",
-        colorLinkType = "black";
+        chartType = "radial",
+        colorLinkType = "black",
+        leafLabels = true;
 
     // TREE CHART FUNCTION
     function chart(selection) {
@@ -132,8 +136,6 @@ function treeChart() {
                 // Create inner chart, centered in the center of the circle
                 var maxAngle = 360,
                     r = width / 2,
-                    rInternal = r - 170,
-                    rLeaves = rInternal - 100,
                     vis = svg.append("g")
                              .attr("transform", "translate(" + (margin.top + r) + "," + (margin.left + r) + ")");
 
@@ -141,10 +143,18 @@ function treeChart() {
                 // activate tip on visualized svg
                 vis.call(tip);
 
+                if (leafLabels === true) {
+                    var rInternal = r - 170,
+                        rLeaves = rInternal - 100;
+                } else {
+                    var rInternal = r,
+                        rLeaves = rInternal;
+                }
+
                 // adjust the bar to calibration
                 var treeScale = 0.9 * rInternal / depth;
 
-                if (depth > 1e-6) {
+                if ((leafLabels === true) & (depth > 1e-6)) {
                     var barLengthData = (30.0 / treeScale).toPrecision(1),
                         barLength = treeScale * barLengthData;
 
@@ -195,32 +205,34 @@ function treeChart() {
                      .on("mouseout", moutLinksRadial);
            
                 // line connecting the leaves to their labels
-                var label = vis.selectAll(".anno")
-                     .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
-                     .enter()
-                     .append("g")
-                     .attr("class", "anno");
+                if (leafLabels === true) {
+                    var label = vis.selectAll(".anno")
+                         .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
+                         .enter()
+                         .append("g")
+                         .attr("class", "anno");
            
-                 label.append("path")
-                     .attr("class", "anno")
-                     .attr("d", function(d) { return stepAnnoRadial(d, rInternal); })
-                     .attr("fill", "none")
-                     .attr("stroke", "lightgrey")
-                     .style("stroke-dasharray", ("3, 3"))
-                     .attr("stroke-width", 2);
+                    label.append("path")
+                         .attr("class", "anno")
+                         .attr("d", function(d) { return stepAnnoRadial(d, rInternal); })
+                         .attr("fill", "none")
+                         .attr("stroke", "lightgrey")
+                         .style("stroke-dasharray", ("3, 3"))
+                         .attr("stroke-width", 2);
            
-                 // leaf labels
-                 label.append("text")
-                     .attr("dy", ".31em")
-                     .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-                     .attr("transform", function(d) {
-                         return ("rotate(" + (d.x - 90) + 
-                                 ")translate(" + (r - 170 + 8) + 
-                                 ")rotate(" + (d.x < 180 ? 0 : 180) + ")");
-                     })
-                     .text(leafLabelFunc)
-                     .on("mouseover", moverRadial)
-                     .on("mouseout", moutRadial);
+                     // leaf labels
+                     label.append("text")
+                         .attr("dy", ".31em")
+                         .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+                         .attr("transform", function(d) {
+                             return ("rotate(" + (d.x - 90) + 
+                                     ")translate(" + (r - 170 + 8) + 
+                                     ")rotate(" + (d.x < 180 ? 0 : 180) + ")");
+                         })
+                         .text(leafLabelFunc)
+                         .on("mouseover", moverRadial)
+                         .on("mouseout", moutRadial);
+                }
            
                 function moverLinksRadial(d) {
                     tip.show(d);
@@ -294,7 +306,7 @@ function treeChart() {
                 // adjust the bar to calibration
                 var treeScale = cluster.size()[1] / depth;
 
-                if (depth > 1e-6) {
+                if ((leafLabels === true) & (depth > 1e-6)) {
                     var barLengthData = (30.0 / treeScale).toPrecision(1),
                         barLength = treeScale * barLengthData;
 
@@ -343,30 +355,30 @@ function treeChart() {
                      .on("mouseout", moutLinksRectangular);
 
                 // line connecting the leaves to their labels
-                var label = vis.selectAll(".anno")
-                     .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
-                     .enter()
-                     .append("g")
-                     .attr("class", "anno");
+                if (leafLabels === true) {
+                    var label = vis.selectAll(".anno")
+                         .data(nodes.filter(function(d) { return d.x !== undefined && !d.children; }))
+                         .enter()
+                         .append("g")
+                         .attr("class", "anno");
            
-                 label.append("path")
-                     .attr("class", "anno")
-                     .attr("d", function(d) { return stepAnnoRectangular(d); })
-                     .attr("fill", "none")
-                     .attr("stroke", "lightgrey")
-                     .style("stroke-dasharray", ("3, 3"))
-                     .attr("stroke-width", 2);
+                    label.append("path")
+                         .attr("class", "anno")
+                         .attr("d", function(d) { return stepAnnoRectangular(d); })
+                         .attr("fill", "none")
+                         .attr("stroke", "lightgrey")
+                         .style("stroke-dasharray", ("3, 3"))
+                         .attr("stroke-width", 2);
 
-                 // leaf labels
-                 label.append("text")
-                     .attr("dy", ".31em")
-                     .attr("text-anchor", "end")
-                     .attr("transform", function(d) { return "translate(" + width + "," + d.x + ")"; })
-                     .text(leafLabelFunc)
-                     .on("mouseover", moverRectangular)
-                     .on("mouseout", moutRectangular);
-
-
+                    // leaf labels
+                    label.append("text")
+                         .attr("dy", ".31em")
+                         .attr("text-anchor", "end")
+                         .attr("transform", function(d) { return "translate(" + width + "," + d.x + ")"; })
+                         .text(leafLabelFunc)
+                         .on("mouseover", moverRectangular)
+                         .on("mouseout", moutRectangular);
+                }
            
                 function moverLinksRectangular(d) {
                     tip.show(d);
@@ -550,6 +562,12 @@ function treeChart() {
     chart.colorLinkType = function (_) {
         if (!arguments.length) return colorLinkType;
         colorLinkType = _;
+        return chart;
+    };
+
+    chart.leafLabels = function (_) {
+        if (!arguments.length) return leafLabels;
+        leafLabels = _;
         return chart;
     };
 

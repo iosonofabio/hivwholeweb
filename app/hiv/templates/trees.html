@@ -24,6 +24,7 @@ function load_single(id, pname, region) {
 }
 
 function load() {
+ console.log("hej");
  load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}");
 }
 </script>
@@ -44,7 +45,7 @@ function load() {
    <button class="btn btn-default active" type="radio" name="plotType" id="switchRectangular" autocomplete="off">Horizontal</label>
   </div>
  </div>
- <div class="col-xs-6 col-sm-4">
+ <div class="col-xs-8 col-sm-6">
   <span>Link color:</span>
   <div class="btn-group btn-pad">
    <button class="btn btn-default active" type="radio" name="plotColorLink" id="switchColorLinkBlack" autocomplete="off">Black</button>
