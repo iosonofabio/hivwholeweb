@@ -26,7 +26,7 @@ Advanced users might take a look on our download section to get the complete dat
 <hr>
 <div class="well">
 <b>How to get started:</b><br>
-Select a patient in the following table or in the tree on the right to get more specific data. Click <a href="/patient1/">here</a> to show data of patient p1. 
+Select a patient in the following table or in the tree on the right to get more specific data. Click <a href="/patient/p1/">here</a> to show data of patient p1. 
 </div>
 		<div class="col-xs-6">
 <table class="table table-condensed">
@@ -49,7 +49,7 @@ Select a patient in the following table or in the tree on the right to get more 
 {% for row in patientTable %}
 <tr>
 <!-- TODO patient needs to get clickable! -->
-<td>{{row['Patient']}}</td>
+<td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
 <td>{{row['Subtype']}}</td>
 <td>{{row['# samples']}}</td>
 <td>{{row['1st sample']}}</td>
@@ -58,23 +58,24 @@ Select a patient in the following table or in the tree on the right to get more 
 {% endfor %}
 </tbody>
 </table>
-		</div>
-		<div class="col-xs-6">
-		<!-- Insert tree here -->
-		tree
-		</div>
-	<div class="row">
-		<div class="col-xs-12">
-		<h4>Populationgenetics and Evolution</h4>
-		bla
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-xs-12">
-		<h4>Data access</h4>
-		bla
-		</div>
-	</div>
+
+</div>
+<div class="col-xs-6">
+<!-- Insert tree here -->
+tree
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <h4>Populationgenetics and Evolution</h4>
+    bla
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <h4>Data access</h4>
+    bla
+  </div>
+</div>
 </div>
 {% endblock %}
 
