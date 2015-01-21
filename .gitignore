@@ -1,7 +1,3 @@
-app/flask
-app/hiv/static/data
-app/hiv/static/tmp
-
 ### /home/fabio/.gitignore-boilerplates/Python.gitignore
 
 *.py[cod]
@@ -53,3 +49,10 @@ Session.vim
 .*
 !.gitignore
 *~
+
+# Specific folders to ignore or keep
+app/flask
+app/hiv/static/data
+app/hiv/static/tmp
+!app/hiv/static/components/*/dist
+
