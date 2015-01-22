@@ -84,6 +84,7 @@ function treeChart() {
             setDepths(tree, 0);
             setNTerminals(tree);
             setDSI(tree);
+            setPatientInternal(tree);
 
             var depth = Math.max(1e-7, getMaxTree(tree, function(d) { return d.depthScaled; })),
                 dsiMax = getMaxTree(tree, function(d) { return d.DSI; });
@@ -97,7 +98,7 @@ function treeChart() {
                     else
                         return "grey";
                 }
-            else if (colorLinkType == "subtype")
+            else if (colorLinkType == "subtype2")
                 var colorLinkFunc = function(d) {
                     var n = d.target;
                     // NOTE: colors from colorbrewer dark2
@@ -109,6 +110,12 @@ function treeChart() {
                         return "#1b9e77"
                     else
                         return "grey";
+                }
+            else if (colorLinkType == "subtype")
+                var colorLinkFunc = function(d) {
+                    var cscale = d3.scale.category20()
+                        .domain(['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11']);
+                    return cscale(d.target.patient);
                 }
             else
                 var colorLinkFunc = function(d) { return "black"; }
@@ -190,7 +197,7 @@ function treeChart() {
 
                 // add scaled depths (in pixels) to the tree
                 nodes.map(function(n) {n.y = n.depthScaled * treeScale; });
-           
+
                 // links
                 var link = vis.selectAll("path.link")
                      .data(cluster.links(nodes))
@@ -472,6 +479,21 @@ function treeChart() {
                     n.DSI = dsicum / childrencum;
             }
         }
+
+        // Set the patient designation of internal nodes to that of its children
+        // iff all agree. otherwise, set to undefined
+        function setPatientInternal(n) {
+            if (n.children) {
+                n.children.map(setPatientInternal);
+                var patient = n.children.map(function (d) {return d.patient});
+                if (patient.every(function (d){return d==patient[0]})){
+                    n.patient=patient[0];
+                }else{
+                    n.patient="undefined";
+                }
+            }
+        }
+
 
         // Tooltip function
         function tooltipFunc(d) {
