@@ -51,6 +51,7 @@ function load() {
    <button class="btn btn-default active" type="radio" name="plotColorLink" id="switchColorLinkBlack" autocomplete="off">Black</button>
    <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkDate" autocomplete="off">Date</label>
    <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkSubtype" autocomplete="off">Subtype</label>
+   <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkPatient" autocomplete="off">Patient</label>
   </div>
  </div>
  <div id='treeDiv{{data.id}}'><svg id='treeSvg{{data.id}}'></svg></div>
@@ -90,17 +91,27 @@ function load() {
   $('#switchColorLinkBlack').on('click', function () {
    $('#switchColorLinkDate').removeClass('active');
    $('#switchColorLinkSubtype').removeClass('active');
+   $('#switchColorLinkPatient').removeClass('active');
    $(this).addClass('active');
    update({id: "{{data.id}}"});
   });
   $('#switchColorLinkDate').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
    $('#switchColorLinkSubtype').removeClass('active');
+   $('#switchColorLinkPatient').removeClass('active');
    $(this).addClass('active');
    update({id: "{{data.id}}"});
   });
   $('#switchColorLinkSubtype').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
+   $('#switchColorLinkDate').removeClass('active');
+   $('#switchColorLinkPatient').removeClass('active');
+   $(this).addClass('active');
+   update({id: "{{data.id}}"});
+  });
+  $('#switchColorLinkPatient').on('click', function () {
+   $('#switchColorLinkBlack').removeClass('active');
+   $('#switchColorLinkSubtype').removeClass('active');
    $('#switchColorLinkDate').removeClass('active');
    $(this).addClass('active');
    update({id: "{{data.id}}"});

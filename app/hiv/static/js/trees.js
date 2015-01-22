@@ -24,6 +24,8 @@ function update(data) {
         chart.colorLinkType("date");
     else if ($("#switchColorLinkSubtype").hasClass("active"))
         chart.colorLinkType("subtype");
+    else if ($("#switchColorLinkPatient").hasClass("active"))
+        chart.colorLinkType("patient");
 
     if (data.leafLabels === false)
         chart.leafLabels(false);
@@ -98,7 +100,7 @@ function treeChart() {
                     else
                         return "grey";
                 }
-            else if (colorLinkType == "subtype2")
+            else if (colorLinkType == "subtype")
                 var colorLinkFunc = function(d) {
                     var n = d.target;
                     // NOTE: colors from colorbrewer dark2
@@ -111,7 +113,7 @@ function treeChart() {
                     else
                         return "grey";
                 }
-            else if (colorLinkType == "subtype")
+            else if (colorLinkType == "patient")
                 var colorLinkFunc = function(d) {
                     var cscale = d3.scale.category20()
                         .domain(['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11']);
