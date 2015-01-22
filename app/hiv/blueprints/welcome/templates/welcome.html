@@ -69,71 +69,86 @@ function load() {
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
-<div class="container" style="padding-top:20px">
+<div class="container" style="padding-top:20px; padding-left:20px">
     <div class="jumbotron">
-		<h2><b>HIV EVO</b></h2>
-		<p style="text-align:justify; margin-left:50px; margin-right:50px">
-We study genetic evolution of HIV during chronic infection on eleven patients, with nine time points per patient spanning a decade. The virus was sequenced whole-genome with a coverage of several thousand. We built this website as a resource for the HIV research community.<br>
-<!--If it is the first time you are visiting this page we recommend to get started with our <a href="/tutorial/">tutorial</a>.<br>
-For getting an overview on our data provided on this site per patient, go to the next section containing patient specific data.<br>
-Advanced users might take a look on our download section to get the complete datasets.-->
-		</p>
+		<h2 class="text-primary"><b>HIV EVO </b><small>Intrapatient HIV evolution</small></h2>
 	</div>
 	<div class="row">
-		<h3><span class="glyphicon glyphicon-user"></span> Patients</h3>
-<hr>
-<div class="well">
-<b>How to get started:</b><br>
-Select a patient in the following table or in the tree on the right to get more specific data. Click <a href="/patient/p1/">here</a> to show data of patient p1. 
-</div>
 		<div class="col-xs-6">
-<table class="table table-condensed">
-<thead>
-<tr>
-<th rowspan = "2">patient</th>
-<th rowspan = "2">subtype</th>
-<th rowspan = "2">&#35; samples</th>
-<th rowspan = "2">1st sample</th>
-<th rowspan = "2">last sample</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-<td colspan = "2" align="center">[days since infection]</td>
-</tr>
-{% for row in patientTable %}
-<tr>
-<!-- TODO patient needs to get clickable! -->
-<td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
-<td>{{row['Subtype']}}</td>
-<td>{{row['# samples']}}</td>
-<td>{{row['1st sample']}}</td>
-<td>{{row['last sample']}}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
+		<h4 class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> About</h4>
+<p style="text-align:justify">
+We study genetic evolution of HIV during chronic infection on eleven patients, with nine time points per patient spanning a decade. The virus was sequenced whole-genome with a coverage of several thousand. We built this website as a resource for the HIV research community.</p>
+		</div>
+		<div class="col-xs-6">
+		<h4 class="text-muted"><span class="glyphicon glyphicon-question-sign"></span> How to get started</h4>
 
+<p style="text-align:justify">The provided data can be browsed by <a href="">patient</a>, <a href="">region</a> or <a href="">methods of analysis</a>. If it is the first time you are visiting this website we recommend to start with our <a href="/tutorial/">tutorial</a>. Advanced users might take a look at our <a href="">download section</a> to get specific datasets.</p>
+		</div>
+	</div>
+<hr>
+<div class="row">
+  <h4 class="text-primary"><span class="glyphicon glyphicon-user" style="padding-left:15px"></span> Patients</h4>
+  <div class="well text-muted" style="width:72%; margin-left:15px">
+    <span class="glyphicon glyphicon-arrow-right"></span> Select a patient in the following table to get more specific data. Click <a href="/patient/p1/">here</a> to show data of patient p1. 
+  </div>
+
+  <div class="col-xs-8 col-sm-6">
+    <p>Overview of patient specific data:</p>
+    <table class="table table-condensed">
+    <thead>
+    <tr>
+    <th rowspan = "2">patient</th>
+    <th rowspan = "2">subtype</th>
+    <th rowspan = "2">&#35; samples</th>
+    <th rowspan = "2">1st sample</th>
+    <th rowspan = "2">last sample</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td colspan = "2" align="center">[days since infection]</td>
+    </tr>
+    {% for row in patientTable %}
+    <tr>
+    <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
+    <td>{{row['Subtype']}}</td>
+    <td>{{row['# samples']}}</td>
+    <td>{{row['1st sample']}}</td>
+    <td>{{row['last sample']}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+  </div>
+  <div id="treeDivall" class="col-xs-7 col-sm-5">
+    <svg id="treeSvgall"></svg>
+    <p style="margin-left:30px; text-align:justify">Interactive phylogenetic tree of all samples in the <strong>{{region}}</strong> region, colored by patient.</p>
+  </div>
 </div>
-<div id="treeDivall" class="col-xs-7 col-sm-5">
-<svg id="treeSvgall"></svg>
-<p>Phylogenetic tree of all samples in the <strong>{{region}}</strong> region, colored by patient.</p>
-</div>
+
 <div class="row">
   <div class="col-xs-12">
-    <h4>Populationgenetics and Evolution</h4>
-    bla
+    <h4 class="text-primary"><span class="glyphicon glyphicon-globe"></span> Regions</h4>
+    <hr>
   </div>
 </div>
 <div class="row">
   <div class="col-xs-12">
-    <h4>Data access</h4>
-    bla
+    <h4 class="text-primary"><span class="glyphicon glyphicon-book"></span> Methods of analysis</h4>
+    <hr>
   </div>
 </div>
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="text-primary"><span class="glyphicon glyphicon-download-alt"></span> Data access</h4>
+    <hr>
+  </div>
+</div>
+
+<!-- container end -->
 </div>
 <!-- NOTE: the tag below is a trick for the tree plot -->
 <div id="switchColorLinkPatient" class="active"></div>
