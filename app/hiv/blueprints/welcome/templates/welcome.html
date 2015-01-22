@@ -51,6 +51,7 @@ function load_single(id, pname, region) {
      data.pname = pname;
      data.region = region;
      data.leafLabels = false;
+     data.optimizeSpace = true;
 
      var treefn = data.tree;
 
@@ -117,9 +118,9 @@ Select a patient in the following table or in the tree on the right to get more 
 </table>
 
 </div>
-<div id="treeDivall" class="col-xs-6 col-sm-4">
+<div id="treeDivall" class="col-xs-7 col-sm-5">
 <svg id="treeSvgall"></svg>
-<p>Phylogenetic tree of all samples in the <strong>{{region}}</strong> region, colored by subtype.</p>
+<p>Phylogenetic tree of all samples in the <strong>{{region}}</strong> region, colored by patient.</p>
 </div>
 <div class="row">
   <div class="col-xs-12">
@@ -135,7 +136,7 @@ Select a patient in the following table or in the tree on the right to get more 
 </div>
 </div>
 <!-- NOTE: the tag below is a trick for the tree plot -->
-<div id="switchColorLinkSubtype" class="active"></div>
+<div id="switchColorLinkPatient" class="active"></div>
 {% endblock %}
 
 

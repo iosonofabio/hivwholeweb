@@ -30,6 +30,9 @@ function update(data) {
     if (data.leafLabels === false)
         chart.leafLabels(false);
 
+    if (data.optimizeSpace === true)
+        chart.optimizeSpace(true);
+
     svg.call(chart);
 
     function getNumberTerminals(n, number) {
@@ -53,7 +56,8 @@ function treeChart() {
         height = svgHeight - margin.top - margin.bottom,
         chartType = "radial",
         colorLinkType = "black",
-        leafLabels = true;
+        leafLabels = true,
+        optimizeSpace = false;
 
     // TREE CHART FUNCTION
     function chart(selection) {
@@ -145,60 +149,74 @@ function treeChart() {
                 // Create inner chart, centered in the center of the circle
                 var maxAngle = 360,
                     r = width / 2,
-                    vis = svg.append("g")
-                             .attr("transform", "translate(" + (margin.top + r) + "," + (margin.left + r) + ")");
+                    treeCenter = {'cx': r, 'cy': r};
 
-
-                // activate tip on visualized svg
-                vis.call(tip);
-
+                // if the leaf labels are not shown, center the tree differently
                 if (leafLabels === true) {
-                    var rInternal = r - 170,
-                        rLeaves = rInternal - 100;
+                    var rInternal = r - 170;
                 } else {
-                    var rInternal = r,
-                        rLeaves = rInternal;
+                    var rInternal = r;
                 }
 
                 // adjust the bar to calibration
                 var treeScale = 0.9 * rInternal / depth;
 
-                if ((leafLabels === true) & (depth > 1e-6)) {
-                    var barLengthData = (30.0 / treeScale).toPrecision(1),
-                        barLength = treeScale * barLengthData;
-
-                    // set the bar text, should be the same as the data except in degenerate trees
-                    var barLengthText = String(barLengthData);
-
-                    // scale bar
-                    var bar = vis.append("g")
-                        .attr("class", "lengthbar")
-                        .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
-           
-                    bar.selectAll(".lengthbar")
-                       .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
-                       .enter()
-                       .append("svg:line")
-                       .attr("x1", function(d) { return d[0]; })
-                       .attr("x2", function(d) { return d[1]; })
-                       .attr("y1", function(d) { return d[2]; })
-                       .attr("y2", function(d) { return d[3]; })
-                       .style("stroke", "black")
-                       .style("stroke-width", 2);
-           
-                    bar.append("text")
-                       .attr("x", -barLength / 2)
-                       .attr("y", 25)
-                       .text(barLengthText)
-                       .attr("text-anchor", "middle");
-                }
-
                 // set up the d3 cluster
                 cluster.size([maxAngle, 1]);
                 var nodes = cluster.nodes(tree);
 
-                // add scaled depths (in pixels) to the tree
-                nodes.map(function(n) {n.y = n.depthScaled * treeScale; });
+                // add position attributes to the tree:
+                // - angle
+                // - radius from the coordinate center (treeCenter)
+                // - x coordinate from the treeCenter
+                // - y coordinate from the treeCenter
+                nodes.map(function(n) {
+                    n.radius = n.depthScaled * treeScale;
+                    n.angle = n.x;
+                    setProjectRadial(n);
+                });
+
+                // if requested, optimize space by resetting the viewbox
+                if (optimizeSpace === true) {
+                    // get max and min x and y
+                    var xMax = d3.max(nodes, function(d){ return d.x; }),
+                        xMin = d3.min(nodes, function(d){ return d.x; }),
+                        yMax = d3.max(nodes, function(d){ return d.y; }),
+                        yMin = d3.min(nodes, function(d){ return d.y; });
+
+                    svg.attr("viewBox", ((r + xMin - 20) + " " + 
+                                         (r + yMin - 20) + " " + 
+                                         (xMax - xMin + 40 + margin.left + margin.right) + " " +
+                                         (yMax - yMin + 40 + margin.top + margin.bottom))
+                            );
+
+                }
+
+                // SVG group to render tree in
+                var vis = svg.append("g")
+                             .attr("transform", ("translate(" +
+                                                 (margin.top + treeCenter.cy) + "," +
+                                                 (margin.left + treeCenter.cx) + ")")
+                                  );
+
+                //// Test dot in the treeCenter
+                //svg.append("circle")
+                //    .attr("cx", margin.left + r)
+                //    .attr("cy", margin.top + r)
+                //    .attr("r", 10)
+                //    .style("fill", "red");
+
+                //svg.append("rect")
+                //    .attr("x", margin.left)
+                //    .attr("y", margin.top)
+                //    .attr("width", 2 * r)
+                //    .attr("height", 2 * r)
+                //    .attr("fill", "none")
+                //    .attr("stroke", "red")
+                //    .attr("stroke-width", 3);
+
+                // activate tip on visualized svg
+                vis.call(tip);
 
                 // links
                 var link = vis.selectAll("path.link")
@@ -232,17 +250,45 @@ function treeChart() {
                      // leaf labels
                      label.append("text")
                          .attr("dy", ".31em")
-                         .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+                         .attr("text-anchor", function(d) { return d.angle < 180 ? "start" : "end"; })
                          .attr("transform", function(d) {
-                             return ("rotate(" + (d.x - 90) + 
+                             return ("rotate(" + (d.angle - 90) + 
                                      ")translate(" + (r - 170 + 8) + 
-                                     ")rotate(" + (d.x < 180 ? 0 : 180) + ")");
+                                     ")rotate(" + (d.angle < 180 ? 0 : 180) + ")");
                          })
                          .text(leafLabelFunc)
                          .on("mouseover", moverRadial)
                          .on("mouseout", moutRadial);
                 }
            
+                // scale bar
+                if ((leafLabels === true) & (depth > 1e-6)) {
+                    var barLengthData = (30.0 / treeScale).toPrecision(1),
+                        barLength = treeScale * barLengthData,
+                        barLengthText = String(barLengthData);
+
+                    var bar = vis.append("g")
+                        .attr("class", "lengthbar")
+                        .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
+           
+                    bar.selectAll(".lengthbar")
+                       .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
+                       .enter()
+                       .append("svg:line")
+                       .attr("x1", function(d) { return d[0]; })
+                       .attr("x2", function(d) { return d[1]; })
+                       .attr("y1", function(d) { return d[2]; })
+                       .attr("y2", function(d) { return d[3]; })
+                       .style("stroke", "black")
+                       .style("stroke-width", 2);
+           
+                    bar.append("text")
+                       .attr("x", -barLength / 2)
+                       .attr("y", 25)
+                       .text(barLengthText)
+                       .attr("text-anchor", "middle");
+                }
+
                 function moverLinksRadial(d) {
                     tip.show(d);
                     moverRadial(d.target);
@@ -257,8 +303,8 @@ function treeChart() {
                   var t = projectRadial(d);
                   vis.append("circle")
                       .attr("class", "highlight")
-                      .attr("cx", t[0])
-                      .attr("cy", t[1])
+                      .attr("cx", t.x)
+                      .attr("cy", t.y)
                       .attr("r", 8)
                       .style("stroke", "steelblue")
                       .style("stroke-width", 3)
@@ -272,28 +318,35 @@ function treeChart() {
                 }
            
                 function projectRadial(d) {
-                  var r = d.y, a = (d.x - 90) / 180 * Math.PI;
-                  return [r * Math.cos(a), r * Math.sin(a)];
+                    var r = d.radius,
+                        a = (d.angle - 90) / 180 * Math.PI;
+                    return {'x': r * Math.cos(a), 'y': r * Math.sin(a)};
+                }
+
+                function setProjectRadial(d) {
+                    var pr = projectRadial(d);
+                    d.x = pr.x;
+                    d.y = pr.y;         
                 }
                 
                 function stepRadial(d) {
-                  var s = projectRadial(d.source),
-                      m = projectRadial({x: d.target.x, y: d.source.y}),
-                      t = projectRadial(d.target),
-                      r = d.source.y,
+                  var s = d.source,
+                      m = projectRadial({angle: d.target.angle, radius: d.source.radius}),
+                      t = d.target,
+                      r = d.source.radius,
                       sweep = d.target.x > d.source.x ? 1 : 0;
                   return (
-                    "M" + s[0] + "," + s[1] +
-                    "A" + r + "," + r + " 0 0," + sweep + " " + m[0] + "," + m[1] +
-                    "L" + t[0] + "," + t[1]);
+                    "M" + s.x + "," + s.y +
+                    "A" + r + "," + r + " 0 0," + sweep + " " + m.x + "," + m.y +
+                    "L" + t.x + "," + t.y);
                 }
                 
                 function stepAnnoRadial(d, r) {
-                  var s = projectRadial({x: d.x, y: d.y + 5}),
-                      t = projectRadial({x: d.x, y: r});
-                  return (
-                    "M" + s[0] + "," + s[1] +
-                    "L" + t[0] + "," + t[1]);
+                    var s = projectRadial({angle: d.angle, radius: d.radius + 5}),
+                        t = projectRadial({angle: d.angle, radius: r});
+                    return (
+                        "M" + s.x + "," + s.y +
+                        "L" + t.x + "," + t.y);
                 }
 
 
@@ -592,6 +645,12 @@ function treeChart() {
     chart.leafLabels = function (_) {
         if (!arguments.length) return leafLabels;
         leafLabels = _;
+        return chart;
+    };
+
+    chart.optimizeSpace = function (_) {
+        if (!arguments.length) return optimizeSpace;
+        optimizeSpace = _;
         return chart;
     };
 
