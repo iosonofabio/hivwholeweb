@@ -5,7 +5,7 @@
 <noscript>
     <div class="bg-danger" style="margin-left:50px; margin-right:50px; margin-top:20px;
    margin-bottom:20px; padding-top:20px; padding-left:20px; padding-bottom:20px">
-		<p class="text-danger"><strong>Warning:</strong> You don't have JavaScript activated. For full functionality of our site JavaScript has to be enabled.</p>
+		<p class="text-danger"><span class="glyphicon glyphicon-warning-sign"></span><strong> Warning:</strong> You don't have JavaScript activated. For full functionality of our site JavaScript has to be enabled.</p>
 		<a href="http://www.enable-javascript.com/" target="_blank">How to enable JavaScript?</a>
     </div>
 </noscript>
@@ -88,13 +88,13 @@ We study genetic evolution of HIV during chronic infection on eleven patients, w
 <hr>
 <div class="row">
   <h4 class="text-primary"><span class="glyphicon glyphicon-user" style="padding-left:15px"></span> Patients</h4>
-  <div class="well text-muted" style="width:72%; margin-left:15px">
+  <div class="well text-muted" style="margin-left:15px; margin-right:15px; margin-top:20px">
     <span class="glyphicon glyphicon-arrow-right"></span> Select a patient in the following table to get more specific data. Click <a href="/patient/p1/">here</a> to show data of patient p1. 
   </div>
 
-  <div class="col-xs-8 col-sm-6">
+  <div class="col-xs-6 col-sm-6">
     <p>Overview of patient specific data:</p>
-    <table class="table table-condensed">
+    <table class="table">
     <thead>
     <tr>
     <th rowspan = "2">patient</th>
@@ -123,15 +123,15 @@ We study genetic evolution of HIV during chronic infection on eleven patients, w
     </tbody>
     </table>
   </div>
-  <div id="treeDivall" class="col-xs-7 col-sm-5">
+  <div id="treeDivall" class="col-xs-5 col-sm-6">
     <svg id="treeSvgall"></svg>
-    <p style="margin-left:30px; text-align:justify">Interactive phylogenetic tree of all samples in the <strong>{{region}}</strong> region, colored by patient.</p>
+    <p style="text-align:justify">Interactive phylogenetic tree of all samples in the <strong>{{region}}</strong> region, colored by patient.</p>
   </div>
 </div>
-
+<hr>
 <div class="row">
   <div class="col-xs-12">
-    <h4 class="text-primary"><span class="glyphicon glyphicon-globe"></span> Regions</h4>
+    <h4 class="text-primary"><span class="glyphicon glyphicon-zoom-in"></span> Genomic regions</h4>
     <hr>
   </div>
 </div>
