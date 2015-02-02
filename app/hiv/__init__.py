@@ -22,11 +22,10 @@ from .blueprints.tutorial import tutorial
 hiv.register_blueprint(tutorial, url_prefix='/tutorial')
 
 from .blueprints.welcome import welcome
-hiv.register_blueprint(welcome, url_prefix='/welcome')
+hiv.register_blueprint(welcome)
 
 from .blueprints.patient import patient
-hiv.register_blueprint(patient, url_prefix='/patient')
+hiv.register_blueprint(patient)
 
-
-from . import views
-
+from .blueprints.region import region
+hiv.register_blueprint(region)
