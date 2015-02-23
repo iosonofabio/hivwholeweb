@@ -1,3 +1,106 @@
-<head></head>
+{% extends "base.html" %}
+{% block content %}
 
-<body>Region page</body>
+<div class="container-fluid" style="padding:20px">
+
+<!-- sidebar -->
+<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+
+  <div class="panel panel-default" style="width:110px; text-align:center">
+		<div class="panel-heading">
+      <b class="text-primary"><span class="glyphicon glyphicon-zoom-in"></span> Regions</b>
+    </div>
+		<div class="list-group">
+        {% for rtmp in regions %}
+        {% if rtmp == region %}
+	      <a href="/region/{{rtmp}}" class="list-group-item active">{{rtmp}}</a>
+        {% else %}
+        <a href="/region/{{rtmp}}" class="list-group-item">{{rtmp}}</a>
+        {% endif %}
+        {% endfor %}
+    </div> 
+  </div>
+
+</div>
+<div class="clearfix visible-xs-block"></div>
+<!-- content -->
+<div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 ">
+  <!-- header -->
+  <div class="panel panel-default">
+    <div class="panel-body text-primary" style="text-align:center">
+      <h4><span class="glyphicon glyphicon-zoom-in"></span> <b>{{region}}</b></h4>
+    </div>
+  </div>
+  <!-- already expanded panels --> 
+  <div class="panel-group">
+    <!-- Intro -->
+    <div class="panel panel-default">
+      <div class="panel-heading"> 
+      <span class="text-primary glyphicon glyphicon-question-sign"></span> <a data-toggle="collapse" href="#Intro">Introduction</a>
+      </div>
+      <div id="Intro" class="panel-collapse collapse in">
+        <div class="panel-body" style="text-align:justify">
+        <!-- Intro text -->  
+		        text  
+        </div>
+      </div>
+    </div>
+    <!-- Summary -->
+    <div class="panel panel-default">
+      <div class="panel-heading"> 
+      <span class="text-primary text-primary glyphicon glyphicon-info-sign"></span> <a data-toggle="collapse" href="#Sum">Summary</a>
+      </div>
+    <div id="Sum" class="panel-collapse collapse in">
+      <div class="panel-body">
+      <!-- Summary content -->
+        <div class="row">
+		      <div class="col-xs-6">
+            <!-- div 1 -->
+              div1     
+          </div>
+          <div class="col-xs-6">
+            <!-- div 2 -->
+              div2
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6">
+            <!-- div 3 -->
+              div3
+          </div>
+          <div class="col-xs-6">
+            <!-- div 4 -->
+              div4
+          </div>
+        </div>
+      </div>
+    </div>
+   </div>    
+   <!-- expand nav -->
+   <div class="panel panel-default"> 
+      <div class="panel-heading">
+         <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+         <a data-toggle="collapse" data-parent="#expand" href="#top1">Topic 1</a>
+      </div>
+      <div id="top1" class="panel-collapse collapse">
+        <div class="panel-body">
+          content 1
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default"> 
+      <div class="panel-heading">
+        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+        <a data-toggle="collapse" data-parent="#expand" href="#top2">Topic 2</a>
+      </div>
+      <div id="top2" class="panel-collapse collapse">
+        <div class="panel-body">
+          content 2
+        </div>
+      </div>
+    </div>
+</div>
+
+</div>
+</div>
+{% endblock %}
