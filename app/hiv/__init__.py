@@ -29,3 +29,13 @@ hiv.register_blueprint(patient)
 
 from .blueprints.region import region
 hiv.register_blueprint(region)
+
+# static pages
+from .blueprints.static import people
+hiv.register_blueprint(people)
+
+from .blueprints.static import publications
+hiv.register_blueprint(publications)
+
+from .blueprints.static import impressum
+hiv.register_blueprint(impressum)

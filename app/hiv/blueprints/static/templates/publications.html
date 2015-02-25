@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block head_end %}
+{{ super() }}
+<style>
+p.list {
+font-size:47px;
+color:lightgrey;
+font-weight:bold;
+font-style:italic;
+}
+</style>
+
+{% endblock %}
+{% block content %}
+
+<div class="container" style="padding:20px">
+
+<div class="panel panel-default text-primary" style="text-align:center">
+  <div class="panel-body">
+      <h4>Publications</h4>
+  </div>
+</div>
+
+<!-- list -->
+<div class="col-xs-1">
+<p class="list">1.</p>
+</div>
+<div class="col-xs-11">
+<a href=""><h5>Title of Publication 1</h5></a>
+<p>Authors of Publication</p>
+<i>Reference</i>
+<hr>
+</div>
+
+<div class="col-xs-1">
+<p class="list">2.</p>
+</div>
+<div class="col-xs-11">
+<a href=""><h5>Title of Publication 2</h5></a>
+<p>Authors of Publication</p>
+<i>Reference</i>
+<hr>
+</div>
+
+<div class="col-xs-1">
+<p class="list">3.</p>
+</div>
+<div class="col-xs-11">
+<a href=""><h5>Title of Publication 3</h5></a>
+<p>Authors of Publication</p>
+<i>Reference</i>
+<hr>
+</div>
+
+
+</div>
+
+{% endblock %}
