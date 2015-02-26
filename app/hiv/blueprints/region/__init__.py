@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, abort
+from . import backbone
 
-# FIXME: add all regions
-regions = ('V3', 'p17', '24', 'PR', 'RT', 'vif', 'vpu', 'nef')
 
 
 region = Blueprint('region', __name__,
@@ -10,12 +9,12 @@ region = Blueprint('region', __name__,
                     template_folder='templates')
 
 
-@region.route('/<regionname>', methods=['GET'])
+@region.route('/<regionname>/', methods=['GET'])
 def index(regionname):
-    if regionname not in regions:
+    if regionname not in backbone.regions:
         abort(404)
 
     return render_template('region.html',
                            region=regionname,
-                           regions=regions, 
+                           regions=backbone.regions, 
                            title='Region page')

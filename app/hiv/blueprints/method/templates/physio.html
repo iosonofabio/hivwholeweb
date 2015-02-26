@@ -4,7 +4,7 @@
 <script type="text/javascript" src="/static/js/physio.js"></script>
 <script type="text/javascript">
   function load_single(id, pname) {
-   d3.xhr("/physiological/")
+   d3.xhr("{{ url_for('.physio') }}")
     .header("Content-Type", "application/json")
     .post(
       JSON.stringify({patient: pname}),

@@ -41,7 +41,7 @@
 <script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
 function load_single(id, pname, region) {
- d3.xhr("/trees/")
+ d3.xhr("/method/trees/")
   .header("Content-Type", "application/json")
   .post(
     JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
@@ -82,7 +82,7 @@ We study genetic evolution of HIV during chronic infection on eleven patients, w
 		<div class="col-xs-6">
 		<h4 class="text-muted"><span class="glyphicon glyphicon-question-sign"></span> How to get started</h4>
 
-<p style="text-align:justify">The provided data can be browsed by <a href="">patient</a>, <a href="">region</a> or <a href="">methods of analysis</a>. If it is the first time you are visiting this website we recommend to start with our <a href="/tutorial/">tutorial</a>. Advanced users might take a look at our <a href="">download section</a> to get specific datasets.</p>
+<p style="text-align:justify">The provided data can be browsed by <a href="/patient/p1/">patient</a>, <a href="/region/V3/">region</a> or <a href="/method/">methods of analysis</a>. If it is the first time you are visiting this website we recommend to start with our <a href="/tutorial/">tutorial</a>. Advanced users might take a look at our <a href="">download section</a> to get specific datasets.</p>
 		</div>
 	</div>
 <hr>

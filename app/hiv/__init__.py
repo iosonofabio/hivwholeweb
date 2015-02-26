@@ -9,20 +9,20 @@
 #
 #    return [output]
 from flask import Flask
-import backbone
 
 
 # TODO: fix static folder, this requires adapting HTML templates
 hiv = Flask(__name__)
 hiv.config.from_object('config')
-hiv.config['SECTIONS'] = backbone.sections
 hiv.config['DATA_SUBFOLDER'] = 'data'
+hiv.config['BLUEPRINTS'] = {}
+
+# welcome page is the index
+from .blueprints.welcome import welcome
+hiv.register_blueprint(welcome, url_prefix='')
 
 from .blueprints.tutorial import tutorial
 hiv.register_blueprint(tutorial, url_prefix='/tutorial')
-
-from .blueprints.welcome import welcome
-hiv.register_blueprint(welcome)
 
 from .blueprints.patient import patient
 hiv.register_blueprint(patient)
@@ -30,9 +30,13 @@ hiv.register_blueprint(patient)
 from .blueprints.region import region
 hiv.register_blueprint(region)
 
+from .blueprints.method import method, backbone
+hiv.register_blueprint(method)
+hiv.config['BLUEPRINTS']['METHOD'] = {'SECTIONS': backbone.sections}
+
 from .blueprints.static import static
 hiv.register_blueprint(static)
 
 
 # Import the views
-import views
+from . import views

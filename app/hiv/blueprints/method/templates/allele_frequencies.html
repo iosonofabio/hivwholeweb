@@ -37,14 +37,14 @@
 <script type="text/javascript" src="/static/js/allele_frequencies.js"></script>
 <script type="text/javascript">
  function load_single(id, pname, callback) {
-  d3.xhr("/allele_frequencies/")
+  d3.xhr("{{ url_for('.allele_frequencies') }}")
    .header("Content-Type", "application/json")
    .post(
      JSON.stringify({patient: pname}),
      function(error, request) {
       var data = JSON.parse(request.responseText);
 
-      d3.xhr("/genomes/")
+      d3.xhr("{{ url_for('.genomes') }}")
       .header("Content-Type", "application/json")
       .post(
         JSON.stringify({patient: pname}),
@@ -52,7 +52,7 @@
          var data_gn = JSON.parse(request.responseText);
 
 
-	  d3.xhr("/n_templates/")
+	 d3.xhr("{{ url_for('.n_templates') }}")
 	   .header("Content-Type", "application/json")
 	   .post(
              JSON.stringify({patient: pname}),

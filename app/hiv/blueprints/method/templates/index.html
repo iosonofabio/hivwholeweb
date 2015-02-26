@@ -5,7 +5,7 @@
 We study genetic evolution of HIV during chronic infection on eleven patients, with nine time points per patient spanning a decade. The virus was sequenced whole-genome with a coverage of several thousand. We built this website as a resource for the HIV research community.
 </div>
 <div class="indexthumbs">
- {% for section in config.SECTIONS %}
+ {% for section in config.BLUEPRINTS.METHOD.SECTIONS %}
    {% if (loop.index + 3) is divisibleby(3) %}
     <div class="row">
    {% endif %}
@@ -13,7 +13,7 @@ We study genetic evolution of HIV during chronic infection on eleven patients, w
      <div class="thumbnail">
        {% if section.thumbnail %}
 	{% if section.url %}
-	<a href={{section.url}}><img width="100" src="{{section.thumbnail}}" alt="{{section.name}}"></a>
+	 <a href={{section.url_complete}}><img width="100" src="{{section.thumbnail}}" alt="{{section.name}}"></a>
 	{% else %}
 	 <img width="100" src="{{section.thumbnail}}" alt="{{section.name}}">
 	{% endif %}
@@ -22,7 +22,7 @@ We study genetic evolution of HIV during chronic infection on eleven patients, w
        {% endif %}
        <div class="caption">
          {% if section.url %}
-          <h3><a href={{section.url}}>{{section.name}}</a></h3>
+          <h3><a href={{section.url_complete}}>{{section.name}}</a></h3>
          {% else %} 
  	 <h3>{{section.name}}</h3>
          {% endif %}

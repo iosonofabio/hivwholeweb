@@ -1,8 +1,5 @@
-# Sections of the website (for navbar et al)
-sections = [{'id': 'tutorial', 'name': 'Tutorial', 'url': '/tutorial/',
-             'thumbnail': '/static/images/icons/tutorial.svg',
-             'thumbnail_white': '/static/images/icons/tutorial_white.svg'},
-            {'id': 'physio', 'name': 'Viral load and CD4+ counts', 'url': '/physiological/',
+# method sections
+sections = [{'id': 'physio', 'name': 'Viral load and CD4+ counts', 'url': '/physiological/',
              'thumbnail': '/static/images/icons/viral_load.svg',
              'thumbnail_white': '/static/images/icons/viral_load_white.svg'},
             {'id': 'genome', 'name': 'Genome sequences', 'url': '/genomes/',
@@ -29,16 +26,10 @@ sections = [{'id': 'tutorial', 'name': 'Tutorial', 'url': '/tutorial/',
             {'id': 'haplo', 'name': 'Local haplotypes', 'url': '/local_haplotypes/',
              'thumbnail': '/static/images/icons/haplotype_frequencies.svg',
              'thumbnail_white': '/static/images/icons/haplotype_frequencies_white.svg'},
-            {'id': 'sfs', 'name': 'Site frequency spectra', 'url': '/sfs/',
-             'thumbnail': '/static/images/icons/SFS.svg',
-             'thumbnail_white': '/static/images/icons/SFS_white.svg'},
-            {'id': 'prop', 'name': 'Propagators', 'url': '/propagators/',
-             'thumbnail': '/static/images/icons/propagator.svg',
-             'thumbnail_white': '/static/images/icons/propagator_white.svg'},
-            {'id': 'pfix', 'name': 'Fixation probability',
-             'thumbnail': '/static/images/icons/fixation_probability.svg',
-             'thumbnail_white': '/static/images/icons/fixation_probability_white.svg'},
            ]
+for section in sections:
+    if 'url' in section:
+        section['url_complete'] = '/method'+section['url']
 
 
 def find_section(**kwargs):

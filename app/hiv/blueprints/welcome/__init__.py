@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect
 from ...models import PatientTableModel
 
 
@@ -9,6 +9,7 @@ welcome = Blueprint('welcome', __name__,
 
 
 @welcome.route('/', methods=['GET'])
+@welcome.route('/index/', methods=['GET'])
 def index():
     table = PatientTableModel().get_table()
 
@@ -16,3 +17,9 @@ def index():
                            patientTable=table,
                            region='PR',
                            title='Welcome page')
+
+
+# FIXME for Bianca: this link should disappear, but it breaks APIs so delete it ASAP
+@welcome.route('/welcome/', methods=['GET'])
+def welcome_redirect():
+    return redirect('/')
