@@ -18,13 +18,12 @@ function load_single(id, pname, region) {
 
      d3.json(treefn, function(error, tree) {
       data.tree = tree;      
-      update(data);
+      updateTree(data);
      });     
     });
 }
 
 function load() {
- console.log("hej");
  load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}");
 }
 </script>
@@ -54,7 +53,9 @@ function load() {
    <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkPatient" autocomplete="off">Patient</label>
   </div>
  </div>
- <div id='treeDiv{{data.id}}'><svg id='treeSvg{{data.id}}'></svg></div>
+ <div id='treeDiv{{data.id}}'>
+  <svg id='treeSvg{{data.id}}'></svg>
+ </div>
  <br>
 
  <p><b>Note</b>: if a color map is used, colors range from blue to red with increasing numbers.</p>
@@ -80,12 +81,12 @@ function load() {
   $('#switchRectangular').on('click', function () {
    $('#switchRadial').removeClass('active');
    $(this).addClass('active');
-   update({id: "{{data.id}}"});
+   updateTree({id: "{{data.id}}"});
   });
   $('#switchRadial').on('click', function () {
    $('#switchRectangular').removeClass('active');
    $(this).addClass('active');
-   update({id: "{{data.id}}"});
+   updateTree({id: "{{data.id}}"});
   });
 
   $('#switchColorLinkBlack').on('click', function () {
@@ -93,28 +94,28 @@ function load() {
    $('#switchColorLinkSubtype').removeClass('active');
    $('#switchColorLinkPatient').removeClass('active');
    $(this).addClass('active');
-   update({id: "{{data.id}}"});
+   updateTree({id: "{{data.id}}"});
   });
   $('#switchColorLinkDate').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
    $('#switchColorLinkSubtype').removeClass('active');
    $('#switchColorLinkPatient').removeClass('active');
    $(this).addClass('active');
-   update({id: "{{data.id}}"});
+   updateTree({id: "{{data.id}}"});
   });
   $('#switchColorLinkSubtype').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
    $('#switchColorLinkDate').removeClass('active');
    $('#switchColorLinkPatient').removeClass('active');
    $(this).addClass('active');
-   update({id: "{{data.id}}"});
+   updateTree({id: "{{data.id}}"});
   });
   $('#switchColorLinkPatient').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
    $('#switchColorLinkSubtype').removeClass('active');
    $('#switchColorLinkDate').removeClass('active');
    $(this).addClass('active');
-   update({id: "{{data.id}}"});
+   updateTree({id: "{{data.id}}"});
   });
 
  </script>

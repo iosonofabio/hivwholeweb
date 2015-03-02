@@ -10,7 +10,7 @@
       JSON.stringify({patient: pname}),
       function(error, request) {
        var data = JSON.parse(request.responseText);
-       update(data.data, id);
+       updatePhysio(data.data, id);
       }
    );
   }
@@ -29,7 +29,7 @@
   </h4>
  {% endif %}
  <h3>{{data.name}}</h3>
- <div class="svg-container">
+ <div class="svg-container physio">
   <svg class="d3-plot {{data.id}}"></svg>
  </div> 
  

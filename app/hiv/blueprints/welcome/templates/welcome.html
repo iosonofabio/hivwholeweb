@@ -57,7 +57,7 @@ function load_single(id, pname, region) {
 
      d3.json(treefn, function(error, tree) {
       data.tree = tree;      
-      update(data);
+      updateTree(data);
      });     
     });
 }

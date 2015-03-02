@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "patientPlots.html" %}
 {% block content %}
 
 <div class="container-fluid" style="padding:20px">
@@ -70,19 +70,16 @@
               {% endfor %}
             </dl>      
           </div>
-          <div class="col-xs-6">
-            <!-- div 2 -->
-              genome plot
+          <div class="col-xs-6 svg-container genome">
+            <svg class="d3-plot {{pname}}"></svg>
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-6">
-            <!-- div 3 -->
-              viral load plot
+          <div class="col-xs-6 svg-container physio">
+            <svg class="d3-plot {{pname}}"></svg>
           </div>
-          <div class="col-xs-6">
-            <!-- div 4 -->
-              tree plot
+          <div class="col-xs-6" id='treeDiv{{pname}}'>
+            <svg id='treeSvg{{pname}}'></svg>
           </div>
         </div>
       </div>
@@ -192,4 +189,68 @@
 </div>
 
 </div>
+
+<!-- Scripts at the end of page load -->
+<script type="text/javascript" src="/static/js/genome.js"></script>
+<script type="text/javascript">
+function loadGenome(id, pname, callback) {
+    d3.xhr("/method/genomes/")
+   .header("Content-Type", "application/json")
+   .post(
+     JSON.stringify({patient: pname}),
+     function(error, request) {
+      var data = JSON.parse(request.responseText);
+      data = {id: id, pname: pname, genome: data.data};
+      callback(data);
+     }
+  );
+}
+
+loadGenome("{{pname}}", "{{pname}}", updateGenome);
+</script>
+
+<script type="text/javascript" src="/static/js/physio.js"></script>
+<script type="text/javascript">
+function loadPhysio(id, pname, callback) {
+ d3.xhr("/method/physiological/")
+  .header("Content-Type", "application/json")
+  .post(
+    JSON.stringify({patient: pname}),
+    function(error, request) {
+     var data = JSON.parse(request.responseText);
+     callback(data.data, id);
+    }
+ );
+}
+
+loadPhysio("{{pname}}", "{{pname}}", updatePhysio);
+</script>
+
+<script type="text/javascript" src="/static/js/trees.js"></script>
+<script type="text/javascript">
+function loadTree(id, pname, region, callback) {
+ d3.xhr("/method/trees/")
+  .header("Content-Type", "application/json")
+  .post(
+    JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
+    function(error, request) {
+     var data = JSON.parse(request.responseText);
+     data.id = id;
+     data.pname = pname;
+     data.region = region;
+
+     var treefn = data.tree;
+
+     d3.json(treefn, function(error, tree) {
+      data.tree = tree;      
+      callback(data);
+     });     
+    });
+}
+
+loadTree("{{pname}}", "{{pname}}", "V3", updateTree);
+</script>
+
+<!-- NOTE: the tag below is a trick for the tree plot -->
+<div id="switchRectangular" class="active"></div>
 {% endblock %}

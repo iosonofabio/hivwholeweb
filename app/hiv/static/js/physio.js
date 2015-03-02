@@ -8,11 +8,12 @@ function get_ymax(data) {
  return d3.max(data, function(d) { return d[1]; });
 }
 
-function update(data, id) {
+function updatePhysio(data, id) {
 
  var colors = {"vl": "black", "cc": "steelblue"};
 
- var div_width = $('.svg-container').width();
+ var div_width = $('.svg-container.physio').width(),
+     svg = d3.select('.svg-container.physio').select("."+id);
 
  var margin = {top: 10, right: 80, bottom: 60, left: 80},
      width = 0.9 * div_width - margin.left - margin.right,
@@ -53,11 +54,10 @@ function update(data, id) {
      .scale(y_cc)
      .orient("right");
 
- var chart_ext = d3.select("."+id)
-     .attr("width", width + margin.left + margin.right)
-     .attr("height", height + margin.bottom + margin.top);
+ svg.attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.bottom + margin.top);
 
- var chart = chart_ext.append("g")
+ var chart = svg.append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
  chart.append("g")

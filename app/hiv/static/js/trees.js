@@ -3,7 +3,7 @@
  * Author: Fabio Zanini
  */
 // NOTE: this function is ready for callbacks, they have to set data = {id: <id>, chartType: <chartType>}
-function update(data) {
+function updateTree(data) {
     var svg = d3.select("#treeSvg"+data.id),
         divWidth = +($("#treeDiv"+data.id).width());
 
@@ -73,7 +73,7 @@ function treeChart() {
                 id = data.id,
                 pname = data.pname,
                 region = data.region;
-           
+
             // Create outer chart (SVG) and make sure there are no other ones
             var svg = d3.select(this);
             svg.selectAll("*").remove();
@@ -599,10 +599,11 @@ function treeChart() {
         function leafLabelFunc(d) {
             var name = String(d.name);
             
-            // local trees have the sequences attached
-            if (String(region).indexOf('minor') == -1)
-               return name.replace(/_/g, ' ');
-            else
+            //FIXME: check the name of trees for minor regions
+            //// local trees have the sequences attached
+            //if (String(region).indexOf('minor') == -1)
+            //   return name.replace(/_/g, ' ');
+            //else
                return name.split('_').slice(1).join(" ");
         }
 
