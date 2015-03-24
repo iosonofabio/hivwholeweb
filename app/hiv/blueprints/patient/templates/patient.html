@@ -70,16 +70,16 @@
               {% endfor %}
             </dl>      
           </div>
-          <div class="col-xs-6 svg-container genome">
-            <svg class="d3-plot {{pname}}"></svg>
+	  <div class="col-xs-6">
+            <svg class="d3-plot" id="genomeSvg{{pname}}Sum"></svg>
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-6 svg-container physio">
-            <svg class="d3-plot {{pname}}"></svg>
+          <div class="col-xs-6">
+            <svg class="d3-plot" id="physioSvg{{pname}}Sum"></svg>
           </div>
-          <div class="col-xs-6" id='treeDiv{{pname}}'>
-            <svg id='treeSvg{{pname}}'></svg>
+          <div class="col-xs-6">
+            <svg id='treeSvg{{pname}}Sum'></svg>
           </div>
         </div>
       </div>
@@ -91,9 +91,9 @@
          <img width="18" src="../../static/images/icons/viral_load.svg"> 
          <a data-toggle="collapse" data-parent="#expand" href="#viral">Viral load and CD4+ counts</a>
       </div>
-      <div id="viral" class="panel-collapse collapse">
+      <div id="viral" class="panel-collapse collapse in">
         <div class="panel-body">
-          viral load
+          <svg class="d3-plot" id="physioSvg{{pname}}"></svg>
         </div>
       </div>
     </div>
@@ -102,20 +102,9 @@
         <img width="18" src="../../static/images/icons/genome.svg"> 
         <a data-toggle="collapse" data-parent="#expand" href="#genome">Genome sequence</a>
       </div>
-      <div id="genome" class="panel-collapse collapse">
+      <div id="genome" class="panel-collapse collapse in">
         <div class="panel-body">
-          genome sequence
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <img width="18" src="../../static/images/icons/consensi.svg"> 
-        <a data-toggle="collapse" data-parent="#expand" href="#consensus">Consensus sequence</a>
-       </div>
-      <div id="consensus" class="panel-collapse collapse">
-        <div class="panel-body">
-          consensus sequence
+          <svg class="d3-plot" id="genomeSvg{{pname}}"></svg>
         </div>
       </div>
     </div>
@@ -124,9 +113,9 @@
         <img width="18" src="../../static/images/icons/tree.svg"> 
         <a data-toggle="collapse" data-parent="#expand" href="#tree">Phylogenetic trees</a>
       </div>
-      <div id="tree" class="panel-collapse collapse">
+      <div id="tree" class="panel-collapse collapse in">
         <div class="panel-body">
-          phylogenetic tree
+          <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
         </div>
       </div>
     </div>
@@ -176,6 +165,17 @@
     </div>
     <div class="panel panel-default"> 
       <div class="panel-heading">
+        <img width="18" src="../../static/images/icons/consensi.svg"> 
+        <a data-toggle="collapse" data-parent="#expand" href="#consensus">Consensus sequences</a>
+      </div>
+      <div id="consensus" class="panel-collapse collapse">
+        <div class="panel-body">
+          consensus sequences
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default"> 
+      <div class="panel-heading">
          <img width="18" src="../../static/images/icons/haplotype_frequencies.svg">
          <a data-toggle="collapse" data-parent="#expand" href="#haplo">Local haplotypes</a>
         </div>
@@ -200,13 +200,14 @@ function loadGenome(id, pname, callback) {
      JSON.stringify({patient: pname}),
      function(error, request) {
       var data = JSON.parse(request.responseText);
-      data = {id: id, pname: pname, genome: data.data};
-      callback(data);
+      data = {pname: pname, genome: data.data};
+      callback(id, data);
      }
   );
 }
 
-loadGenome("{{pname}}", "{{pname}}", updateGenome);
+loadGenome("genomeSvg{{pname}}Sum", "{{pname}}", updateGenome);
+loadGenome("genomeSvg{{pname}}", "{{pname}}", updateGenome);
 </script>
 
 <script type="text/javascript" src="/static/js/physio.js"></script>
@@ -218,12 +219,13 @@ function loadPhysio(id, pname, callback) {
     JSON.stringify({patient: pname}),
     function(error, request) {
      var data = JSON.parse(request.responseText);
-     callback(data.data, id);
+     callback(id, data.data);
     }
  );
 }
 
-loadPhysio("{{pname}}", "{{pname}}", updatePhysio);
+loadPhysio("physioSvg{{pname}}Sum", "{{pname}}", updatePhysio);
+loadPhysio("physioSvg{{pname}}", "{{pname}}", updatePhysio);
 </script>
 
 <script type="text/javascript" src="/static/js/trees.js"></script>
@@ -235,7 +237,6 @@ function loadTree(id, pname, region, callback) {
     JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
     function(error, request) {
      var data = JSON.parse(request.responseText);
-     data.id = id;
      data.pname = pname;
      data.region = region;
 
@@ -243,12 +244,13 @@ function loadTree(id, pname, region, callback) {
 
      d3.json(treefn, function(error, tree) {
       data.tree = tree;      
-      callback(data);
+      callback(id, data);
      });     
     });
 }
 
-loadTree("{{pname}}", "{{pname}}", "V3", updateTree);
+loadTree("treeSvg{{pname}}Sum", "{{pname}}", "V3", updateTree);
+loadTree("treeSvg{{pname}}", "{{pname}}", "V3", updateTree);
 </script>
 
 <!-- NOTE: the tag below is a trick for the tree plot -->

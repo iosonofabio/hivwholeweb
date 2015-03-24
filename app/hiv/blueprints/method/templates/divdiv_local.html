@@ -50,7 +50,7 @@
          function(error, request) {
           var data_gn = JSON.parse(request.responseText);
 	  var data = {"divdiv": data_dd.data, "genome": data_gn.data};
-	  update(data, id);
+	  updateDivDivLocal(id, data);
          }
        );
 
@@ -59,7 +59,7 @@
   }
 
  function load() {
-  load_single("{{data.id}}", "{{data.pname}}");
+  load_single("divDivLocalSvg{{data.id}}", "{{data.pname}}");
  }
 </script>
 {% endblock %}
@@ -72,8 +72,8 @@
   </h4>
  {% endif %}
  <h3>{{data.name}}</h3>
- <div class="svg-container genome">
-  <svg class="d3-plot {{data.id}}"></svg>
+ <div class="svg-container genome {{data.id}}">
+  <svg class="d3-plot" id="divDivLocalSvg{{data.id}}"></svg>
  </div>
 
  <form role="form" action="" method="post" name="divdiv_local_settings" class="form-inline">

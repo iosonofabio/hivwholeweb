@@ -1,8 +1,8 @@
 // FIXME: some genes overlap (p2/p6?)
-function updateGenome(data) {
+function updateGenome(id, data) {
 
-    var divWidth = $('.svg-container.genome').width(),
-        svg = d3.select('.svg-container.genome').select("."+data.id);
+    var svg = d3.select('#'+id),
+        divWidth = $('#'+id).parent().width();
 
     var chart = genomeChart().svgWidth(divWidth);
 
@@ -61,7 +61,6 @@ function genomeChart() {
             vis.call(tip);
 
             var genome = data.genome,
-                id = data.id,
                 features = genome.features;
     
             if (x == "undefined")

@@ -3,20 +3,20 @@
 {{ super() }}
 <script type="text/javascript" src="/static/js/physio.js"></script>
 <script type="text/javascript">
-  function load_single(id, pname) {
+  function load_single(id, pname, callback) {
    d3.xhr("{{ url_for('.physio') }}")
     .header("Content-Type", "application/json")
     .post(
       JSON.stringify({patient: pname}),
       function(error, request) {
        var data = JSON.parse(request.responseText);
-       updatePhysio(data.data, id);
+       callback(id, data.data);
       }
    );
   }
 
  function load() {
-  load_single("{{data.id}}", "{{data.pname}}");
+  load_single("svg{{data.id}}", "{{data.pname}}", updatePhysio);
  }
 </script>
 {% endblock %}
@@ -29,8 +29,8 @@
   </h4>
  {% endif %}
  <h3>{{data.name}}</h3>
- <div class="svg-container physio">
-  <svg class="d3-plot {{data.id}}"></svg>
+ <div>
+  <svg class="d3-plot" id="svg{{data.id}}"></svg>
  </div> 
  
  <div class="btn-group btn-pad">

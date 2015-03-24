@@ -6,9 +6,9 @@
   <div class="col-sm-4 col-md-3 sidebar">
    <ul class="nav nav-sidebar affix">
     {% for section in config.BLUEPRINTS.METHOD.SECTIONS %}{% if section.url %}{% if section_name == section.name %}
-    <li class="active"><a href="{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
+    <li class="active"><a href="/method{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
     {% else %}
-    <li><a href="{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
+    <li><a href="/method{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
     {% endif %}{% endif %}{% endfor %}
    </ul>
   </div>

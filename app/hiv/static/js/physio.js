@@ -1,23 +1,13 @@
-function get_tmax(data) {
-  var tvl = d3.max(data.vl, function(d) { return d[0]; });
-  var tcc = d3.max(data.cc, function(d) { return d[0]; });
-  return d3.max([tvl, tcc]);
-}
+function updatePhysio(id, data) {
 
-function get_ymax(data) {
- return d3.max(data, function(d) { return d[1]; });
-}
-
-function updatePhysio(data, id) {
-
- var colors = {"vl": "black", "cc": "steelblue"};
-
- var div_width = $('.svg-container.physio').width(),
-     svg = d3.select('.svg-container.physio').select("."+id);
+ var svg = d3.select('#'+id),
+     divWidth = $('#'+id).parent().width();
 
  var margin = {top: 10, right: 80, bottom: 60, left: 80},
-     width = 0.9 * div_width - margin.left - margin.right,
+     width = 0.9 * divWidth - margin.left - margin.right,
      height = 330 - margin.top - margin.bottom;
+
+ var colors = {"vl": "black", "cc": "steelblue"};
 
  var tmax = get_tmax(data);
  var vlmax = get_ymax(data.vl);
@@ -177,6 +167,16 @@ function updatePhysio(data, id) {
      return d3.svg.axis()
          .scale(x)
          .orient("bottom");
+ }
+
+ function get_tmax(data) {
+   var tvl = d3.max(data.vl, function(d) { return d[0]; });
+   var tcc = d3.max(data.cc, function(d) { return d[0]; });
+   return d3.max([tvl, tcc]);
+ }
+ 
+ function get_ymax(data) {
+  return d3.max(data, function(d) { return d[1]; });
  }
 
 }

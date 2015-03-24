@@ -10,7 +10,6 @@ function load_single(id, pname, region) {
     JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
     function(error, request) {
      var data = JSON.parse(request.responseText);
-     data.id = id;
      data.pname = pname;
      data.region = region;
 
@@ -18,13 +17,13 @@ function load_single(id, pname, region) {
 
      d3.json(treefn, function(error, tree) {
       data.tree = tree;      
-      updateTree(data);
+      updateTree(id, data);
      });     
     });
 }
 
 function load() {
- load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}");
+ load_single("treeSvg{{data.id}}", "{{data.pname}}", "{{data.region}}");
 }
 </script>
 {% endblock %}
@@ -53,7 +52,7 @@ function load() {
    <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkPatient" autocomplete="off">Patient</label>
   </div>
  </div>
- <div id='treeDiv{{data.id}}'>
+ <div>
   <svg id='treeSvg{{data.id}}'></svg>
  </div>
  <br>
@@ -81,12 +80,12 @@ function load() {
   $('#switchRectangular').on('click', function () {
    $('#switchRadial').removeClass('active');
    $(this).addClass('active');
-   updateTree({id: "{{data.id}}"});
+   updateTree("treeSvg{{data.id}}");
   });
   $('#switchRadial').on('click', function () {
    $('#switchRectangular').removeClass('active');
    $(this).addClass('active');
-   updateTree({id: "{{data.id}}"});
+   updateTree("treeSvg{{data.id}}");
   });
 
   $('#switchColorLinkBlack').on('click', function () {
@@ -94,28 +93,28 @@ function load() {
    $('#switchColorLinkSubtype').removeClass('active');
    $('#switchColorLinkPatient').removeClass('active');
    $(this).addClass('active');
-   updateTree({id: "{{data.id}}"});
+   updateTree("treeSvg{{data.id}}");
   });
   $('#switchColorLinkDate').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
    $('#switchColorLinkSubtype').removeClass('active');
    $('#switchColorLinkPatient').removeClass('active');
    $(this).addClass('active');
-   updateTree({id: "{{data.id}}"});
+   updateTree("treeSvg{{data.id}}");
   });
   $('#switchColorLinkSubtype').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
    $('#switchColorLinkDate').removeClass('active');
    $('#switchColorLinkPatient').removeClass('active');
    $(this).addClass('active');
-   updateTree({id: "{{data.id}}"});
+   updateTree("treeSvg{{data.id}}");
   });
   $('#switchColorLinkPatient').on('click', function () {
    $('#switchColorLinkBlack').removeClass('active');
    $('#switchColorLinkSubtype').removeClass('active');
    $('#switchColorLinkDate').removeClass('active');
    $(this).addClass('active');
-   updateTree({id: "{{data.id}}"});
+   updateTree("treeSvg{{data.id}}");
   });
 
  </script>

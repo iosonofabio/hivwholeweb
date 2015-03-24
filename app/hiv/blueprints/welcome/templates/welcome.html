@@ -47,7 +47,6 @@ function load_single(id, pname, region) {
     JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
     function(error, request) {
      var data = JSON.parse(request.responseText);
-     data.id = id;
      data.pname = pname;
      data.region = region;
      data.leafLabels = false;
@@ -57,13 +56,13 @@ function load_single(id, pname, region) {
 
      d3.json(treefn, function(error, tree) {
       data.tree = tree;      
-      updateTree(data);
+      updateTree(id, data);
      });     
     });
 }
 
 function load() {
- load_single("all", "all", "{{region}}");
+ load_single("treeSvgAll", "all", "{{region}}");
 }
 </script>
 {% endblock %}
@@ -123,8 +122,8 @@ We study genetic evolution of HIV during chronic infection on eleven patients, w
     </tbody>
     </table>
   </div>
-  <div id="treeDivall" class="col-xs-5 col-sm-6">
-    <svg id="treeSvgall"></svg>
+  <div class="col-xs-5 col-sm-6">
+    <svg id="treeSvgAll"></svg>
     <p style="text-align:justify">Interactive phylogenetic tree of all samples in the <strong>{{region}}</strong> region, colored by patient.</p>
   </div>
 </div>

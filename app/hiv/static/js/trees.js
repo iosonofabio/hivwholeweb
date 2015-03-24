@@ -2,10 +2,14 @@
  * Plot phylogenetic trees with radial or rectangular representation
  * Author: Fabio Zanini
  */
-// NOTE: this function is ready for callbacks, they have to set data = {id: <id>, chartType: <chartType>}
-function updateTree(data) {
-    var svg = d3.select("#treeSvg"+data.id),
-        divWidth = +($("#treeDiv"+data.id).width());
+// NOTE: this function is ready for callbacks, they have to set data = {chartType: <chartType>}
+function updateTree(id, data) {
+    if (typeof(data)==='undefined') data = {};
+
+    var svg = d3.select('#'+id),
+        divWidth = $('#'+id).parent().width();
+
+    console.log(arguments);
 
     // if this function is called with some useful data, bind it to the DOM
     if ("tree" in data)
@@ -70,7 +74,6 @@ function treeChart() {
                         "yellow", "orange", "red"]);
 
             var tree = data.tree,
-                id = data.id,
                 pname = data.pname,
                 region = data.region;
 
