@@ -9,8 +9,6 @@ function updateTree(id, data) {
     var svg = d3.select('#'+id),
         divWidth = $('#'+id).parent().width();
 
-    console.log(arguments);
-
     // if this function is called with some useful data, bind it to the DOM
     if ("tree" in data)
         svg.datum(data)
