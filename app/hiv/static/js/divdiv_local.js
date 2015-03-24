@@ -1,3 +1,13 @@
+function emptyDivDivLocal(id, keepData) {
+
+ var svg = d3.select('#'+id);
+ svg.selectAll("*").remove();
+
+ if ((typeof(keepData) == "undefined") | (!keepData)) svg.datum(null);
+
+}
+
+
 function updateDivDivLocal(id, data) {
 
     var svg = d3.select('#'+id),

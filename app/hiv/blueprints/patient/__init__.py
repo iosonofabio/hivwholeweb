@@ -15,9 +15,13 @@ def index(patient_number):
     pname = 'p'+str(patient_number)
     pnames = ['p'+str(i) for i in xrange(1, 12)]
     table = PatientTableModel().get_table()
+    tree_regions = ['V3', 'psi', 'p17', 'RRE']
+    divdiv_regions = ['V3', 'psi', 'p17', 'RRE']
 
     return render_template('patient.html',
                            pname=pname,
                            pnames=pnames,
                            patientTable=table, 
+                           treeRegions=tree_regions,
+                           divDivRegions=divdiv_regions,
                            title='Patient page')

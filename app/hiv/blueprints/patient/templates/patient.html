@@ -71,14 +71,6 @@
             </dl>      
           </div>
 	  <div class="col-xs-6">
-            <svg class="d3-plot" id="genomeSvg{{pname}}Sum"></svg>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <svg class="d3-plot" id="physioSvg{{pname}}Sum"></svg>
-          </div>
-          <div class="col-xs-6">
             <svg id='treeSvg{{pname}}Sum'></svg>
           </div>
         </div>
@@ -91,7 +83,7 @@
          <img width="18" src="../../static/images/icons/viral_load.svg"> 
          <a data-toggle="collapse" data-parent="#expand" href="#viral">Viral load and CD4+ counts</a>
       </div>
-      <div id="viral" class="panel-collapse collapse">
+      <div id="viral" class="panel-collapse collapse in">
         <div class="panel-body">
           <svg class="d3-plot" id="physioSvg{{pname}}"></svg>
         </div>
@@ -102,7 +94,7 @@
         <img width="18" src="../../static/images/icons/genome.svg"> 
         <a data-toggle="collapse" data-parent="#expand" href="#genome">Genome sequence</a>
       </div>
-      <div id="genome" class="panel-collapse collapse">
+      <div id="genome" class="panel-collapse collapse in">
         <div class="panel-body">
           <svg class="d3-plot" id="genomeSvg{{pname}}"></svg>
         </div>
@@ -115,29 +107,49 @@
       </div>
       <div id="tree" class="panel-collapse collapse">
         <div class="panel-body">
-          <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
+          <div style="padding-bottom:20px">
+            <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
+          </div>
+          <div class="form-group form-inline" align="center">
+           <label>Region:</label>
+           <select class="form-control treeRegion">
+             {% for region in treeRegions %}
+              <option>{{region}}</option>
+             {% endfor %} 
+           </select>
+          </div>
         </div>
       </div>
     </div>
     <div class="panel panel-default"> 
       <div class="panel-heading">
          <img width="18" src="../../static/images/icons/diversity.svg">
-         <a data-toggle="collapse" data-parent="#expand" href="#geneticdiv">Genetic divergence and diversity</a>
-       </div>
-      <div id="geneticdiv" class="panel-collapse collapse">
+         <a data-toggle="collapse" data-parent="#expand" href="#divDiv">Genetic divergence and diversity</a>
+      </div>
+      <div id="divDiv" class="panel-collapse collapse">
         <div class="panel-body">
-          divergence and diversity
+          <div style="padding-bottom:20px">
+            <svg class="d3-plot" id='divDivSvg{{pname}}'></svg>
+          </div>
+          <div class="form-group form-inline" align="center">
+           <label>Region:</label>
+           <select class="form-control divDivRegion">
+             {% for region in divDivRegions %}
+              <option>{{region}}</option>
+             {% endfor %} 
+           </select>
+          </div>
         </div>
       </div>
     </div>
     <div class="panel panel-default"> 
       <div class="panel-heading">
          <img width="18" src="../../static/images/icons/divdiv_local.svg">
-         <a data-toggle="collapse" data-parent="#expand" href="#localdiv">Local divergence and diversity</a>
+         <a data-toggle="collapse" data-parent="#expand" href="#divDivLocal">Local divergence and diversity</a>
        </div>
-      <div id="localdiv" class="panel-collapse collapse">
+      <div id="divDivLocal" class="panel-collapse collapse">
         <div class="panel-body">
-          local divergence and diversity
+          <svg class="d3-plot" id='divDivLocalSvg{{pname}}'></svg>
         </div>
       </div>
     </div>
@@ -148,18 +160,18 @@
        </div>
       <div id="cov" class="panel-collapse collapse">
         <div class="panel-body">
-          coverage
+          <svg class="d3-plot" id='coverageSvg{{pname}}' height="600"></svg>
         </div>
       </div>
     </div>
     <div class="panel panel-default"> 
       <div class="panel-heading">
          <img width="18" src="../../static/images/icons/allele_frequencies.svg">
-         <a data-toggle="collapse" data-parent="#expand" href="#freq">Allele frequencies</a>
+         <a data-toggle="collapse" data-parent="#expand" href="#allFreq">Allele frequencies</a>
        </div>
-      <div id="freq" class="panel-collapse collapse">
+      <div id="allFreq" class="panel-collapse collapse">
         <div class="panel-body">
-          allele frequencies
+          <svg class="d3-plot" id='allFreqSvg{{pname}}' height="700"></svg>
         </div>
       </div>
     </div>
@@ -191,9 +203,24 @@
 </div>
 
 <!-- Scripts at the end of page load -->
+<script type="text/javascript" src="/static/js/physio.js"></script>
+<script type="text/javascript">
+function loadPhysio(id, pname) {
+ d3.xhr("/method/physiological/")
+  .header("Content-Type", "application/json")
+  .post(
+    JSON.stringify({patient: pname}),
+    function(error, request) {
+     var data = JSON.parse(request.responseText);
+     updatePhysio(id, data.data);
+    }
+ );
+}
+</script>
+
 <script type="text/javascript" src="/static/js/genome.js"></script>
 <script type="text/javascript">
-function loadGenome(id, pname, callback) {
+function loadGenome(id, pname) {
     d3.xhr("/method/genomes/")
    .header("Content-Type", "application/json")
    .post(
@@ -201,78 +228,218 @@ function loadGenome(id, pname, callback) {
      function(error, request) {
       var data = JSON.parse(request.responseText);
       data = {pname: pname, genome: data.data};
-      callback(id, data);
+      updateGenome(id, data);
      }
   );
 }
-
-loadGenome("genomeSvg{{pname}}Sum", "{{pname}}", updateGenome);
-</script>
-
-<script type="text/javascript" src="/static/js/physio.js"></script>
-<script type="text/javascript">
-function loadPhysio(id, pname, callback) {
- d3.xhr("/method/physiological/")
-  .header("Content-Type", "application/json")
-  .post(
-    JSON.stringify({patient: pname}),
-    function(error, request) {
-     var data = JSON.parse(request.responseText);
-     callback(id, data.data);
-    }
- );
-}
-
-loadPhysio("physioSvg{{pname}}Sum", "{{pname}}", updatePhysio);
 </script>
 
 <script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
-function loadTree(id, pname, region, callback) {
+function loadTree(id, pname, region) {
  d3.xhr("/method/trees/")
   .header("Content-Type", "application/json")
   .post(
     JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
     function(error, request) {
      var data = JSON.parse(request.responseText);
-     data.pname = pname;
-     data.region = region;
-
-     var treefn = data.tree;
-
-     d3.json(treefn, function(error, tree) {
+     d3.json(data.tree, function(error, tree) {
+      data.pname = pname;
+      data.region = region;
       data.tree = tree;      
-      callback(id, data);
+      updateTree(id, data);
      });     
     });
 }
-
-loadTree("treeSvg{{pname}}Sum", "{{pname}}", "V3", updateTree);
 </script>
+
+<script type="text/javascript" src="/static/js/divdiv.js"></script>
+<script type="text/javascript">
+function loadDivDiv(id, pname, region) {
+ d3.xhr("/method/divdiv/")
+  .header("Content-Type", "application/json")
+  .post(
+    JSON.stringify({patient: pname, region: region}),
+    function(error, request) {
+     var data = JSON.parse(request.responseText);
+     updateDivDiv(id, data.data);
+    }
+ );
+}
+</script>
+
+<script type="text/javascript" src="/static/js/divdiv_local.js"></script>
+<script type="text/javascript">
+function loadDivDivLocal(id, pname) {
+ d3.xhr("/method/divdiv_local/")
+  .header("Content-Type", "application/json")
+  .post(
+    JSON.stringify({patient: pname}),
+    function(error, request) {
+     var data_dd = JSON.parse(request.responseText);
+
+     d3.xhr("/method/genomes/")
+     .header("Content-Type", "application/json")
+     .post(
+       JSON.stringify({patient: pname}),
+       function(error, request) {
+        var data_gn = JSON.parse(request.responseText);
+        var data = {"divdiv": data_dd.data, "genome": data_gn.data};
+        updateDivDivLocal(id, data);
+       }
+     );
+
+    }
+ );
+}
+</script>
+
+<script type="text/javascript" src="/static/js/coverage.js"></script>
+<script type="text/javascript">
+function loadCoverage(id, pname) {
+ d3.xhr("/method/coverage/")
+  .header("Content-Type", "application/json")
+  .post(
+    JSON.stringify({patient: pname}),
+    function(error, request) {
+     var data = JSON.parse(request.responseText);
+
+     d3.xhr("/method/genomes/")
+     .header("Content-Type", "application/json")
+     .post(
+       JSON.stringify({patient: pname}),
+       function(error, request) {
+        var data_gn = JSON.parse(request.responseText);
+
+        d3.xhr("/method/n_templates/")
+         .header("Content-Type", "application/json")
+         .post(
+           JSON.stringify({patient: pname}),
+           function(error, request) {
+            var data_ntemplates = JSON.parse(request.responseText);
+
+            // This is not totally safe, but ok for now
+            data = data.data;
+            data.genome = data_gn.data;
+            data.ntemplates = data_ntemplates.data.ntemplates;
+            updateCoverage(id, data);
+         });
+      });
+   });
+}
+</script>
+
+<script type="text/javascript" src="/static/js/allele_frequencies.js"></script>
+<script type="text/javascript">
+function loadAlleleFrequencies(id, pname) {
+ d3.xhr("/method/allele_frequencies/")
+  .header("Content-Type", "application/json")
+  .post(
+    JSON.stringify({patient: pname}),
+    function(error, request) {
+     var data = JSON.parse(request.responseText);
+
+     d3.xhr("/method/genomes/")
+     .header("Content-Type", "application/json")
+     .post(
+       JSON.stringify({patient: pname}),
+       function(error, request) {
+        var data_gn = JSON.parse(request.responseText);
+
+
+        d3.xhr("/method/n_templates/")
+          .header("Content-Type", "application/json")
+          .post(
+            JSON.stringify({patient: pname}),
+            function(error, request) {
+             var data_ntemplates = JSON.parse(request.responseText);
+
+             // This is not totally safe, but ok for now
+             data = data.data;
+             data.genome = data_gn.data;
+             data.ntemplates = data_ntemplates.data.ntemplates;
+             updateAlleleFrequencies(id, data);
+          });
+       });
+    });
+}
+</script>
+
+
+<!-- load at page opening -->
+<script>
+loadTree("treeSvg{{pname}}Sum", "{{pname}}", "V3");
+loadPhysio("physioSvg{{pname}}", "{{pname}}");
+loadGenome("genomeSvg{{pname}}", "{{pname}}");
+</script>
+
 
 <!-- collapsible event handling -->
 <script type="text/javascript">
 $('#viral').on('shown.bs.collapse', function () {
-    loadPhysio("physioSvg{{pname}}", "{{pname}}", updatePhysio);
+    loadPhysio("physioSvg{{pname}}", "{{pname}}");
 })
 $('#viral').on('hidden.bs.collapse', function () {
     emptyPhysio("physioSvg{{pname}}");
 })
 
 $('#genome').on('shown.bs.collapse', function () {
-    loadGenome("genomeSvg{{pname}}", "{{pname}}", updateGenome);
+    loadGenome("genomeSvg{{pname}}", "{{pname}}");
 })
 $('#genome').on('hidden.bs.collapse', function () {
     emptyGenome("genomeSvg{{pname}}");
 })
 
 $('#tree').on('shown.bs.collapse', function () {
-    loadTree("treeSvg{{pname}}", "{{pname}}", "V3", updateTree);
+    var region = $('.treeRegion option:selected').val();
+    loadTree("treeSvg{{pname}}", "{{pname}}", region);
 })
 $('#tree').on('hidden.bs.collapse', function () {
     emptyTree("treeSvg{{pname}}");
 })
 
+$('#divDiv').on('shown.bs.collapse', function () {
+    var region = $('.divDivRegion option:selected').val();
+    loadDivDiv("divDivSvg{{pname}}", "{{pname}}", region);
+})
+$('#divDiv').on('hidden.bs.collapse', function () {
+    emptyDivDiv("divDivSvg{{pname}}");
+})
+
+$('#divDivLocal').on('shown.bs.collapse', function () {
+    loadDivDivLocal("divDivLocalSvg{{pname}}", "{{pname}}");
+})
+$('#divDivLocal').on('hidden.bs.collapse', function () {
+    emptyDivDivLocal("divDivLocalSvg{{pname}}");
+})
+
+$('#cov').on('shown.bs.collapse', function () {
+    loadCoverage("coverageSvg{{pname}}", "{{pname}}");
+})
+$('#cov').on('hidden.bs.collapse', function () {
+    emptyCoverage("coverageSvg{{pname}}");
+})
+
+$('#allFreq').on('shown.bs.collapse', function () {
+    loadAlleleFrequencies("allFreqSvg{{pname}}", "{{pname}}");
+})
+$('#allFreq').on('hidden.bs.collapse', function () {
+    emptyAlleleFrequencies("allFreqSvg{{pname}}");
+})
+
+</script>
+
+<!-- jquery event handling for selections (trees, etc) -->
+<script>
+$('select.treeRegion').on('change', function(){
+   var region = $('.treeRegion option:selected').val();
+   loadTree("treeSvg{{pname}}", "{{pname}}", region);
+});
+
+$('select.divDivRegion').on('change', function(){
+   var region = $('.divDivRegion option:selected').val();
+   loadDivDiv("divDivSvg{{pname}}", "{{pname}}", region);
+});
 
 </script>
 

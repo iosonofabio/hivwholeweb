@@ -1,13 +1,27 @@
-function updateCoverage(data) {
-    var id = data.id;
-    var div_width = $('.svg-container').width();
+function emptyCoverage(id, keepData) {
+
+ var svg = d3.select('#'+id);
+ svg.selectAll("*").remove();
+
+ if ((typeof(keepData) == "undefined") | (!keepData)) svg.datum(null);
+
+}
+
+
+function updateCoverage(id, data) {
+
+    var svg = d3.select("#"+id),
+        divWidth = $('#'+id).parent().width();
    
     var margin = {top: 10, right: 60, bottom: 150, left: 80},
-        width = 0.9 * div_width - margin.left - margin.right,
+        width = 0.9 * divWidth - margin.left - margin.right,
         vpad = 20, height_genome = 200,
-        height = $('.'+id).height() - margin.top - margin.bottom,
+        height = $('#'+id).height() - margin.top - margin.bottom,
         height_cov = height - vpad - height_genome,
         currentITime = 0;
+
+    svg.attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.bottom + margin.top);
    
     var datal = data.cov.length;
     var covmax = get_ymax(data.cov);
@@ -37,10 +51,6 @@ function updateCoverage(data) {
          .orient("right")
          .tickSize(width, 0, 0)
          .tickFormat("");
-   
-    var svg = d3.select("."+id)
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.bottom + margin.top);
    
     var chart = svg.append("g")
          .attr("id", "main-chart"+id)

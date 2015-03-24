@@ -63,15 +63,14 @@
 	      data = data.data;
 	      data.genome = data_gn.data;
 	      data.ntemplates = data_ntemplates.data.ntemplates;
-	      data.id = id
-	      callback(data);
+	      callback(id, data);
 	   });
         });
      });
  }
 
  function load() {
-  load_single("{{data.id}}", "{{data.pname}}", updateAlleleFrequencies);
+  load_single("allFreqSvg{{data.id}}", "{{data.pname}}", updateAlleleFrequencies);
  }
 </script>
 {% endblock %}
@@ -85,7 +84,7 @@
  {% endif %}
   <h3>{{data.name}}</h3>
   <div class="svg-container genome">
-   <svg class="d3-plot {{data.id}}" height="700"></svg>
+   <svg class="d3-plot" id="allFreqSvg{{data.id}}" height="700"></svg>
   </div>
 
  <form role="form" action="" method="post" name="aft_settings" class="form-inline">

@@ -10,13 +10,13 @@
      JSON.stringify({patient: pname, region: region}),
      function(error, request) {
       var data = JSON.parse(request.responseText);
-      update(data.data, id);
+      updateDivDiv(id, data.data);
      }
   );
  }
 
  function load() {
-  load_single("{{data.id}}", "{{data.pname}}", "{{data.region}}");
+  load_single("svgDivDiv{{data.id}}", "{{data.pname}}", "{{data.region}}");
  }
 </script>
 {% endblock %}
@@ -30,7 +30,7 @@
  {% endif %}
   <h3>{{data.name}}</h3>
   <div class="svg-container">
-   <svg class="d3-plot {{data.id}}"></svg>
+   <svg class="d3-plot" id="svgDivDiv{{data.id}}"></svg>
   </div> 
 
  <div class="btn-group btn-pad">

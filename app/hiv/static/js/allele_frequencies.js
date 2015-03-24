@@ -1,26 +1,36 @@
-function updateAlleleFrequencies(data) {
-    var div_width = $('.svg-container').width();
+function emptyAlleleFrequencies(id, keepData) {
+
+ var svg = d3.select('#'+id);
+ svg.selectAll("*").remove();
+
+ if ((typeof(keepData) == "undefined") | (!keepData)) svg.datum(null);
+
+}
+
+
+function updateAlleleFrequencies(id, data) {
+    var svg = d3.select("#"+id),
+        divWidth = $('#'+id).parent().width();
    
     var margin = {top: 45, right: 50, bottom: 50, left: 80},
-        width = div_width - margin.left - margin.right,
-        height = $('.'+data.id).height() - margin.top - margin.bottom,
+        width = divWidth - margin.left - margin.right,
+        height = $('#'+id).height() - margin.top - margin.bottom,
         vpad = 50, height_genome=200,
         heightAft = (height - height_genome - vpad - vpad) / 2,
         currentTime = data.times[0],
         zoomArea = [-1, 10000];
    
-    var svg = d3.select("."+data.id)
-        .attr("width", width + margin.left + margin.right)
+    svg.attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.bottom + margin.top);
    
     var vis = svg.append("g")
          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
    
     var visAft = vis.append("g")
-         .attr("class", "d3-chart aft-chart"+data.id);
+         .attr("class", "d3-chart aft-chart"+id);
    
     var visAfg = vis.append("g")
-         .attr("class", "d3-chart afg-chart"+data.id)
+         .attr("class", "d3-chart afg-chart"+id)
          .attr("transform", "translate(0," + (heightAft + 1.5 * vpad) + ")");
    
     var x = d3.scale.linear()

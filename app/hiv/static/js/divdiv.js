@@ -1,47 +1,26 @@
- function get_tmax(data) {
-  var tmax = 0;
-  for (i = 0; i < data.dg.length; i++) {
-    if (data.dg[i][0] > tmax) {
-     tmax = data.dg[i][0];
-    }
-  }
-  for (i = 0; i < data.ds.length; i++) {
-    if (data.ds[i][0] > tmax) {
-     tmax = data.ds[i][0];
-    }
-  }
-  return tmax;
- }
+function emptyDivDiv(id, keepData) {
 
- function get_ymax(data) {
-  var ymax = data[0][1];
-  for (i = 1; i < data.length; i++) {
-    if (data[i][1] > ymax) {
-     ymax = data[i][1];
-    }
-  }
-  return ymax;
- }
+ var svg = d3.select('#'+id);
+ svg.selectAll("*").remove();
 
- function get_ymin(data) {
-  var ymin = data[0][1];
-  for (i = 1; i < data.length; i++) {
-    if (data[i][1] < ymin) {
-     ymin = data[i][1];
-    }
-  }
-  return ymin;
- }
+ if ((typeof(keepData) == "undefined") | (!keepData)) svg.datum(null);
 
-function update(data, id) {
+}
 
- var colors = {"dg": "darkred", "ds": "steelblue"};
 
- var div_width = $('.svg-container').width();
+function updateDivDiv(id, data) {
+
+ var svg = d3.select("#"+id),
+     divWidth = $('#'+id).parent().width();
 
  var margin = {top: 5, right: 80, bottom: 40, left: 80},
-     width = 0.9 * div_width - margin.left - margin.right,
+     width = 0.9 * divWidth - margin.left - margin.right,
      height = 330 - margin.top - margin.bottom;
+
+ svg.attr("width", width + margin.left + margin.right)
+     .attr("height", height + margin.bottom + margin.top);
+
+ var colors = {"dg": "darkred", "ds": "steelblue"};
 
  var tmax = get_tmax(data);
  var dgmax = get_ymax(data.dg);
@@ -86,11 +65,7 @@ function update(data, id) {
      .tickSize(width, 0, 0)
      .tickFormat("");
 
- var chart_ext = d3.select("."+id)
-     .attr("width", width + margin.left + margin.right)
-     .attr("height", height + margin.bottom + margin.top);
-
- var chart = chart_ext.append("g")
+ var chart = svg.append("g")
        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
  // Draw the grid lines (they should stay behind)
@@ -204,6 +179,40 @@ function update(data, id) {
             .interpolate("monotone")(data);
  }
 
+ function get_tmax(data) {
+  var tmax = 0;
+  for (i = 0; i < data.dg.length; i++) {
+    if (data.dg[i][0] > tmax) {
+     tmax = data.dg[i][0];
+    }
+  }
+  for (i = 0; i < data.ds.length; i++) {
+    if (data.ds[i][0] > tmax) {
+     tmax = data.ds[i][0];
+    }
+  }
+  return tmax;
+ }
+
+ function get_ymax(data) {
+  var ymax = data[0][1];
+  for (i = 1; i < data.length; i++) {
+    if (data[i][1] > ymax) {
+     ymax = data[i][1];
+    }
+  }
+  return ymax;
+ }
+
+ function get_ymin(data) {
+  var ymin = data[0][1];
+  for (i = 1; i < data.length; i++) {
+    if (data[i][1] < ymin) {
+     ymin = data[i][1];
+    }
+  }
+  return ymin;
+ }
 
  }
 
