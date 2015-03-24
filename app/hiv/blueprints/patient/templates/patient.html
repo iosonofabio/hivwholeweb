@@ -91,7 +91,7 @@
          <img width="18" src="../../static/images/icons/viral_load.svg"> 
          <a data-toggle="collapse" data-parent="#expand" href="#viral">Viral load and CD4+ counts</a>
       </div>
-      <div id="viral" class="panel-collapse collapse in">
+      <div id="viral" class="panel-collapse collapse">
         <div class="panel-body">
           <svg class="d3-plot" id="physioSvg{{pname}}"></svg>
         </div>
@@ -102,7 +102,7 @@
         <img width="18" src="../../static/images/icons/genome.svg"> 
         <a data-toggle="collapse" data-parent="#expand" href="#genome">Genome sequence</a>
       </div>
-      <div id="genome" class="panel-collapse collapse in">
+      <div id="genome" class="panel-collapse collapse">
         <div class="panel-body">
           <svg class="d3-plot" id="genomeSvg{{pname}}"></svg>
         </div>
@@ -113,7 +113,7 @@
         <img width="18" src="../../static/images/icons/tree.svg"> 
         <a data-toggle="collapse" data-parent="#expand" href="#tree">Phylogenetic trees</a>
       </div>
-      <div id="tree" class="panel-collapse collapse in">
+      <div id="tree" class="panel-collapse collapse">
         <div class="panel-body">
           <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
         </div>
@@ -207,7 +207,6 @@ function loadGenome(id, pname, callback) {
 }
 
 loadGenome("genomeSvg{{pname}}Sum", "{{pname}}", updateGenome);
-loadGenome("genomeSvg{{pname}}", "{{pname}}", updateGenome);
 </script>
 
 <script type="text/javascript" src="/static/js/physio.js"></script>
@@ -225,7 +224,6 @@ function loadPhysio(id, pname, callback) {
 }
 
 loadPhysio("physioSvg{{pname}}Sum", "{{pname}}", updatePhysio);
-loadPhysio("physioSvg{{pname}}", "{{pname}}", updatePhysio);
 </script>
 
 <script type="text/javascript" src="/static/js/trees.js"></script>
@@ -250,8 +248,34 @@ function loadTree(id, pname, region, callback) {
 }
 
 loadTree("treeSvg{{pname}}Sum", "{{pname}}", "V3", updateTree);
-loadTree("treeSvg{{pname}}", "{{pname}}", "V3", updateTree);
 </script>
+
+<!-- collapsible event handling -->
+<script type="text/javascript">
+$('#viral').on('shown.bs.collapse', function () {
+    loadPhysio("physioSvg{{pname}}", "{{pname}}", updatePhysio);
+})
+$('#viral').on('hidden.bs.collapse', function () {
+    emptyPhysio("physioSvg{{pname}}");
+})
+
+$('#genome').on('shown.bs.collapse', function () {
+    loadGenome("genomeSvg{{pname}}", "{{pname}}", updateGenome);
+})
+$('#genome').on('hidden.bs.collapse', function () {
+    emptyGenome("genomeSvg{{pname}}");
+})
+
+$('#tree').on('shown.bs.collapse', function () {
+    loadTree("treeSvg{{pname}}", "{{pname}}", "V3", updateTree);
+})
+$('#tree').on('hidden.bs.collapse', function () {
+    emptyTree("treeSvg{{pname}}");
+})
+
+
+</script>
+
 
 <!-- NOTE: the tag below is a trick for the tree plot -->
 <div id="switchRectangular" class="active"></div>

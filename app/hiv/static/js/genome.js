@@ -1,3 +1,13 @@
+function emptyGenome(id, keepData) {
+
+ var svg = d3.select('#'+id);
+ svg.selectAll("*").remove();
+
+ if ((typeof(keepData) == "undefined") | (!keepData)) svg.datum(null);
+
+}
+
+
 // FIXME: some genes overlap (p2/p6?)
 function updateGenome(id, data) {
 

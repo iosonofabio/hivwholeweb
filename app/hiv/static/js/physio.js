@@ -1,3 +1,13 @@
+function emptyPhysio(id, keepData) {
+
+ var svg = d3.select('#'+id);
+ svg.selectAll("*").remove();
+
+ if ((typeof(keepData) == "undefined") | (!keepData)) svg.datum(null);
+
+}
+
+
 function updatePhysio(id, data) {
 
  var svg = d3.select('#'+id),
@@ -6,6 +16,10 @@ function updatePhysio(id, data) {
  var margin = {top: 10, right: 80, bottom: 60, left: 80},
      width = 0.9 * divWidth - margin.left - margin.right,
      height = 330 - margin.top - margin.bottom;
+
+ if (typeof(data) != "undefined") svg.datum(data);
+
+ data = svg.datum();
 
  var colors = {"vl": "black", "cc": "steelblue"};
 
