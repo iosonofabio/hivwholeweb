@@ -40,22 +40,19 @@
 
 <script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
-function load_single(id, pname, region) {
+function loadTree(id, pname, region) {
  d3.xhr("/method/trees/")
   .header("Content-Type", "application/json")
   .post(
     JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
     function(error, request) {
      var data = JSON.parse(request.responseText);
-     data.pname = pname;
-     data.region = region;
-     data.leafLabels = false;
-     data.optimizeSpace = true;
-
-     var treefn = data.tree;
-
-     d3.json(treefn, function(error, tree) {
+     d3.json(data.tree, function(error, tree) {
       data.tree = tree;      
+      data.pname = pname;
+      data.region = region;
+      data.leafLabels = false;
+      data.optimizeSpace = true;
       updateTree(id, data);
      });     
     });
