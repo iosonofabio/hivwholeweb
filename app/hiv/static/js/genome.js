@@ -281,10 +281,12 @@ function genomeChart() {
             }
     
             function bgColor(d) {
-                if (("highlightedRegions" in data) & (data.highlightedRegions.indexOf(d.name) != -1))
-                    return "darkorange";
-                else
+                if (!(data.hasOwnProperty("highlightedRegions")))
                     return "steelblue";
+                else if (data.highlightedRegions.indexOf(d.name) == -1)
+                    return "steelblue";
+                else
+                    return "darkorange";
             }
 
             function moutFeature(d) {
