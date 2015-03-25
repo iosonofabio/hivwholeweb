@@ -14,7 +14,10 @@ def index(regionname):
     if regionname not in backbone.regions:
         abort(404)
 
+    pnames = ['p'+str(i) for i in xrange(1, 12)]
+
     return render_template('region.html',
                            region=regionname,
                            regions=backbone.regions, 
+                           pnames=pnames,
                            title='Region page')

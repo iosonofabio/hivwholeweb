@@ -280,11 +280,20 @@ function genomeChart() {
                 }
             }
     
+            function bgColor(d) {
+                if (("highlightedRegions" in data) & (data.highlightedRegions.indexOf(d.name) != -1))
+                    return "darkorange";
+                else
+                    return "steelblue";
+            }
+
             function moutFeature(d) {
                 // change color back
-                d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect")
-                    .style("fill", "steelblue");
-      
+                // if the feature has a native color, use it, otherwise steelblue
+                var fearect = d3.select("#" + d.name.replace(/[ ']/g, "-") + "rect");
+
+                fearect.style("fill", bgColor(d));
+
                 // hide tooltip
                 tip.hide(d);   
       
@@ -317,11 +326,11 @@ function genomeChart() {
                     .attr("y", 0)
                     .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
                     .attr("height", heightBlock)
-                    .style("fill", "steelblue")
+                    .style("fill", bgColor)
                     .style("fill-opacity", 0.5)
                     .style("stroke-width", 1)
                     .style("stroke", "black");
-      
+
                 // show text only of longer things (that's why we have a tooltip)
                 // FIXME: use a criterion that is more zoom-friendly
                 fea.append("text")
