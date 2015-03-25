@@ -30,6 +30,9 @@ hiv.register_blueprint(patient)
 from .blueprints.region import region
 hiv.register_blueprint(region)
 
+from .blueprints.data import data
+hiv.register_blueprint(data)
+
 from .blueprints.method import method, backbone
 hiv.register_blueprint(method)
 hiv.config['BLUEPRINTS']['METHOD'] = {'SECTIONS': backbone.sections}
