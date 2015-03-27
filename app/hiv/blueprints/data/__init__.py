@@ -10,4 +10,4 @@ data = Blueprint('data', __name__,
 @data.route('/', methods=['GET'])
 def index():
     return render_template('data.html',
-                          )
+                          title='Downloads')

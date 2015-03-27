@@ -1,4 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
-Page with the data download
+
+<div class="container" style="padding:20px">
+<!-- header -->
+  <div class="panel panel-default text-primary" style="text-align:center">
+    <div class="panel-body">
+      <h4><span class="glyphicon glyphicon-download-alt"></span> Data access</h4>
+    </div>
+  </div>
+<!-- content -->  
+  <div class="panel panel-default">
+      <div class="panel-heading"> 
+        <span class="text-primary">Patient specific data</span>
+      </div>
+      <div class="panel-body">
+         Info text 
+          <hr>
+         <p>patient: |DROP DOWN|</p>
+        <div id="dropdown">
+          <table class="table">
+            <thead>
+            <tr>
+            <th>samples</th>
+            <th>CD4+ counts</th>
+            <th>consensus sequence</th>
+            <th>gene annotation</th>
+            <th>data matrices</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td># 1</td>
+            <td>link</td>
+            <td>link</td>
+            <td>link</td>
+            <td>link</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading"> 
+      <span class="text-primary">Haplotypes</span>
+    </div>
+    <div class="panel-body">
+        Info text
+        <hr>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        FORM 1
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        FORM 2
+        </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading"> 
+      <span class="text-primary">Documentation</span>
+    </div>
+    <div class="panel-body">
+        link, discription etc.?
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading"> 
+      <a data-toggle="collapse" href="#raw">Raw sequencing data</a>
+    </div>
+    <div id="raw" class="panel-collapse collapse">
+      <div class="panel-body">
+          table
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

@@ -22,3 +22,9 @@ def publications():
 def impressum():
     return render_template('impress.html',
                            title='Impressum')
+
+
+@static.route('/controls/', methods=['GET'])
+def controls():
+    return render_template('controls.html',
+                           title='Controls')
