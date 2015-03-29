@@ -519,9 +519,9 @@ class LocalHaplotypeModel(object):
 
 class PatientTableModel(object):
 
-    def get_table_filename(self, full=True):
+    def get_table_filename(self, full=True, format='tsv'):
         '''Get the filename of the patient table'''
-	fn = 'patients.csv'
+	fn = 'patients.'+format
 	return data_folder[full]+'tables/'+fn
 
 
@@ -548,3 +548,39 @@ class PatientTableModel(object):
                 table.append(tline)
 
         return table
+
+
+class SampleTableModel(object):
+    def __init__(self, pname):
+        self.pname = pname
+
+
+    def get_table_filename(self, full=True, format='tsv'):
+        '''Get the filename of the patient table'''
+	fn = 'samples_'+self.pname+'.'+format
+	return data_folder[full]+'tables/'+fn
+
+
+    def get_table(self):
+        '''Read the table from file'''
+        fn = self.get_table_filename(full=True)
+
+        table = []
+        fieldinds = []
+        with open(fn, 'r') as f:
+            headerfields = f.readline().rstrip('\n').split('\t')
+            for field in headerfields:
+                if field == 'days since infection':
+                    field = 'time'
+                fieldinds.append(field) 
+
+            for line in f:
+                tline = {}
+                fieldsline = line.rstrip('\n').split('\t')
+                if len(fieldsline) == 0:
+                    continue
+                tline = {fieldinds[ifi]: '{:1.0f}'.format(float(field)) for ifi, field in enumerate(fieldsline)}
+                table.append(tline)
+
+        return table
+

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, abort
-from ...models import PatientTableModel
+from ...models import PatientTableModel, SampleTableModel
 
 patient = Blueprint('patient', __name__,
                     url_prefix='/patient',
@@ -18,10 +18,13 @@ def index(patient_number):
     tree_regions = ['V3', 'psi', 'p17', 'RRE']
     divdiv_regions = ['V3', 'psi', 'p17', 'RRE']
 
+    sample_table = SampleTableModel(pname).get_table()
+
     return render_template('patient.html',
                            pname=pname,
                            pnames=pnames,
                            patientTable=table, 
+                           sampleTable=sample_table,
                            treeRegions=tree_regions,
                            divDivRegions=divdiv_regions,
                            title='Patient page')

@@ -57,18 +57,47 @@
       <div class="panel-body">
       <!-- Summary content -->
         <div class="row">
-		      <div class="col-xs-6">
-            <!-- div 1 -->
+	  <div class="col-xs-6">
             <dl class="dl-horizontal">
               {% for row in patientTable %}
               {% if row['Patient'] == pname %}
               <dt>subtype</dt><dd>{{row['Subtype']}}</dd>
               <dt>&#35; samples</dt><dd>{{row['# samples']}}</dd>
-              <dt>1st sample [days]</dt><dd>{{row['1st sample']}}</dd>
-              <dt>last sample [days]</dt><dd>{{row['last sample']}}</dd>
               {% endif %}
               {% endfor %}
-            </dl>      
+            </dl>
+	    <!-- SAMPLE TABLE -->
+            <table class="table">
+              <thead>
+                <tr>
+	          <th>Time</th>
+                  <th colspan="6" align="center">Number of RNA templates per PCR</th>
+                </tr>
+	        <tr>
+	          <th>[days since infection]</th>
+                  <th>F1</th>
+                  <th>F2</th>
+                  <th>F3</th>
+                  <th>F4</th>
+                  <th>F5</th>
+                  <th>F6</th>
+	        </tr>
+              </thead>
+              <tbody>
+	        {% for row in sampleTable %}
+                <tr>
+	          <td>{{row.time}}</td>
+	          <td>{{row.F1q}}</td>
+	          <td>{{row.F2q}}</td>
+	          <td>{{row.F3q}}</td>
+	          <td>{{row.F4q}}</td>
+	          <td>{{row.F5q}}</td>
+	          <td>{{row.F6q}}</td>
+	        </tr>
+	        {% endfor %}
+              </tbody>
+            </table>
+	    <!-- END SAMPLE TABLE -->
           </div>
 	  <div class="col-xs-6">
             <svg id='treeSvg{{pname}}Sum'></svg>
