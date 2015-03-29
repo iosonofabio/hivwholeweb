@@ -1,3 +1,4 @@
+from flask import render_template, abort
 from . import hiv
 
 # Proxy view factory for static files, for download
@@ -7,12 +8,16 @@ from . import hiv
 # TODO: fix robots.txt
 @hiv.route('/download/<path:path>')
 def data_proxy(path):
+    import re
+
     sf = hiv.config['DATA_SUBFOLDER']
 
-    fields = resplit('_|\.', path)
+    fields = re.split('_|\.', path)
     dtype = fields[0]
 
     # Switch by data type
+    # FIXME: we should be using data models to manage these paths, not
+    # hardcode them!
     if dtype == 'tree':
         if len(fields) < 4:
             abort(404)
@@ -44,6 +49,14 @@ def data_proxy(path):
         pname = fields[1]
         format = fields[2]
         fn = sf+'/sequences/reference_'+pname+'_genomewide.'+format
+        return hiv.send_static_file(fn)
+
+    elif dtype == 'act':
+        if len(fields) < 3:
+            abort(404)
+        pname = fields[1]
+        format = fields[2]
+        fn = sf+'/one_site/allele_counts_'+pname+'_genomewide.'+format
         return hiv.send_static_file(fn)
 
     elif dtype == 'divdiv':

@@ -211,8 +211,8 @@ class AlleleFrequencyModel(object):
         self.pname = pname
 
 
-    def get_allele_counts_filename(self, full=True):
-        fn = 'allele_counts_'+self.pname+'_genomewide.npz'
+    def get_allele_counts_filename(self, full=True, format='npz'):
+        fn = 'allele_counts_'+self.pname+'_genomewide.'+format
         return data_folder[full]+'one_site/'+fn
 
 

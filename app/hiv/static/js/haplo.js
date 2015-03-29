@@ -1,28 +1,27 @@
-function update(data, id) {
-
- var margin = {'top': 20, 'bottom': 10, 'left': 40, 'right': 40},
-     width = $('#haploThumbnail').width() - margin.left - margin.right,
-     height = $('#haploThumbnail').height() - margin.top - margin.bottom;
-
-  var vis = d3.select("#haploThumbnail").append("g")
-       .attr("id", "haploThumbnailVis")
-       .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-       .datum(data);
-
-  var x = d3.scale.linear()
-           .domain([1, data.len + 50])
-	   .range([0, width])
- 
-  vis.append("line")
-   .attr("x1", x.range()[0])
-   .attr("x2", x.range()[1])
-   .attr("y1", 0)
-   .attr("y2", 0)
-   .style("stroke", "black")
-   .style("stroke-width", 5);
-
-  addRegion($("#region option:selected").text());
-
+function updateHaplo(id, data) {
+    var margin = {'top': 20, 'bottom': 10, 'left': 40, 'right': 40},
+        width = $('#'+id).width() - margin.left - margin.right,
+        height = $('#'+id).height() - margin.top - margin.bottom;
+  
+    var svg = d3.select("#"+id),
+        vis = svg.append("g")
+         .attr("id", "haploThumbnailVis")
+         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+         .datum(data.data);
+  
+    var x = d3.scale.linear()
+        .domain([1, data.len + 50])
+  	.range([0, width]);
+   
+    vis.append("line")
+        .attr("x1", x.range()[0])
+        .attr("x2", x.range()[1])
+        .attr("y1", 0)
+        .attr("y2", 0)
+        .style("stroke", "black")
+        .style("stroke-width", 5);
+  
+    addRegion($("#region option:selected").text());
 }
 
 
