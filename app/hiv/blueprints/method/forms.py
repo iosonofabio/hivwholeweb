@@ -19,14 +19,10 @@ _regions = ('V3', 'PR', 'psi', 'vpr', 'vpu', 'p15', 'p17',
 
 # Classes
 class RoiForm(Form):
-    # FIXME: allow all fragments, including HXB2 and genomewide
-    region = SelectField('Region',
-                           choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])
-    start = IntegerField('Start')
-    end = IntegerField('End')
+    # It only accepts one region, we only use genomewide HXB2 coordinates
+    start = IntegerField('From')
+    end = IntegerField('To')
 
-    # TODO: make dynamic validator that accepts different fragment
-    # arguments, e.g. genomewide or HXB2
     # TODO: make clean meassages for failures
     def validate(self):
 

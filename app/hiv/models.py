@@ -417,6 +417,12 @@ class LocalHaplotypeModel(object):
 	return data_folder[full]+'patients/'+fn
 
 
+    def get_coordinate_map_filename(self, full=True, refname='HXB2', format='tsv'):
+        '''Get the filename of the coordinate map'''
+	fn = 'coordinate_map_'+self.pname+'_'+refname+'_genomewide.'+format
+	return data_folder[full]+'coordinate_maps/'+fn
+
+
     def get_local_haplotype_filename(self, tmp_root_folder=None, full=True):
         '''Get the filename of a temporary file with the haplotype data'''
         import random
@@ -434,10 +440,79 @@ class LocalHaplotypeModel(object):
         return fn
 
 
-    def clean_temporary_folders(self):
-        import shutil
+    def translate_coordinates(self):
+        import numpy as np
+        # NOTE: the map is always genomewide??
+        mapco = dict(np.loadtxt(self.get_coordinate_map_filename(full=True)))
+
+        # In case the coordinate is missing, extend the region
+        # Translate start position
+        pos = self.roi[1]
+        while pos not in mapco:
+            pos -= 1
+        pmin = min(mapco.iterkeys())
+        pos = max(pos, pmin)
+        start = mapco[pos]
+
+        # Translate end position
+        pos = self.roi[2]
+        while pos not in mapco:
+            pos += 1
+        pmax = max(mapco.iterkeys())
+        pos = min(pos, pmax)
+        end = mapco[pos]
+
+        # Find the fragment if available
+        from Bio import SeqIO
+        refseq = SeqIO.read(GenomeModel(self.pname).get_reference_filename(), 'gb')
+        for fea in refseq.features:
+            feaname = fea.qualifiers['note'][0]
+            if feaname not in ['F'+str(i) for i in xrange(1, 7)]:
+                continue
+
+            fea_start = fea.location.nofuzzy_start
+            fea_end = fea.location.nofuzzy_end
+
+            if (fea_start <= start) and (fea_end >= end):
+                start -= fea_start
+                end -= fea_start
+                break
+        else:
+            raise ValueError('No fragment fully covering the haplotype')
+
+        self.roi = (feaname, start, end)
+
+
+    def clean_temporary_folders(self, timeout='default'):
+        import os, shutil
+
+        if timeout == 'default':
+            from . import hiv
+            timeout = hiv.config['TIMEOUT_TMP']
+
+        if timeout is not None:
+            import time
+            now = time.time()
+
+        if isinstance(timeout, basestring):
+            unit = timeout[-1]
+            timeout = float(timeout[:-1])
+            if timeout in ['m', 'h', 'd', 'w']:
+                timeout *= 60
+            if timeout in ['h', 'd', 'w']:
+                timeout *= 60
+            if timeout in ['d', 'w']:
+                timeout *= 24
+            if timeout in ['w']:
+                timeout *= 7
+
         for dirname in self.dirnames:
             if os.path.isdir(dirname):
+                if timeout is not None:
+                    timem = os.path.getmtime(dirname)
+                    if (now - timem) < timeout:
+                        continue
+
                 shutil.rmtree(dirname)
         self.dirnames = []
 
@@ -480,10 +555,14 @@ class LocalHaplotypeModel(object):
             raise ValueError('File format not recognized')
 
 
-    def get_data(self, tmp_root_folder=None):
+
+    def get_data(self, clean=True):
         '''Get the data'''
 	import numpy as np
         from .analysis.get_local_haplotypes import get_local_haplotypes_aligned
+
+        if clean:
+            self.clean_temporary_folders()
 
 	times = np.loadtxt(self.get_timeline_filename())
 

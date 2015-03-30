@@ -57,14 +57,14 @@
       <span class="text-primary">Haplotypes</span>
     </div>
     <div class="panel-body">
-      <div class="col-md-6">
+      <div class="col-md-5">
         <div class="thumbnail">
           <h4>Precompiled alignments</h4>
           <p>These alignments are premade for regions of general interest.</p>
 	  <div class="svg-container">
 	    <svg id="haploThumbnail" width=400 height=70></svg>
 	  </div>
-          <form role="form" action="" method="post" name="haplo_precompiled">
+          <form role="form" action="" method="post" name="haplo_precompiled" style="padding-bottom:10px">
             <div class="form-group">
               {{formpc.hidden_tag()}}
               {{formpc.patient.label}}
@@ -76,20 +76,16 @@
           </form>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-7">
         <div class="thumbnail">
           <h4>New alignments</h4>
           <p>Generate alignments for a custom genomic region.</p>
-          <form role="form" action="" method="post" name="haplo_settings">
+          <form role="form" action="" method="post" name="haplo_settings" style="padding:10px">
             {{form.hidden_tag()}}
             {{form.roi.hidden_tag()}}
             <div class="form-group">
               {{form.patient.label}}
               {{form.patient}}
-              {{form.roi.region.label}}
-              {{form.roi.region}}
-            </div>
-            <div class="form-group">
               {{form.roi.start.label}}
               {{form.roi.start}}
               {{form.roi.end.label}}

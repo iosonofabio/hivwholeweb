@@ -328,29 +328,43 @@ def haplotypes():
         return redirect('/download/haplotypes_'+pname+'_'+region+'.zip')
 
     elif form.validate_on_submit():
+        # NOTE: we offer only genomewide HXB2 coordinates
+        region = 'genomewide'
         pname = form.patient.data
-        region = form.roi.region.data
         start = form.roi.start.data - 1 #Inclusive coordinates
         end = form.roi.end.data
         roi = (region, start, end)
 
         hm = LocalHaplotypeModel(pname, roi)
+        try:
+            hm.translate_coordinates()
+        except ValueError:
+            flash('No PCR fragment covers such region, please select a narrower region')
 
-        # Get the data in a temporary folder/file
-        tmp_folder = '/home/hivwholewebu1/tmp/'
-        fn = hm.get_data(tmp_root_folder=tmp_folder)
+            return render_template('haplotypes.html',
+                           title=section['name'],
+                           show_intro=show_intro,
+                           form=form,
+                           formpc=formpc,
+                           section_name=section['name'],
+                          )
 
-        # Read it in...
-        with open(fn, 'r') as f:
-            fstr = f.read()
 
-        # ...and delete it
-        hm.clean_temporary_folders()
+        # Get the data from a temporary folder + file
+        # NOTE: the temp folders are cleaned regularly at a timeout specified
+        # in the config file, so no need to to that here.
+        fn = hm.get_data()
 
         # TODO: refine this to show a success page with a download link etc. (that
         # changes the policies on temporary files, storage use, etc., so watch out)
+        with open(fn, 'r') as f:
+            fstr = f.read()
         response = make_response(fstr)
-        response.headers["Content-Disposition"] = "attachment; filename=alignments.zip"
+        response.headers["Content-Disposition"] = ("attachment; filename="+
+                                                   "haplotypes_"+pname+
+                                                   "_"+str(start+1)+
+                                                   "_"+str(end)+
+                                                   ".zip")
         return response
 
 

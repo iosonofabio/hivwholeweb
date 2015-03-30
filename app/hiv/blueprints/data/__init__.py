@@ -12,6 +12,7 @@ data = Blueprint('data', __name__,
 def index():
     # Haplotype forms
     from ..method.forms import LocalHaplotypeForm, PrecompiledHaplotypeForm
+    from ...models import LocalHaplotypeModel
     form = LocalHaplotypeForm()
     formpc = PrecompiledHaplotypeForm()
 
@@ -26,7 +27,38 @@ def index():
             return redirect('/download/haplotypes_'+pname+'_'+region+'.zip')
 
         elif form.validate_on_submit():
-            flash('UNDER CONSTRUCTION!')
+            # NOTE: we offer only genomewide HXB2 coordinates
+            region = 'genomewide'
+            pname = form.patient.data
+            start = form.roi.start.data - 1 #Inclusive coordinates
+            end = form.roi.end.data
+            roi = (region, start, end)
+
+            hm = LocalHaplotypeModel(pname, roi)
+            try:
+                hm.translate_coordinates()
+                cont = True
+            except ValueError:
+                flash('No PCR fragment covers such region, please select a narrower region')
+                cont = False
+
+            if cont:
+                # Get the data from a temporary folder + file
+                # NOTE: the temp folders are cleaned regularly at a timeout specified
+                # in the config file, so no need to to that here.
+                fn = hm.get_data()
+
+                # TODO: refine this to show a success page with a download link etc. (that
+                # changes the policies on temporary files, storage use, etc., so watch out)
+                with open(fn, 'r') as f:
+                    fstr = f.read()
+                response = make_response(fstr)
+                response.headers["Content-Disposition"] = ("attachment; filename="+
+                                                           "haplotypes_"+pname+
+                                                           "_"+str(start+1)+
+                                                           "_"+str(end)+
+                                                           ".zip")
+                return response
 
 
     # NOTE: we are using the proxy view for static downloads as a screen

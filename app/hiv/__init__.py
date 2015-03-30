@@ -14,8 +14,6 @@ from flask import Flask
 # TODO: fix static folder, this requires adapting HTML templates
 hiv = Flask(__name__)
 hiv.config.from_object('config')
-hiv.config['DATA_SUBFOLDER'] = 'data'
-hiv.config['BLUEPRINTS'] = {}
 
 # welcome page is the index
 from .blueprints.welcome import welcome
@@ -39,7 +37,6 @@ hiv.config['BLUEPRINTS']['METHOD'] = {'SECTIONS': backbone.sections}
 
 from .blueprints.static import static
 hiv.register_blueprint(static)
-
 
 # Import the views
 from . import views
