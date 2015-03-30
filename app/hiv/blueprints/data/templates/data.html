@@ -24,36 +24,35 @@
         <span class="text-primary">Patient specific data</span>
       </div>
       <div class="panel-body">
-        
-          <table class="table">
-            <thead>
+        <table class="table">
+          <thead>
+          <tr>
+          <th>Patient</th>
+          <th>Samples</th>
+          <th>Viral load</th>
+          <th>CD4+ counts</th>
+          <th>Reference</th>
+          <th>Allele counts</th>
+          </tr>
+          </thead>
+          <tbody>
+	    {% for datum in data %}
             <tr>
-            <th>Patient</th>
-            <th>Samples</th>
-            <th>Viral load</th>
-            <th>CD4+ counts</th>
-            <th>Reference</th>
-            <th>Allele counts</th>
-            </tr>
-            </thead>
-            <tbody>
-	      {% for datum in data %}
-              <tr>
-	        <td>{{datum.pname}}</td>
-	        <td>{{datum.nsamples}}</td>
-		<td><a href="{{datum.vl}}">DAT</a></td>
-		<td><a href="{{datum.cd4}}">DAT</a></td>
-		<td><a href="{{datum.refgb}}">GB</a> | <a href="{{datum.reffa}}">Fasta</a></td>
-		<td><a href="{{datum.act}}">ZIP</a></td>
-	      </tr>
-	      {% endfor %}
-            </tbody>
-          </table>
-          <!-- table description -->
-          <dl class="dl-horizontal">
-            <dt>column1</dt><dd>description1</dd>
-            <dt>column2</dt><dd>description2</dd>
-          </dl>
+	      <td>{{datum.pname}}</td>
+	      <td>{{datum.nsamples}}</td>
+	      <td><a href="{{datum.vl}}">DAT</a></td>
+	      <td><a href="{{datum.cd4}}">DAT</a></td>
+	      <td><a href="{{datum.refgb}}">GB</a> | <a href="{{datum.reffa}}">Fasta</a></td>
+	      <td><a href="{{datum.act}}">ZIP</a></td>
+	    </tr>
+	    {% endfor %}
+          </tbody>
+        </table>
+        <!-- NOTE: Richard wants this! table description -->
+        <dl class="dl-horizontal">
+          <dt>column1</dt><dd>description1</dd>
+          <dt>column2</dt><dd>description2</dd>
+        </dl>
       </div>
   </div>
   <div class="panel panel-default">
@@ -130,6 +129,33 @@
 	  <div id="reads{{datum.pname}}" class="tab-pane fade">
 	  {% endif %}
 	    table with bam files for {{datum.pname}}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Sample</th>
+                  <th>F1</th>
+                  <th>F2</th>
+                  <th>F3</th>
+                  <th>F4</th>
+                  <th>F5</th>
+                  <th>F6</th>
+                </tr>
+              </thead>
+              <tbody>
+		{% for sample in datum.samples %}
+                <tr>
+   	          <td>{{sample.time}}</td>
+		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F1.bam">BAM</a></td>
+		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F2.bam">BAM</a></td>
+		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F3.bam">BAM</a></td>
+		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F4.bam">BAM</a></td>
+		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F5.bam">BAM</a></td>
+		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F6.bam">BAM</a></td>
+   	        </tr>
+   	      {% endfor %}
+              </tbody>
+            </table>
+
           </div>
 	  {% endfor %}
         </div>

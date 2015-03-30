@@ -65,13 +65,16 @@ def index():
     # to the real locations on the server. A nice side effect is that we need
     # not instantiate data models within this view.
     # That factory is quite poorly written though, and would need some love.
-    from ...models import PatientTableModel
+    from ...models import PatientTableModel, SampleTableModel
     data = []
     table = PatientTableModel().get_table()
     d = lambda x: '/download/'+x
     for row in table:
         pname = row['Patient']
         n_samples = row['# samples']
+
+        sample = SampleTableModel(pname)
+        samples = sample.get_table(fields=['time'])
 
         data.append({'pname': pname,
                      'nsamples': n_samples,
@@ -80,6 +83,7 @@ def index():
                      'refgb': d('genome_'+pname+'.gb'),
                      'reffa': d('genome_'+pname+'.fasta'),
                      'act': d('act_'+pname+'.zip'),
+                     'samples': samples,
                     })
 
     return render_template('data.html',

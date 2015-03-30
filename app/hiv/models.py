@@ -640,7 +640,7 @@ class SampleTableModel(object):
 	return data_folder[full]+'tables/'+fn
 
 
-    def get_table(self):
+    def get_table(self, fields=None):
         '''Read the table from file'''
         fn = self.get_table_filename(full=True)
 
@@ -651,14 +651,20 @@ class SampleTableModel(object):
             for field in headerfields:
                 if field == 'days since infection':
                     field = 'time'
-                fieldinds.append(field) 
+
+                if (fields is None) or (field in fields):
+                    fieldinds.append(field)
 
             for line in f:
                 tline = {}
                 fieldsline = line.rstrip('\n').split('\t')
                 if len(fieldsline) == 0:
                     continue
-                tline = {fieldinds[ifi]: '{:1.0f}'.format(float(field)) for ifi, field in enumerate(fieldsline)}
+
+                for ifi, field in enumerate(fieldsline):
+                    if ifi >= len(fieldinds):
+                        break
+                    tline[fieldinds[ifi]] = '{:1.0f}'.format(float(field))
                 table.append(tline)
 
         return table

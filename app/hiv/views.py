@@ -91,4 +91,14 @@ def data_proxy(path):
         fn = sf+'/alignments/consensi_alignment_'+pname+'_'+fragment+'.'+format
         return hiv.send_static_file(fn)
 
+    elif dtype == 'reads':
+        if len(fields) < 5:
+            abort(404)
+        pname = fields[1]
+        tind = fields[2]
+        fragment = fields[3]
+        format = fields[4]
+        fn = sf+'/patients/'+pname+'/'+tind+'/'+fragment+'.'+format
+        return hiv.send_static_file(fn)
+
     abort(404)
