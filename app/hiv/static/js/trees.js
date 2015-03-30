@@ -344,7 +344,7 @@ function treeChart() {
                       m = projectRadial({angle: d.target.angle, radius: d.source.radius}),
                       t = d.target,
                       r = d.source.radius,
-                      sweep = d.target.x > d.source.x ? 1 : 0;
+                      sweep = d.target.angle > d.source.angle ? 1 : 0;
                   return (
                     "M" + s.x + "," + s.y +
                     "A" + r + "," + r + " 0 0," + sweep + " " + m.x + "," + m.y +
