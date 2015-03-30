@@ -132,13 +132,17 @@
               <thead>
                 <tr>
                   <th>Sample</th>
+                  <th colspan="6" align="center">PCR amplicon</th>
+                </tr>
+	        <tr>
+	          <th>[days since infection]</th>
                   <th>F1</th>
                   <th>F2</th>
                   <th>F3</th>
                   <th>F4</th>
                   <th>F5</th>
                   <th>F6</th>
-                </tr>
+	        </tr>
               </thead>
               <tbody>
 		{% for sample in datum.samples %}
