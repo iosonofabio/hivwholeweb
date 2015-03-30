@@ -24,7 +24,7 @@
         <span class="text-primary">Patient specific data</span>
       </div>
       <div class="panel-body">
-        <div id="dropdown">
+        
           <table class="table">
             <thead>
             <tr>
@@ -49,7 +49,11 @@
 	      {% endfor %}
             </tbody>
           </table>
-        </div>
+<!-- table description -->       
+          <dl class="dl-horizontal">
+          <dt>column1</dt><dd>description1</dd>
+          <dt>column2</dt><dd>description2</dd>
+          </dl>
       </div>
   </div>
   <div class="panel panel-default">
@@ -75,6 +79,10 @@
             <button type="submit" class="btn btn-default">Download</button>
           </form>
         </div>
+<!-- form 1 description -->
+      <dl class="dl-horizontal">
+          <dt>form1</dt><dd>description1</dd>
+      </dl>
       </div>
       <div class="col-md-6">
         <div class="thumbnail">
@@ -99,7 +107,15 @@
             <button type="submit" class="btn btn-default">Generate</button>
           </form>
         </div>
-      </div>
+
+<!-- form 2 description -->
+        <dl class="dl-horizontal">
+          <dt>form2</dt><dd>description2</dd>
+        </dl>
+
+      </div> 
+<!-- put continuous text here if you need full width of haplo div -->   
+
     </div>
   </div>
   <div class="panel panel-default">
@@ -108,16 +124,23 @@
     </div>
     <div id="raw" class="panel-collapse collapse">
       <div class="panel-body">
-          table
+
+<!-- tab design draft for read data -->          
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#p1">p1</a></li>
+            <li><a data-toggle="tab" href="#p">...</a></li>
+        </ul> 
+
+        <div class="tab-content">
+          <div id="p1" class="tab-pane fade in active">
+              table with bam files for p1
+          </div>
+          <div id="p" class="tab-pane fade">
+              ...
+          </div>
+        </div>
+
       </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading"> 
-      <span class="text-primary">Documentation</span>
-    </div>
-    <div class="panel-body">
-        link, discription etc.?
     </div>
   </div>
 </div>
