@@ -20,10 +20,10 @@ sections = [{'id': 'physio', 'name': 'Viral load and CD4+ counts', 'url': '/phys
             {'id': 'cov', 'name': 'Coverage', 'url': '/coverage/',
              'thumbnail': '/static/images/icons/coverage.svg',
              'thumbnail_white': '/static/images/icons/coverage_white.svg'},
-            {'id': 'af', 'name': 'Allele frequencies', 'url': '/allele_frequencies/',
+            {'id': 'af', 'name': 'Single nucleotide variant frequencies', 'url': '/allele_frequencies/',
              'thumbnail': '/static/images/icons/allele_frequencies.svg',
              'thumbnail_white': '/static/images/icons/allele_frequencies_white.svg'},
-            {'id': 'haplo', 'name': 'Local haplotypes', 'url': '/local_haplotypes/',
+            {'id': 'haplo', 'name': 'Haplotypes', 'url': '/local_haplotypes/',
              'thumbnail': '/static/images/icons/haplotype_frequencies.svg',
              'thumbnail_white': '/static/images/icons/haplotype_frequencies_white.svg'},
            ]

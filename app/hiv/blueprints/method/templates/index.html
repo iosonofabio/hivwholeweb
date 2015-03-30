@@ -1,36 +1,39 @@
 {% extends "no-sidebar.html" %}
 {% block content %}
 <div class="coverpage main">
-<div class="indexthumbs">
- {% for section in config.BLUEPRINTS.METHOD.SECTIONS %}
-   {% if (loop.index + 3) is divisibleby(3) %}
+  <div class="indexthumbs">
+    {% for section in config.BLUEPRINTS.METHOD.SECTIONS %}
+    {% if loop.index0 % 2 %}
     <div class="row">
-   {% endif %}
-    <div class="col-sm-6 col-md-4">
-     <div class="thumbnail">
-       {% if section.thumbnail %}
-	{% if section.url %}
-	 <a href={{section.url_complete}}><img width="100" src="{{section.thumbnail}}" alt="{{section.name}}"></a>
-	{% else %}
-	 <img width="100" src="{{section.thumbnail}}" alt="{{section.name}}">
-	{% endif %}
-       {% else %}
-	<img width="100" src="/static/images/icons/question.svg" alt="...">
-       {% endif %}
-       <div class="caption">
-         {% if section.url %}
-          <h3><a href={{section.url_complete}}>{{section.name}}</a></h3>
-         {% else %} 
- 	 <h3>{{section.name}}</h3>
-         {% endif %}
-        <p>{{section.caption}}</p>
-       </div>
-     </div>
+    {% endif %}
+      <div class="col-sm-2">
+        <div class="thumbnail">
+          {% if section.thumbnail %}
+          {% if section.url %}
+          <a href={{section.url_complete}}><img width="100" src="{{section.thumbnail}}" alt="{{section.name}}"></a>
+          {% else %}
+          <img width="100" src="{{section.thumbnail}}" alt="{{section.name}}">
+          {% endif %}
+          {% else %}
+          <img width="100" src="/static/images/icons/question.svg" alt="...">
+          {% endif %}
+          <div class="caption">
+            {% if section.url %}
+            <h4><a href={{section.url_complete}}>{{section.name}}</a></h4>
+            {% else %} 
+            <h4>{{section.name}}</h4>
+            {% endif %}
+            <p>{{section.caption}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        {% include ["snippets/"+section.id+".html", "snippets/dumb.html"] ignore missing %}
+      </div>
+    {% if loop.index0 % 2 %}
     </div>
-   {% if (loop.index + 3) is divisibleby(3) %}
-    </div>
-   {% endif %}
- {% endfor %}
-</div>
+    {% endif %}
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}
