@@ -12,13 +12,13 @@
 {% endwith %}
 
 <div class="container" style="padding:20px">
-<!-- header -->
+  <!-- header -->
   <div class="panel panel-default text-primary" style="text-align:center">
     <div class="panel-body">
       <h4><span class="glyphicon glyphicon-download-alt"></span> Data access</h4>
     </div>
   </div>
-<!-- content -->  
+  <!-- content -->  
   <div class="panel panel-default">
       <div class="panel-heading"> 
         <span class="text-primary">Patient specific data</span>
@@ -49,10 +49,10 @@
 	      {% endfor %}
             </tbody>
           </table>
-<!-- table description -->       
+          <!-- table description -->
           <dl class="dl-horizontal">
-          <dt>column1</dt><dd>description1</dd>
-          <dt>column2</dt><dd>description2</dd>
+            <dt>column1</dt><dd>description1</dd>
+            <dt>column2</dt><dd>description2</dd>
           </dl>
       </div>
   </div>
@@ -79,10 +79,6 @@
             <button type="submit" class="btn btn-default">Download</button>
           </form>
         </div>
-<!-- form 1 description -->
-      <dl class="dl-horizontal">
-          <dt>form1</dt><dd>description1</dd>
-      </dl>
       </div>
       <div class="col-md-7">
         <div class="thumbnail">
@@ -103,15 +99,8 @@
             <button type="submit" class="btn btn-default">Generate</button>
           </form>
         </div>
-
-<!-- form 2 description -->
-        <dl class="dl-horizontal">
-          <dt>form2</dt><dd>description2</dd>
-        </dl>
-
-      </div> 
-<!-- put continuous text here if you need full width of haplo div -->   
-
+      </div>
+      <!-- put continuous text here if you need full width of haplo div -->
     </div>
   </div>
   <div class="panel panel-default">
@@ -121,19 +110,28 @@
     <div id="raw" class="panel-collapse collapse">
       <div class="panel-body">
 
-<!-- tab design draft for read data -->          
+        <!-- tab design draft for read data -->
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#p1">p1</a></li>
-            <li><a data-toggle="tab" href="#p">...</a></li>
+	  {% for datum in data %}
+	  {% if datum.pname == "p1" %}
+	  <li class="active"><a data-toggle="tab" href="#reads{{datum.pname}}">{{datum.pname}}</a></li>
+	  {% else %}
+	  <li><a data-toggle="tab" href="#reads{{datum.pname}}">{{datum.pname}}</a></li>
+	  {% endif %}
+	  {% endfor %}
         </ul> 
 
         <div class="tab-content">
-          <div id="p1" class="tab-pane fade in active">
-              table with bam files for p1
+	  <!-- need for a jinja for cycle over the patients -->
+	  {% for datum in data %}
+	  {% if datum.pname == "p1" %}
+	  <div id="reads{{datum.pname}}" class="tab-pane fade in active">
+	  {% else %}
+	  <div id="reads{{datum.pname}}" class="tab-pane fade">
+	  {% endif %}
+	    table with bam files for {{datum.pname}}
           </div>
-          <div id="p" class="tab-pane fade">
-              ...
-          </div>
+	  {% endfor %}
         </div>
 
       </div>
