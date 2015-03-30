@@ -98,7 +98,8 @@ def data_proxy(path):
         tind = fields[2]
         fragment = fields[3]
         format = fields[4]
-        fn = sf+'/patients/'+pname+'/'+tind+'/'+fragment+'.'+format
+        fn = sf+'/patients/'+pname+'/samples/'+tind+'/'+fragment+'.'+format
+        print fn
         return hiv.send_static_file(fn)
 
     abort(404)
