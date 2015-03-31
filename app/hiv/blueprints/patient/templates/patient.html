@@ -71,7 +71,7 @@
               <thead>
                 <tr>
 	          <th>Time</th>
-                  <th colspan="6" align="center">Number of RNA templates per PCR</th>
+                  <th colspan="6" align="center">Estimated number of RNA templates per PCR</th>
                 </tr>
 	        <tr>
 	          <th>[days since infection]</th>
@@ -100,7 +100,9 @@
 	    <!-- END SAMPLE TABLE -->
           </div>
 	  <div class="col-xs-6">
-            <svg id='treeSvg{{pname}}Sum'></svg>
+	   <p>Phylogenetic tree of <b>V3</b> in patient {{pname}}.
+	   <!-- <svg id='treeSvg{{pname}}Sum'></svg> -->
+	   <img src='/static/data/trees/tree_{{pname}}_V3_example.svg'>
           </div>
         </div>
       </div>
@@ -222,7 +224,43 @@
         </div>
       <div id="haplo" class="panel-collapse collapse">
         <div class="panel-body">
-          local haplotypes
+          <div class="row">
+            <div class="col-md-6">
+              <div class="thumbnail">
+                <h4>Precompiled alignments</h4>
+                <p>These alignments are premade for regions of general interest.</p>
+                <div class="svg-container">
+                  <svg id="haploThumbnail" width=400 height=70></svg>
+                </div>
+                <form role="form" action="" method="post" name="haplo_precompiled" style="padding-bottom:10px">
+                  <div class="form-group">
+                    {{formpc.hidden_tag()}}
+                    {{formpc.region.label}}
+                    {{formpc.region}}
+                  </div>
+                  <button type="submit" class="btn btn-default">Download</button>
+                </form>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="thumbnail">
+                <h4>New alignments</h4>
+                <p>Generate alignments for a custom genomic region.</p>
+                <form role="form" action="" method="post" name="haplo_settings" style="padding:10px">
+                  {{form.roi.hidden_tag()}}
+                  <div class="form-group">
+                    {{form.roi.start.label}}
+                    {{form.roi.start}}
+                    {{form.roi.end.label}}
+                    {{form.roi.end}}
+                  </div>
+                  <p><b>From</b>/<b>To</b> require <b>HXB2</b> coordinates (both ends included).</p>
+                  <p><b>NOTE</b>: A few <b>minutes</b> might elapse while we prepare your data.</p>
+                  <button type="submit" class="btn btn-default">Generate</button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -471,6 +509,28 @@ $('select.divDivRegion').on('change', function(){
 });
 
 </script>
+
+<script type="text/javascript" src="/static/js/haplo.js"></script>
+<script type="text/javascript">
+function loadHaplo(id, pname) {
+    d3.xhr("/method/genomes/")
+        .header("Content-Type", "application/json")
+        .post(
+          JSON.stringify({patient: pname}),
+          function(error, request) {
+           var data = JSON.parse(request.responseText);
+           updateHaplo(id, {'data': data.data, 'pname': pname});
+          });
+}
+loadHaplo("haploThumbnail", "HXB2");
+
+$('#region').change(function() {
+ $("#region option:selected").each(function() {
+  moveRegion($(this).text());
+ });
+});
+</script>
+
 
 
 <!-- NOTE: the tag below is a trick for the tree plot -->

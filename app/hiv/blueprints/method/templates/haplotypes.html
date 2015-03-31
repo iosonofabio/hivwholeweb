@@ -13,46 +13,46 @@
  <h3>Choose one option:</h3>
  <br>
  <div class="row">
- <div class="col-md-6">
-  <div class="thumbnail">
-   <h4>Precompiled alignments</h4>
-   <p>These alignments are premade for regions of general interest.</p>
-   <div class="svg-container">
-     <svg id="haploThumbnail" width=400 height=70></svg>
+   <div class="col-md-6">
+     <div class="thumbnail">
+       <h4>Precompiled alignments</h4>
+       <p>These alignments are premade for regions of general interest.</p>
+       <div class="svg-container">
+         <svg id="haploThumbnail" width=400 height=70></svg>
+       </div>
+       <form role="form" action="" method="post" name="haplo_precompiled" style="padding-bottom:10px">
+         <div class="form-group">
+           {{formpc.hidden_tag()}}
+           {{formpc.patient.label}}
+           {{formpc.patient}}
+           {{formpc.region.label}}
+           {{formpc.region}}
+         </div>
+         <button type="submit" class="btn btn-default">Download</button>
+       </form>
+     </div>
    </div>
-   <form role="form" action="" method="post" name="haplo_precompiled" style="padding-bottom:10px">
-    <div class="form-group">
-    {{formpc.hidden_tag()}}
-    {{formpc.patient.label}}
-    {{formpc.patient}}
-    {{formpc.region.label}}
-    {{formpc.region}}
-    </div>
-    <button type="submit" class="btn btn-default">Download</button>
-   </form>
-  </div>
- </div>
- <div class="col-md-6">
-  <div class="thumbnail">
-   <h4>New alignments</h4>
-   <p>Generate alignments for a custom genomic region.</p>
-   <form role="form" action="" method="post" name="haplo_settings" style="padding:10px">
-    {{form.hidden_tag()}}
-    {{form.roi.hidden_tag()}}
-    <div class="form-group">
-     {{form.patient.label}}
-     {{form.patient}}
-     {{form.roi.start.label}}
-     {{form.roi.start}}
-     {{form.roi.end.label}}
-     {{form.roi.end}}
-    </div>
-    <p><b>From</b>/<b>To</b> require <b>HXB2</b> coordinates (both ends included).</p>
-    <p><b>NOTE</b>: A few <b>minutes</b> might elapse while we prepare your data.</p>
-    <button type="submit" class="btn btn-default">Generate</button>
-   </form>
-  </div>
- </div>
+   <div class="col-md-6">
+     <div class="thumbnail">
+       <h4>New alignments</h4>
+       <p>Generate alignments for a custom genomic region.</p>
+       <form role="form" action="" method="post" name="haplo_settings" style="padding:10px">
+         {{form.hidden_tag()}}
+         {{form.roi.hidden_tag()}}
+         <div class="form-group">
+           {{form.patient.label}}
+           {{form.patient}}
+           {{form.roi.start.label}}
+           {{form.roi.start}}
+           {{form.roi.end.label}}
+           {{form.roi.end}}
+         </div>
+         <p><b>From</b>/<b>To</b> require <b>HXB2</b> coordinates (both ends included).</p>
+         <p><b>NOTE</b>: A few <b>minutes</b> might elapse while we prepare your data.</p>
+         <button type="submit" class="btn btn-default">Generate</button>
+       </form>
+     </div>
+   </div>
  </div>
 
 <script type="text/javascript" src="/static/js/haplo.js"></script>

@@ -2,7 +2,7 @@
 '''
 author:     Fabio Zanini
 date:       12/12/14
-content:    Forms for hivwholeweb.
+content:    Forms for the method blueprint.
 '''
 # Modules
 from flask.ext.wtf import Form
