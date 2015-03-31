@@ -131,7 +131,12 @@ function treeChart() {
                 var colorLinkFunc = function(d) {
                     var cscale = d3.scale.category20()
                         .domain(['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11']);
-                    return cscale(d.target.patient);
+                    if (d.target.patient != "undefined")
+                        return cscale(d.target.patient);
+                    else if (d.target.name != "undefined")
+                        return "black";
+                    else
+                        return "grey";
                 }
             else
                 var colorLinkFunc = function(d) { return "black"; }
@@ -569,6 +574,12 @@ function treeChart() {
                 var pname =  String(n.name).split('_')[0];
                 if (pname[0] == "p")
                     msg = msg + "Patient: " + pname + "</br>";
+                else if (pname != "undefined") {
+                    if (pname == "LAI-III")
+                        msg = msg + "Name: " + pname + " (HXB2)</br>";
+                    else
+                        msg = msg + "Name: " + pname + "</br>";
+                }
             
                 if (isNumeric(n.CD4))
                     msg = msg + "CD4+ cell count [cells/ml]: " + n.CD4 + "</br>";
