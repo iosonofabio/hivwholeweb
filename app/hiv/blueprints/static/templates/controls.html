@@ -2,57 +2,107 @@
 {% block content %}
 
 <div class="container" style="padding:20px">
-<!-- header -->
+  <!-- header -->
   <div class="panel panel-default text-primary" style="text-align:center">
     <div class="panel-body">
-      <h4><span class="glyphicon glyphicon-stats"></span> Controls</h4>
+      <h4><span class="glyphicon glyphicon-stats"></span>Controls</h4>
     </div>
   </div>
-<div class="panel-group">
+  <div class="panel-group">
     <!-- Intro -->
     <div class="panel panel-default">
       <div class="panel-heading"> 
-      <span class="text-primary glyphicon glyphicon-question-sign"></span> &nbsp;<a data-toggle="collapse" href="#Intro">Introduction</a>
+        <span class="text-primary glyphicon glyphicon-question-sign"></span> <a data-toggle="collapse" href="#Intro">Introduction</a>
       </div>
       <div id="Intro" class="panel-collapse collapse in">
         <div class="panel-body" style="text-align:justify">
-        <!-- Intro text -->  
-		        text   
+          <!-- Intro text -->
+          text
         </div>
       </div>
     </div>
-    <!-- Summary -->
-    <div class="panel panel-default">
-      <div class="panel-heading"> 
-      <span class="text-primary text-primary glyphicon glyphicon-info-sign"></span> &nbsp;<a data-toggle="collapse" href="#Sum">Summary</a>
-      </div>
-    <div id="Sum" class="panel-collapse collapse in">
-      <div class="panel-body">
-      <!-- Summary content -->
-        text plots etc.
-      </div>
-    </div>
-   </div>    
-   <!-- expand nav -->
-   <div class="panel panel-default"> 
+    <!-- expand nav -->
+    <div class="panel panel-default"> 
       <div class="panel-heading">
-         <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
-         <a data-toggle="collapse" data-parent="#expand" href="#top1"> Topic 1</a>
+        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+        <a data-toggle="collapse" data-parent="#expand" href="#sampleColl">Sample collection</a>
       </div>
-      <div id="top1" class="panel-collapse collapse">
+      <div id="sampleColl" class="panel-collapse collapse in">
         <div class="panel-body">
-          plot 1
+	  <div display='block' align='center' style='padding-bottom:20px'>
+	    <img src='/static/images/controls/sketchPrep.svg' width='80%'>
+          </div>
+	  {% include 'snippets/samplePrep.html' ignore missing %}
         </div>
       </div>
     </div>
     <div class="panel panel-default"> 
       <div class="panel-heading">
-         <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
-         <a data-toggle="collapse" data-parent="#expand" href="#top2"> Topic 2</a>
+        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+        <a data-toggle="collapse" data-parent="#expand" href="#seqQual">Sequencing quality</a>
       </div>
-      <div id="top2" class="panel-collapse collapse">
+      <div id="seqQual" class="panel-collapse collapse in">
         <div class="panel-body">
-          plot 2
+	  <div display='block' align='center' style='padding-bottom:20px'>
+	    <img src='/static/images/controls/quality_along_read.svg' width='80%'>
+          </div>
+	  {% include 'snippets/seqQuality.html' ignore missing %}
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default"> 
+      <div class="panel-heading">
+        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+        <a data-toggle="collapse" data-parent="#expand" href="#phredQual">Phred quality assessment</a>
+      </div>
+      <div id="phredQual" class="panel-collapse collapse in">
+        <div class="panel-body">
+	  <div display='block' align='center' style='padding-bottom:20px'>
+	    <img src='/static/images/controls/phix_phred_errors.svg' width='50%'>
+          </div>
+	  {% include 'snippets/phredErrors.html' ignore missing %}
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default"> 
+      <div class="panel-heading">
+        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+        <a data-toggle="collapse" data-parent="#expand" href="#seqErr">Sequencing errors</a>
+      </div>
+      <div id="seqErr" class="panel-collapse collapse in">
+        <div class="panel-body">
+	  <div display='block' align='center' style='padding-bottom:20px'>
+	    <img src='/static/images/controls/ref_minor_allele.svg' width='80%'>
+          </div>
+	  {% include 'snippets/seqErrors.html' ignore missing %}
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default"> 
+      <div class="panel-heading">
+        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+        <a data-toggle="collapse" data-parent="#expand" href="#afOverlap">Minor variant frequency in overlaps</a>
+      </div>
+      <div id="afOverlap" class="panel-collapse collapse in">
+        <div class="panel-body">
+	  <div display='block' align='center' style='padding-bottom:20px'>
+	    <img src='/static/images/controls/allele_frequency_overlap.png' width='60%'>
+          </div>
+	  {% include 'snippets/afOverlap.html' ignore missing %}
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default"> 
+      <div class="panel-heading">
+        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+        <a data-toggle="collapse" data-parent="#expand" href="#nextera">Minor variant frequency in overlaps</a>
+      </div>
+      <div id="nextera" class="panel-collapse collapse in">
+        <div class="panel-body">
+	  <div display='block' align='center' style='padding-bottom:20px'>
+	    <img src='/static/images/controls/insert_size_distribution.svg' width='80%'>
+          </div>
+	  {% include 'snippets/nextera.html' ignore missing %}
         </div>
       </div>
     </div>
