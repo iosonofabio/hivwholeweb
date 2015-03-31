@@ -2,7 +2,7 @@ from flask import (Blueprint, render_template, abort, request,
                    redirect, flash, make_response)
 from ...models import (PatientTableModel, SampleTableModel,
                        LocalHaplotypeModel)
-from .forms import RoiForm, PrecompiledHaplotypeForm
+from .forms import RoiForm, PrecompiledHaplotypeForm, ConsensiForm
 
 patient = Blueprint('patient', __name__,
                     url_prefix='/patient',
@@ -16,22 +16,29 @@ def index(patient_number):
         abort(404)
     pname = 'p'+str(patient_number)
 
-    form = RoiForm()
+    formco = ConsensiForm()
+    formht = RoiForm()
     formpc = PrecompiledHaplotypeForm()
 
     if request.method == 'POST':
-        if (not formpc.validate_on_submit()) and (not form.validate_on_submit()):
+        if ((not formpc.validate_on_submit()) and
+            (not formht.validate_on_submit()) and
+            (not formco.validate_on_submit())):
             flash('Form incorrectly filled!')
 
-        if formpc.validate_on_submit():
+        elif formco.validate_on_submit():
+            region = formco.region.data
+            return redirect('/download/consensi_'+pname+'_'+region+'.fasta')
+
+        elif formpc.validate_on_submit():
             region = formpc.region.data
             return redirect('/download/haplotypes_'+pname+'_'+region+'.zip')
 
-        elif form.validate_on_submit():
+        elif formht.validate_on_submit():
             # NOTE: we offer only genomewide HXB2 coordinates
             region = 'genomewide'
-            start = form.start.data - 1 #Inclusive coordinates
-            end = form.end.data
+            start = formht.start.data - 1 #Inclusive coordinates
+            end = formht.end.data
             roi = (region, start, end)
 
             hm = LocalHaplotypeModel(pname, roi)
@@ -77,6 +84,7 @@ def index(patient_number):
                            sampleTable=sample_table,
                            treeRegions=tree_regions,
                            divDivRegions=divdiv_regions,
-                           form=form,
+                           formCons=formco,
+                           formht=formht,
                            formpc=formpc,
                            title='Patient page')

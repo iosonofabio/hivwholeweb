@@ -222,8 +222,14 @@
           <a data-toggle="collapse" data-parent="#expand" href="#consensus">Consensus sequences</a>
         </div>
         <div id="consensus" class="panel-collapse collapse">
-          <div class="panel-body">
-            consensus sequences
+          <div class="panel-body" align="center">
+            <form role="form" action="" method="post" name="consensi_settings" class="form-horizontal">
+              {{formCons.hidden_tag()}}
+              <div class="form-group">
+               {{formCons.region.label}} {{formCons.region}}
+              </div>
+              <button type="submit" class="btn btn-default">Download sequences</button>
+            </form>
           </div>
         </div>
       </div>
@@ -257,12 +263,12 @@
                   <h4>New alignments</h4>
                   <p>Generate alignments for a custom genomic region.</p>
                   <form role="form" action="" method="post" name="haplo_settings" style="padding:10px">
-                    {{form.hidden_tag()}}
+                    {{formht.hidden_tag()}}
                     <div class="form-group">
-                      {{form.start.label}}
-                      {{form.start}}
-                      {{form.end.label}}
-                      {{form.end}}
+                      {{formht.start.label}}
+                      {{formht.start}}
+                      {{formht.end.label}}
+                      {{formht.end}}
                     </div>
                     <p><b>From</b>/<b>To</b> require <b>HXB2</b> coordinates (both ends included).</p>
                     <p><b>NOTE</b>: A few <b>minutes</b> might elapse while we prepare your data.</p>
