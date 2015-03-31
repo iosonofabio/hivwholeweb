@@ -66,89 +66,77 @@ function load() {
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
 <div class="container" style="padding-top:20px; padding-left:20px">
-    <div class="jumbotron">
-		<h2 class="text-primary"><b>HIV EVO </b><small>Intrapatient HIV evolution</small></h2>
+  <div class="jumbotron">
+	<h2 class="text-primary"><b>HIV EVO</b> <small><b>Intrapatient HIV evolution</b></small></h2>
 	</div>
-	<div class="row">
-		<div class="col-xs-6">
-		<h4 class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> About</h4>
-<p style="text-align:justify">
-HIV is one of the most rapidly evolving organisms known. By continuously changing its genome, the virus evades the host immune response and establishes a chronic infection. In order to quantitatively monitor and study HIV evolution, we have sequenced the entire genome of the diverse virus population in several individuals at many consecutive time points to a depth greater 1000.<br>
-
-The <a href="/people/">project</a> is a collaboration between the labs of <a href="http://neherlab.wordpress.com">Richard Neher</a> and <a href="http://ki.se/en/mtc/jan-albert-group">Jan Albert</a> and is funded by the ERC through grant HIVEVO 260686. This website is meant to provide convenient access to the data, methods, and analysis.
- </p>
+  <div class="row">
+		<div class="col-xs-6">   
+	    <h4 class="text-muted" style="text-align:center"><span class="glyphicon glyphicon-info-sign"></span> Deep longitudinal data</h4>
+      <hr>
+      <ul>
+      <li> 10 patients </li>
+      <li> more than 80 time points </li>
+      <li> whole genome </li>
+      <li> coverage >1000 with quantified template input </li>
+      </ul>
 		</div>
 		<div class="col-xs-6">
-		<h4 class="text-muted"><span class="glyphicon glyphicon-question-sign"></span> How to get started</h4>
-
-<p style="text-align:justify">The primary access to the data is organized by <a href="/patient/p1/">patient</a> and provides a summary of clinical parameteres, phylogenetic patterns, dynamics of single nucleotide variants and sequencing statistics. A summary of the sequencing methods and quality control can be found in the tab <a href="/sequencing/">Methods</a>. If this is the first time you are visiting this website we recommend to start with our <a href="/tutorial/">tutorial</a>. Full access to the data -- including mapped sequencing reads as well as processed data -- is provided in our <a href="">download section</a>.</p>
+		  <h4 class="text-muted" style="text-align:center"><span class="glyphicon glyphicon-question-sign"></span> How to access and explore</h4>
+      <hr>
+      <ul>
+      <li> Browse data by <a href="/patient/p1/">patient</a></li>
+      <li> Compare patients and <a href="/region/V3/">genomic regions</a></li>
+      <li> The sequencing <a href="/method/">methods</a> and quality <a href="/controls/">controls</a></li>
+      <li> <a href="/data/">Download</a> the cleaned reads </li>
+      </ul>
 		</div>
-	</div>
-<hr>
-<div class="row">
- <h4 class="text-primary"><span class="glyphicon glyphicon-user" style="padding-left:15px"></span> <a href="/patient/p1/">Patients</a></h4>
-  <div class="well text-muted" style="margin-left:15px; margin-right:15px; margin-top:20px">
-    <span class="glyphicon glyphicon-arrow-right"></span> 
-    Select a patient in the following table to access a summary of HIV evolution in each of our study participants. Click <a href="/patient/p1/">here</a> to show data of patient p1. 
   </div>
-
-  <div class="col-xs-6 col-sm-6">
-    <p>Overview of patient specific data:</p>
-    <table class="table">
-    <thead>
-    <tr>
-    <th rowspan="2">patient</th>
-    <th rowspan="2">subtype</th>
-    <th rowspan="2">&#35; samples</th>
-    <th rowspan="2">1st sample</th>
-    <th rowspan="2">last sample</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td colspan="2" align="center">[days since infection]</td>
-    </tr>
-    {% for row in patientTable %}
-    <tr>
-    <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
-    <td>{{row['Subtype']}}</td>
-    <td>{{row['# samples']}}</td>
-    <td>{{row['1st sample']}}</td>
-    <td>{{row['last sample']}}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-    </table>
+  <div class="panel panel-default" style="margin-top:20px">    
+      <div class="panel-body">
+      <div class="col-md-6">
+        <h5 class="text-muted" style="text-align:center"><b>Table:</b> Overview of patient specific data.</h5>
+        <table class="table">
+        <thead>
+        <tr>
+        <th rowspan="2">Patient</th>
+        <th rowspan="2">Subtype</th>
+        <th rowspan="2">&#35; samples</th>
+        <th rowspan="2">1st sample</th>
+        <th rowspan="2">Last sample</th>
+        <th rowspan="2"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td colspan="2" align="center">[days since infection]</td>
+        <td></td>
+        </tr>
+        {% for row in patientTable %}
+        <tr>
+        <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
+        <td>{{row['Subtype']}}</td>
+        <td>{{row['# samples']}}</td>
+        <td>{{row['1st sample']}}</td>
+        <td>{{row['last sample']}}</td>
+        <td><span class="glyphicon glyphicon-stop" style="color:{{colors[row['Patient']]}}"></span></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <div>
+        <h5 class="text-muted" style="text-align:center">
+        <b>Example:</b> Phylogeny of samples in the <strong>{{region}}</strong> region, colored by patient.
+        </h5>
+        <svg id="treeSvgAll"></svg>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="col-sm-5">
-   <p style="text-align:justify"><b>Example:</b> Phylogeny of samples in the <strong>{{region}}</strong> region, colored by patient.</p>
-    <svg id="treeSvgAll"></svg>
-  </div>
-</div>
-<hr>
-<div class="row">
-  <div class="col-xs-12">
-   <h4 class="text-primary"><span class="glyphicon glyphicon-zoom-in"></span> <a href="/region/V3/">Genomic regions</a></h4>
-    <hr>
-  </div>
-</div>
-<div class="row">
-  <div class="col-xs-12">
-   <h4 class="text-primary"><span class="glyphicon glyphicon-book"></span> <a href="/method/">Methods of analysis</a></h4>
-    <hr>
-  </div>
-</div>
-<div class="row">
-  <div class="col-xs-12">
-    <h4 class="text-primary"><span class="glyphicon glyphicon-download-alt"></span> <a href="/data/">Data access</a></h4>
-    <hr>
-  </div>
-</div>
-
-<!-- container end -->
 </div>
 <!-- NOTE: the tag below is a trick for the tree plot -->
 <div id="switchColorLinkPatient" class="active"></div>
