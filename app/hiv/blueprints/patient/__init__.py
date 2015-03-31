@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, abort, request, redirect, flash
-from ...models import PatientTableModel, SampleTableModel
-from .forms import LocalHaplotypeForm, PrecompiledHaplotypeForm
+from flask import (Blueprint, render_template, abort, request,
+                   redirect, flash, make_response)
+from ...models import (PatientTableModel, SampleTableModel,
+                       LocalHaplotypeModel)
+from .forms import RoiForm, PrecompiledHaplotypeForm
 
 patient = Blueprint('patient', __name__,
                     url_prefix='/patient',
@@ -14,7 +16,7 @@ def index(patient_number):
         abort(404)
     pname = 'p'+str(patient_number)
 
-    form = LocalHaplotypeForm()
+    form = RoiForm()
     formpc = PrecompiledHaplotypeForm()
 
     if request.method == 'POST':
@@ -28,8 +30,8 @@ def index(patient_number):
         elif form.validate_on_submit():
             # NOTE: we offer only genomewide HXB2 coordinates
             region = 'genomewide'
-            start = form.roi.start.data - 1 #Inclusive coordinates
-            end = form.roi.end.data
+            start = form.start.data - 1 #Inclusive coordinates
+            end = form.end.data
             roi = (region, start, end)
 
             hm = LocalHaplotypeModel(pname, roi)

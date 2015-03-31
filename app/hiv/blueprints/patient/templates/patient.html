@@ -257,12 +257,12 @@
                   <h4>New alignments</h4>
                   <p>Generate alignments for a custom genomic region.</p>
                   <form role="form" action="" method="post" name="haplo_settings" style="padding:10px">
-                    {{form.roi.hidden_tag()}}
+                    {{form.hidden_tag()}}
                     <div class="form-group">
-                      {{form.roi.start.label}}
-                      {{form.roi.start}}
-                      {{form.roi.end.label}}
-                      {{form.roi.end}}
+                      {{form.start.label}}
+                      {{form.start}}
+                      {{form.end.label}}
+                      {{form.end}}
                     </div>
                     <p><b>From</b>/<b>To</b> require <b>HXB2</b> coordinates (both ends included).</p>
                     <p><b>NOTE</b>: A few <b>minutes</b> might elapse while we prepare your data.</p>

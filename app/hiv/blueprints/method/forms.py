@@ -25,7 +25,6 @@ class RoiForm(Form):
 
     # TODO: make clean meassages for failures
     def validate(self):
-
         if not super(RoiForm, self).validate():
             return False
 

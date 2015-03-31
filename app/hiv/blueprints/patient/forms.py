@@ -13,10 +13,6 @@ from ..method.forms import (_regions, RoiForm)
 
 
 # Classes
-class LocalHaplotypeForm(Form):
-    roi = FormField(RoiForm)
-
-
 class PrecompiledHaplotypeForm(Form):
     region = SelectField('Region',
                          choices=[[reg] *2 for reg in _regions])
