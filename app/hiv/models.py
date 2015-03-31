@@ -13,9 +13,6 @@ import os
 data_folder_short = '/static/data/'
 data_folder_full = os.path.dirname(os.path.abspath(__file__))+data_folder_short
 data_folder = [data_folder_short, data_folder_full]
-tmp_folder_short = '/static/tmp/'
-tmp_folder_full = os.path.dirname(os.path.abspath(__file__))+tmp_folder_short
-tmp_folder = [tmp_folder_short, tmp_folder_full]
 
 
 
@@ -423,15 +420,16 @@ class LocalHaplotypeModel(object):
 	return data_folder[full]+'coordinate_maps/'+fn
 
 
-    def get_local_haplotype_filename(self, tmp_root_folder=None, full=True):
+    def get_local_haplotype_filename(self, full=True):
         '''Get the filename of a temporary file with the haplotype data'''
         import random
-	if tmp_root_folder is None:
-	    tmp_root_folder = tmp_folder[full]
+        
+        from . import hiv
+        tmp_root_folder = hiv.config['TMP_ROOT_FOLDER']
 
         dirname = tmp_root_folder+str(random.randint(0, 10000))+'/'
         while os.path.isdir(dirname):
-            dirname = tmp_folder[full]+str(random.randint(0, 10000))+'/'
+            dirname = tmp_root_folder+str(random.randint(0, 10000))+'/'
 
         self.dirnames.append(dirname)
         os.mkdir(dirname)
@@ -443,7 +441,8 @@ class LocalHaplotypeModel(object):
     def translate_coordinates(self):
         import numpy as np
         # NOTE: the map is always genomewide??
-        mapco = dict(np.loadtxt(self.get_coordinate_map_filename(full=True)))
+        mapco = dict(np.loadtxt(self.get_coordinate_map_filename(full=True),
+                                dtype=int))
 
         # In case the coordinate is missing, extend the region
         # Translate start position
@@ -566,7 +565,6 @@ class LocalHaplotypeModel(object):
 
 	times = np.loadtxt(self.get_timeline_filename())
 
-        # FIXME: do this better
         fragment, start, end = self.roi 
 
         alis = []
@@ -590,7 +588,7 @@ class LocalHaplotypeModel(object):
 	    alis.append({'time': times[i_time],
 	                 'ali': ali})
 
-        fn_out = self.get_local_haplotype_filename(tmp_root_folder=tmp_root_folder)
+        fn_out = self.get_local_haplotype_filename()
         self.store_alignments(alis, fn_out)
 
         return fn_out

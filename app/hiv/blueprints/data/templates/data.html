@@ -1,17 +1,19 @@
 {% extends "dataPlots.html" %}
 {% block content %}
-<!-- NOTE FOR BIANCA: FLASHED MESSAGES SHOULD BE IN THE PARENT TEMPLATE, EITHER BASE OR SOME LAYER ABOVE THAT. AND IT SHOULD BE STYLED ;-) -->
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul>
-{% for message in messages %}
-    <li>{{ message }} </li>
-{% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
-
 <div class="container" style="padding:20px">
+  <!-- flashed messages -->
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="alert alert-danger" role="alert">
+    {% for message in messages %}
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span class="sr-only">Error: </span>{{ message }}
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+  <!-- end flashed messages -->
+
   <!-- header -->
   <div class="panel panel-default text-primary" style="text-align:center">
     <div class="panel-body">

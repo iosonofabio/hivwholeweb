@@ -1,263 +1,274 @@
 {% extends "patientPlots.html" %}
+{% block head_end %}
+{{ super() }}
+<link href="../static/css/patient.css" rel="stylesheet">
+{% endblock %}
 {% block content %}
 
-<div class="container-fluid" style="padding:20px">
-
-<!-- sidebar -->
-<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-
-  <div class="panel panel-default" style="width:110px; text-align:center">
-		<div class="panel-heading">
-      <span class="glyphicon glyphicon-user"></span> Patients
-    </div>
-		<div class="list-group">
+<div class="container-fluid">
+  <!-- sidebar -->
+  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 patient-sidebar">
+    <div class="panel panel-default" style="width:110px; text-align:center">
+      <div class="panel-heading">
+        <span class="glyphicon glyphicon-user"></span> Patients
+      </div>
+      <div class="list-group">
         {% for ptmp in pnames %}
         {% if ptmp == pname and ptmp!='p4'%} <!-- exclude p4 -->
-	      <a href="/patient/{{ptmp}}" class="list-group-item active">{{ptmp}}</a>
+  	<a href="/patient/{{ptmp}}" class="list-group-item active">{{ptmp}}</a>
         {% elif ptmp!='p4' %} <!-- exclude p4 -->
         <a href="/patient/{{ptmp}}" class="list-group-item">{{ptmp}}</a>
         {% endif %}
         {% endfor %}
-    </div> 
-  </div>
-
-</div>
-
-<div class="clearfix visible-xs"></div>
-
-<!-- patient content -->
-<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-
-  <!-- header -->
-  <div class="panel panel-default">
-    <div class="panel-body text-primary" style="text-align:center">
-      <h4><span class="glyphicon glyphicon-user"></span> Patient {{pname}}</h4>
+      </div> 
     </div>
   </div>
-  <!-- already expanded panels --> 
-  <div class="panel-group">
-    <!-- Intro -->
+  <div class="clearfix visible-xs"></div>
+  <!-- patient content -->
+  <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 patient-content">
+    <!-- flashed messages -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-danger" role="alert">
+      {% for message in messages %}
+      <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+      <span class="sr-only">Error: </span>{{ message }}
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    <!-- end flashed messages -->
+    <!-- header -->
     <div class="panel panel-default">
-      <div class="panel-heading"> 
-      <span class="text-primary glyphicon glyphicon-question-sign"></span> &nbsp;<a data-toggle="collapse" href="#Intro">Introduction</a>
-      </div>
-      <div id="Intro" class="panel-collapse collapse in">
-        <div class="panel-body" style="text-align:justify">
-        <!-- Intro text -->  
-		        <b>Data summary of {{pname}}:</b> The different tabs below allow to browse clinical data, summary statistics such as <a href="#divdiv">genetic diversity and divergence</a>, <a href="#tree">phylogenetic trees</a>, <a href="#cov">sequencing statistics</a>, as well as the <a href="#allFreq">dynamics of single nucleotide variants</a>. The <a href="#haplo">last tab</a> provides access haplotypes from any region of the HIV genome at all time points.   
-        </div>
+      <div class="panel-body text-primary" style="text-align:center">
+        <h4><span class="glyphicon glyphicon-user"></span> Patient {{pname}}</h4>
       </div>
     </div>
-    <!-- Summary -->
-    <div class="panel panel-default">
-      <div class="panel-heading"> 
-      <span class="text-primary text-primary glyphicon glyphicon-info-sign"></span> &nbsp;<a data-toggle="collapse" href="#Sum">Summary</a>
-      </div>
-    <div id="Sum" class="panel-collapse collapse in">
-      <div class="panel-body">
-      <!-- Summary content -->
-        <div class="row">
-	  <div class="col-xs-6">
-            <dl class="dl-horizontal">
-              {% for row in patientTable %}
-              {% if row['Patient'] == pname %}
-              <dt>subtype</dt><dd>{{row['Subtype']}}</dd>
-              <dt>&#35; samples</dt><dd>{{row['# samples']}}</dd>
-              {% endif %}
-              {% endfor %}
-            </dl>
-	    <!-- SAMPLE TABLE -->
-            <table class="table">
-              <thead>
-                <tr>
-	          <th>Time</th>
-                  <th colspan="6" align="center">Estimated number of RNA templates per PCR</th>
-                </tr>
-	        <tr>
-	          <th>[days since infection]</th>
-                  <th>F1</th>
-                  <th>F2</th>
-                  <th>F3</th>
-                  <th>F4</th>
-                  <th>F5</th>
-                  <th>F6</th>
-	        </tr>
-              </thead>
-              <tbody>
-	        {% for row in sampleTable %}
-                <tr>
-	          <td>{{row.time}}</td>
-	          <td>{{row.F1q}}</td>
-	          <td>{{row.F2q}}</td>
-	          <td>{{row.F3q}}</td>
-	          <td>{{row.F4q}}</td>
-	          <td>{{row.F5q}}</td>
-	          <td>{{row.F6q}}</td>
-	        </tr>
-	        {% endfor %}
-              </tbody>
-            </table>
-	    <!-- END SAMPLE TABLE -->
-          </div>
-	  <div class="col-xs-6">
-	   <p>Phylogenetic tree of <b>V3</b> in patient {{pname}}.
-	   <!-- <svg id='treeSvg{{pname}}Sum'></svg> -->
-	   <img src='/static/data/trees/tree_{{pname}}_V3_example.svg'>
+    <!-- already expanded panels --> 
+    <div class="panel-group">
+      <!-- Intro -->
+      <div class="panel panel-default">
+        <div class="panel-heading"> 
+        <span class="text-primary glyphicon glyphicon-question-sign"></span> &nbsp;<a data-toggle="collapse" href="#Intro">Introduction</a>
+        </div>
+        <div id="Intro" class="panel-collapse collapse in">
+          <div class="panel-body" style="text-align:justify">
+          <!-- Intro text -->  
+	  {% include ["snippets/intro_"+pname+".html", "snippets/intro.html"] ignore missing %}
           </div>
         </div>
       </div>
-    </div>
-   </div>    
-   <!-- expand nav -->
-   <div class="panel panel-default"> 
-      <div class="panel-heading">
-         <img width="18" src="../../static/images/icons/viral_load.svg"> 
-         <a data-toggle="collapse" data-parent="#expand" href="#viral">Viral load and CD4+ counts</a>
-      </div>
-      <div id="viral" class="panel-collapse collapse in">
-        <div class="panel-body">
-          <svg class="d3-plot" id="physioSvg{{pname}}"></svg>
+      <!-- Summary -->
+      <div class="panel panel-default">
+        <div class="panel-heading"> 
+        <span class="text-primary text-primary glyphicon glyphicon-info-sign"></span> &nbsp;<a data-toggle="collapse" href="#Sum">Summary</a>
         </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <img width="18" src="../../static/images/icons/genome.svg"> 
-        <a data-toggle="collapse" data-parent="#expand" href="#genome">Genome sequence</a>
-      </div>
-      <div id="genome" class="panel-collapse collapse in">
+      <div id="Sum" class="panel-collapse collapse in">
         <div class="panel-body">
-          <svg class="d3-plot" id="genomeSvg{{pname}}"></svg>
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <img width="18" src="../../static/images/icons/tree.svg"> 
-        <a data-toggle="collapse" data-parent="#expand" href="#tree">Phylogenetic trees</a>
-      </div>
-      <div id="tree" class="panel-collapse collapse">
-        <div class="panel-body">
-          <div style="padding-bottom:20px">
-            <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
-          </div>
-          <div class="form-group form-inline" align="center">
-           <label>Region:</label>
-           <select class="form-control treeRegion">
-             {% for region in treeRegions %}
-              <option>{{region}}</option>
-             {% endfor %} 
-           </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-         <img width="18" src="../../static/images/icons/diversity.svg">
-         <a data-toggle="collapse" data-parent="#expand" href="#divDiv">Genetic divergence and diversity</a>
-      </div>
-      <div id="divDiv" class="panel-collapse collapse">
-        <div class="panel-body">
-          <div style="padding-bottom:20px">
-            <svg class="d3-plot" id='divDivSvg{{pname}}'></svg>
-          </div>
-          <div class="form-group form-inline" align="center">
-           <label>Region:</label>
-           <select class="form-control divDivRegion">
-             {% for region in divDivRegions %}
-              <option>{{region}}</option>
-             {% endfor %} 
-           </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-         <img width="18" src="../../static/images/icons/divdiv_local.svg">
-         <a data-toggle="collapse" data-parent="#expand" href="#divDivLocal">Local divergence and diversity</a>
-       </div>
-      <div id="divDivLocal" class="panel-collapse collapse">
-        <div class="panel-body">
-          <svg class="d3-plot" id='divDivLocalSvg{{pname}}'></svg>
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-         <img width="18" src="../../static/images/icons/coverage.svg">
-         <a data-toggle="collapse" data-parent="#expand" href="#cov">Coverage</a>
-       </div>
-      <div id="cov" class="panel-collapse collapse">
-        <div class="panel-body">
-          <svg class="d3-plot" id='coverageSvg{{pname}}' height="600"></svg>
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-         <img width="18" src="../../static/images/icons/allele_frequencies.svg">
-         <a data-toggle="collapse" data-parent="#expand" href="#allFreq">Allele frequencies</a>
-       </div>
-      <div id="allFreq" class="panel-collapse collapse">
-        <div class="panel-body">
-          <svg class="d3-plot" id='allFreqSvg{{pname}}' height="700"></svg>
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <img width="18" src="../../static/images/icons/consensi.svg"> 
-        <a data-toggle="collapse" data-parent="#expand" href="#consensus">Consensus sequences</a>
-      </div>
-      <div id="consensus" class="panel-collapse collapse">
-        <div class="panel-body">
-          consensus sequences
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-         <img width="18" src="../../static/images/icons/haplotype_frequencies.svg">
-         <a data-toggle="collapse" data-parent="#expand" href="#haplo">Local haplotypes</a>
-        </div>
-      <div id="haplo" class="panel-collapse collapse">
-        <div class="panel-body">
+        <!-- Summary content -->
           <div class="row">
-            <div class="col-md-6">
-              <div class="thumbnail">
-                <h4>Precompiled alignments</h4>
-                <p>These alignments are premade for regions of general interest.</p>
-                <div class="svg-container">
-                  <svg id="haploThumbnail" width=400 height=70></svg>
-                </div>
-                <form role="form" action="" method="post" name="haplo_precompiled" style="padding-bottom:10px">
-                  <div class="form-group">
-                    {{formpc.hidden_tag()}}
-                    {{formpc.region.label}}
-                    {{formpc.region}}
-                  </div>
-                  <button type="submit" class="btn btn-default">Download</button>
-                </form>
-              </div>
+  	  <div class="col-xs-6">
+              <dl class="dl-horizontal">
+                {% for row in patientTable %}
+                {% if row['Patient'] == pname %}
+                <dt>subtype</dt><dd>{{row['Subtype']}}</dd>
+                <dt>&#35; samples</dt><dd>{{row['# samples']}}</dd>
+                {% endif %}
+                {% endfor %}
+              </dl>
+  	    <!-- SAMPLE TABLE -->
+              <table class="table">
+                <thead>
+                  <tr>
+  	          <th>Time</th>
+                    <th colspan="6" align="center">Estimated number of RNA templates per PCR</th>
+                  </tr>
+  	        <tr>
+  	          <th>[days since infection]</th>
+                    <th>F1</th>
+                    <th>F2</th>
+                    <th>F3</th>
+                    <th>F4</th>
+                    <th>F5</th>
+                    <th>F6</th>
+  	        </tr>
+                </thead>
+                <tbody>
+  	        {% for row in sampleTable %}
+                  <tr>
+  	          <td>{{row.time}}</td>
+  	          <td>{{row.F1q}}</td>
+  	          <td>{{row.F2q}}</td>
+  	          <td>{{row.F3q}}</td>
+  	          <td>{{row.F4q}}</td>
+  	          <td>{{row.F5q}}</td>
+  	          <td>{{row.F6q}}</td>
+  	        </tr>
+  	        {% endfor %}
+                </tbody>
+              </table>
+  	    <!-- END SAMPLE TABLE -->
             </div>
-            <div class="col-md-6">
-              <div class="thumbnail">
-                <h4>New alignments</h4>
-                <p>Generate alignments for a custom genomic region.</p>
-                <form role="form" action="" method="post" name="haplo_settings" style="padding:10px">
-                  {{form.roi.hidden_tag()}}
-                  <div class="form-group">
-                    {{form.roi.start.label}}
-                    {{form.roi.start}}
-                    {{form.roi.end.label}}
-                    {{form.roi.end}}
+  	  <div class="col-xs-6">
+  	   <p align="center">Phylogenetic tree of <b>V3</b> in patient {{pname}}.
+  	   <!-- <svg id='treeSvg{{pname}}Sum'></svg> -->
+  	   <img src='/static/data/trees/tree_{{pname}}_V3_example.svg' style="max-width:100%; max-height:100%">
+            </div>
+          </div>
+        </div>
+      </div>
+     </div>    
+     <!-- expand nav -->
+     <div class="panel panel-default"> 
+        <div class="panel-heading">
+           <img width="18" src="../../static/images/icons/viral_load.svg"> 
+           <a data-toggle="collapse" data-parent="#expand" href="#viral">Viral load and CD4+ counts</a>
+        </div>
+        <div id="viral" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <svg class="d3-plot" id="physioSvg{{pname}}"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default"> 
+        <div class="panel-heading">
+          <img width="18" src="../../static/images/icons/genome.svg"> 
+          <a data-toggle="collapse" data-parent="#expand" href="#genome">Genome sequence</a>
+        </div>
+        <div id="genome" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <svg class="d3-plot" id="genomeSvg{{pname}}"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default"> 
+        <div class="panel-heading">
+          <img width="18" src="../../static/images/icons/tree.svg"> 
+          <a data-toggle="collapse" data-parent="#expand" href="#tree">Phylogenetic trees</a>
+        </div>
+        <div id="tree" class="panel-collapse collapse">
+          <div class="panel-body">
+            <div style="padding-bottom:20px">
+              <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
+            </div>
+            <div class="form-group form-inline" align="center">
+             <label>Region:</label>
+             <select class="form-control treeRegion">
+               {% for region in treeRegions %}
+                <option>{{region}}</option>
+               {% endfor %} 
+             </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default"> 
+        <div class="panel-heading">
+           <img width="18" src="../../static/images/icons/diversity.svg">
+           <a data-toggle="collapse" data-parent="#expand" href="#divDiv">Genetic divergence and diversity</a>
+        </div>
+        <div id="divDiv" class="panel-collapse collapse">
+          <div class="panel-body">
+            <div style="padding-bottom:20px">
+              <svg class="d3-plot" id='divDivSvg{{pname}}'></svg>
+            </div>
+            <div class="form-group form-inline" align="center">
+             <label>Region:</label>
+             <select class="form-control divDivRegion">
+               {% for region in divDivRegions %}
+                <option>{{region}}</option>
+               {% endfor %} 
+             </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default"> 
+        <div class="panel-heading">
+           <img width="18" src="../../static/images/icons/divdiv_local.svg">
+           <a data-toggle="collapse" data-parent="#expand" href="#divDivLocal">Local divergence and diversity</a>
+         </div>
+        <div id="divDivLocal" class="panel-collapse collapse">
+          <div class="panel-body">
+            <svg class="d3-plot" id='divDivLocalSvg{{pname}}'></svg>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default"> 
+        <div class="panel-heading">
+           <img width="18" src="../../static/images/icons/coverage.svg">
+           <a data-toggle="collapse" data-parent="#expand" href="#cov">Coverage</a>
+         </div>
+        <div id="cov" class="panel-collapse collapse">
+          <div class="panel-body">
+            <svg class="d3-plot" id='coverageSvg{{pname}}' height="600"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default"> 
+        <div class="panel-heading">
+           <img width="18" src="../../static/images/icons/allele_frequencies.svg">
+           <a data-toggle="collapse" data-parent="#expand" href="#allFreq">Allele frequencies</a>
+         </div>
+        <div id="allFreq" class="panel-collapse collapse">
+          <div class="panel-body">
+            <svg class="d3-plot" id='allFreqSvg{{pname}}' height="700"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default"> 
+        <div class="panel-heading">
+          <img width="18" src="../../static/images/icons/consensi.svg"> 
+          <a data-toggle="collapse" data-parent="#expand" href="#consensus">Consensus sequences</a>
+        </div>
+        <div id="consensus" class="panel-collapse collapse">
+          <div class="panel-body">
+            consensus sequences
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default"> 
+        <div class="panel-heading">
+           <img width="18" src="../../static/images/icons/haplotype_frequencies.svg">
+           <a data-toggle="collapse" data-parent="#expand" href="#haplo">Local haplotypes</a>
+          </div>
+        <div id="haplo" class="panel-collapse collapse">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="thumbnail">
+                  <h4>Precompiled alignments</h4>
+                  <p>These alignments are premade for regions of general interest.</p>
+                  <div class="svg-container">
+                    <svg id="haploThumbnail" width=400 height=70></svg>
                   </div>
-                  <p><b>From</b>/<b>To</b> require <b>HXB2</b> coordinates (both ends included).</p>
-                  <p><b>NOTE</b>: A few <b>minutes</b> might elapse while we prepare your data.</p>
-                  <button type="submit" class="btn btn-default">Generate</button>
-                </form>
+                  <form role="form" action="" method="post" name="haplo_precompiled" style="padding-bottom:10px">
+                    <div class="form-group">
+                      {{formpc.hidden_tag()}}
+                      {{formpc.region.label}}
+                      {{formpc.region}}
+                    </div>
+                    <button type="submit" class="btn btn-default">Download</button>
+                  </form>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="thumbnail">
+                  <h4>New alignments</h4>
+                  <p>Generate alignments for a custom genomic region.</p>
+                  <form role="form" action="" method="post" name="haplo_settings" style="padding:10px">
+                    {{form.roi.hidden_tag()}}
+                    <div class="form-group">
+                      {{form.roi.start.label}}
+                      {{form.roi.start}}
+                      {{form.roi.end.label}}
+                      {{form.roi.end}}
+                    </div>
+                    <p><b>From</b>/<b>To</b> require <b>HXB2</b> coordinates (both ends included).</p>
+                    <p><b>NOTE</b>: A few <b>minutes</b> might elapse while we prepare your data.</p>
+                    <button type="submit" class="btn btn-default">Generate</button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
@@ -265,7 +276,6 @@
       </div>
     </div>
   </div>
-</div>
 
 </div>
 

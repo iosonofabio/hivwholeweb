@@ -1,0 +1,20 @@
+.patient-content
+{
+    position: relative;
+    top: 0px; 
+    bottom: 0px;
+    left: 130px;
+    right: 0px;
+    padding-top: 20px;
+}
+.patient-sidebar
+{
+    padding-top: 70px;
+    position: fixed;
+    left: 10px;
+    top: 0px;
+    bottom: 0px;
+    width: 130px; /* same as .patient-content left */
+    background-color: #fff;
+    z-index: 1020;
+}
