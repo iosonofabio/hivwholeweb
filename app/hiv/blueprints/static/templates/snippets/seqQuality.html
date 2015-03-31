@@ -1,8 +1,7 @@
 <b>Sequencing quality:</b>
-Phred quality of a typical sequencing run, estimated by CASAVA 1.8
-during base calling. The slow linear decrease is due to a small fraction of
-sub-read-length inserts that were not successfully filtered out during size
-selection. The more important decrease in quality at the end of read 2 is a
-basic limitation of the illumina platform due to phasing errors and optical overlap of
-bridge-amplified clusters on the flow cell.
-We typically used a quality threshold of 30 for our analysis, corresponding to a miscalling rate of 0.1%.
+The graphs show the fraction of bases sequenced with a quality better than the indicated threshold for each position in read 1 and read 2 (this run used a 3x250 cycle kit). Phred qualities are estimate by CASAVA 1.8 during base calling. Things to note:
+<ul>
+<li>a slow linear decrease even for the threshold Q10. This is due to short inserts escaping size selection</li>
+<li>quality deteriorates towards the end of read 2, likely due to phasing errors and optical overlap of bridge-amplified clusters on the flow cell. </li>
+<li>We typically used a quality threshold of 30 for our analysis, corresponding to a miscalling rate of 0.1%.</li>
+</ul>
