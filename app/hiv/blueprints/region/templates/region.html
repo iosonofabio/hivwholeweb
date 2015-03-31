@@ -50,22 +50,9 @@
       </div>
     <div id="Sum" class="panel-collapse collapse in">
       <div class="panel-body">
-      <!-- Summary content -->
         <div class="row">
 	  <div class="col-xs-12">
             <svg class="d3-plot" id="genomeSvg{{region}}" style="padding-bottom:20px"></svg>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-12">
-            <div class="form-group form-inline" align="center">
-             <label>Patient:</label>
-             <select class="form-control locationPname">
-               {% for pname in pnames %}
-                <option>{{pname}}</option>
-               {% endfor %} 
-             </select>
-            </div>
           </div>
         </div>
       </div>
@@ -120,19 +107,9 @@ function loadGenome(id, pname, highlight) {
 
 <!-- load at page opening -->
 <script>
-//FIXME: get the pname from a form or so
-var pname = $('.locationPname option:selected').val();
-loadGenome("genomeSvg{{region}}", pname, true);
+loadGenome("genomeSvg{{region}}", "HXB2", true);
 </script>
 
-<!-- jquery event handling for selections (trees, etc) -->
-<script>
-$('select.locationPname').on('change', function(){
-    var pname = $('.locationPname option:selected').val();
-    emptyGenome("genomeSvg{{region}}");
-    loadGenome("genomeSvg{{region}}", pname, true);
-});
-</script>
 
 
 {% endblock %}

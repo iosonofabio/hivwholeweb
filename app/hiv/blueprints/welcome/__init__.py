@@ -15,7 +15,7 @@ def index():
 
     return render_template('welcome.html',
                            patientTable=table,
-                           region='V3',
+                           region='p17',
                            title='Welcome page')
 
 
