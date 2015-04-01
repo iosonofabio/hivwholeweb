@@ -71,7 +71,7 @@ def index(patient_number):
 
     pnames = ['p'+str(i) for i in xrange(1, 12)]
     table = PatientTableModel().get_table()
-    tree_regions = ['V3', 'psi', 'p17', 'RRE', 'V3_minor']
+    tree_regions = ['V3', 'V3_minor', 'p17', 'p17_minor', 'psi', 'RRE']
     divdiv_regions = ['V3', 'psi', 'p17', 'RRE']
 
     sample_table = SampleTableModel(pname).get_table()
