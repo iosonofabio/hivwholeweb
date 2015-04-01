@@ -148,15 +148,19 @@
 	        </tr>
               </thead>
               <tbody>
-		{% for sample in datum.samples %}
+		{% for sample in datum.reads %}
+		{% set sampleloop = loop %}
                 <tr>
    	          <td>{{sample.time}}</td>
-		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F1.bam">BAM</a></td>
-		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F2.bam">BAM</a></td>
-		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F3.bam">BAM</a></td>
-		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F4.bam">BAM</a></td>
-		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F5.bam">BAM</a></td>
-		  <td><a href="/download/reads_{{datum.pname}}_{{loop.index}}_F6.bam">BAM</a></td>
+		  {% for fr in fragments %}
+                  <td>
+		  {% if sample.get(fr) %}
+		  <a href="/download/reads_{{datum.pname}}_{{sampleloop.index}}_{{fr}}.bam">BAM</a></td>
+		  {% else %}
+		  -
+		  {% endif %}
+		  </td>
+		  {% endfor %}
    	        </tr>
    	      {% endfor %}
               </tbody>

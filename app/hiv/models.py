@@ -633,7 +633,7 @@ class SampleTableModel(object):
 
 
     def get_table_filename(self, full=True, format='tsv'):
-        '''Get the filename of the patient table'''
+        '''Get the filename of the samples table'''
 	fn = 'samples_'+self.pname+'.'+format
 	return data_folder[full]+'tables/'+fn
 
@@ -666,4 +666,24 @@ class SampleTableModel(object):
                 table.append(tline)
 
         return table
+
+
+class ReadsTableModel(SampleTableModel):
+    def get_reads_filename(self, i, fragment, full=True, format='bam'):
+        '''Get the filename of the table with the presence of reads files'''
+	fn = fragment+'.'+format
+	fn = data_folder[full]+'patients/'+self.pname+'/samples/'+str(i)+'/'+fn
+        return fn
+
+
+    def get_table(self):
+        import os
+
+        table = super(ReadsTableModel, self).get_table(fields=['time'])
+        for it, datum in enumerate(table, 1):
+            for fragment in ['F'+str(i) for i in xrange(1, 7)]:
+                datum[fragment] = os.path.isfile(self.get_reads_filename(it, fragment))
+
+        return table
+
 
