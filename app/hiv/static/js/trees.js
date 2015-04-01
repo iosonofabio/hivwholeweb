@@ -38,7 +38,8 @@ function updateTree(id, data) {
     else if ($("#switchColorLinkPatient").hasClass("active"))
         chart.colorLinkType("patient");
 
-    if (data.leafLabels === false)
+    // Leaf labels defaults to false for minor variant trees
+    if ((data.leafLabels === false) || ((typeof(data.leafLabels) == "undefined") && (svg.datum().region.indexOf("minor") != -1)))
         chart.leafLabels(false);
 
     if (data.optimizeSpace === true)
@@ -79,7 +80,7 @@ function treeChart() {
                 .domain([0, 0.25, 0.33, 0.5, 0.67, 0.75, 1])
                 .range(["darkblue", "blue", "cyan", "green",
                         "yellow", "orange", "red"]);
-
+            
             var tree = data.tree,
                 pname = data.pname,
                 region = data.region;
@@ -245,6 +246,14 @@ function treeChart() {
                      .attr("stroke-width", 2)
                      .on("mouseover", moverLinksRadial)
                      .on("mouseout", moutLinksRadial);
+
+
+                // balls proportional to frequency for minor variants
+                if (region.indexOf("minor") != -1) {
+                    link.filter(function(d) { return d.target.frequency != "undefined" })
+                        .each(plotBallsRadial);
+
+                }
            
                 // line connecting the leaves to their labels
                 if (leafLabels === true) {
@@ -364,6 +373,19 @@ function treeChart() {
                         "L" + t.x + "," + t.y);
                 }
 
+                function plotBallsRadial(d, i) {
+                    var freq = d.target.frequency,
+                        r = 2 + (18 - 5) * ((Math.log(freq) / Math.LN10) + 2.0) / 2.0;
+                    vis.append("circle")
+                        .datum(d.target)
+                        .attr("class", "leaf")
+                        .attr("r", r)
+                        .attr("cx", d.target.x)
+                        .attr("cy", d.target.y)
+                        .attr("fill", colorLinkFunc(d, i))
+                        .attr("fill-opacity", 0.7);
+                
+                }
 
             }
 
@@ -430,6 +452,13 @@ function treeChart() {
                      .attr("stroke-width", 2)
                      .on("mouseover", moverLinksRectangular)
                      .on("mouseout", moutLinksRectangular);
+
+                // balls proportional to frequency for minor variants
+                if (region.indexOf("minor") != -1) {
+                    link.filter(function(d) { return d.target.frequency != "undefined" })
+                        .each(plotBallsRect);
+
+                }
 
                 // line connecting the leaves to their labels
                 if (leafLabels === true) {
@@ -499,6 +528,19 @@ function treeChart() {
                         "M" + d.y + "," + d.x +
                         "H" + (10 + depth * treeScale)
                     );
+                }
+
+
+                function plotBallsRect(d, i) {
+                    var freq = d.target.frequency,
+                        r = 2 + (18 - 5) * ((Math.log(freq) / Math.LN10) + 2.0) / 2.0;
+                    vis.append("circle")
+                        .attr("class", "leaf")
+                        .attr("r", r)
+                        .attr("cx", d.target.y)
+                        .attr("cy", d.target.x)
+                        .attr("fill", colorLinkFunc(d, i));
+                
                 }
 
             }
@@ -603,30 +645,36 @@ function treeChart() {
 
             }
 
-            if (n.subtype !== "undefined")
+            if ((typeof(n.subtype) != "undefined") && (n.subtype !== "undefined")) {
                 msg = msg + "Subtype: " + n.subtype + "</br>";
+            }
 
             if (isNumeric(n.DSI))
                 msg = msg + "Day since infection: " + n.DSI.toFixed(0) + "</br>";
 
-            msg = msg + "Mutations on this branch: ";
-            if (n.muts.length > 0) {
-                var muts = n.muts.split(" "),
-                    nMuts = muts.length,
-                    nMutsPerLine = 10,
-                    nMutLines = Math.ceil(nMuts / nMutsPerLine);
-                
-                if (nMutLines == 1)
-                    msg = msg + n.muts;
-                else {
-                    msg = msg + "</br>";
-                    for(var i=0; i < nMutLines - 1; i++)
-                        msg = msg + muts.slice(i * nMutsPerLine, (i+1) * nMutsPerLine).join(" ") + "</br>";
-                    msg = msg + muts.slice((nMutLines - 1) * nMutsPerLine, nMuts).join(" ");
-                
-                }
-            } else
-                msg = msg + "(none)"
+            if (isNumeric(n.frequency))
+                msg = msg + "Frequency: " + (100 * n.frequency).toFixed(0) + "%</br>";
+
+            if ((typeof(n.muts) != "undefined") && (n.muts !== "undefined")){
+                msg = msg + "Mutations on this branch: ";
+                if (n.muts.length > 0) {
+                    var muts = n.muts.split(" "),
+                        nMuts = muts.length,
+                        nMutsPerLine = 10,
+                        nMutLines = Math.ceil(nMuts / nMutsPerLine);
+                    
+                    if (nMutLines == 1)
+                        msg = msg + n.muts;
+                    else {
+                        msg = msg + "</br>";
+                        for(var i=0; i < nMutLines - 1; i++)
+                            msg = msg + muts.slice(i * nMutsPerLine, (i+1) * nMutsPerLine).join(" ") + "</br>";
+                        msg = msg + muts.slice((nMutLines - 1) * nMutsPerLine, nMuts).join(" ");
+                    
+                    }
+                } else
+                    msg = msg + "(none)"
+            }
 
             return msg;
         }

@@ -95,44 +95,48 @@ function load() {
       <div class="panel-body">
       <div class="col-md-6">
         <h5 class="text-muted" style="text-align:center"><b>Table:</b> Overview of patient specific data.</h5>
-        <table class="table">
-        <thead>
-        <tr>
-        <th rowspan="2">Patient</th>
-        <th rowspan="2">Subtype</th>
-        <th rowspan="2">&#35; samples</th>
-        <th rowspan="2">1st sample</th>
-        <th rowspan="2">Last sample</th>
-        <th rowspan="2"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td colspan="2" align="center">[days since infection]</td>
-        <td></td>
-        </tr>
-        {% for row in patientTable %}
-        <tr>
-        <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
-        <td>{{row['Subtype']}}</td>
-        <td>{{row['# samples']}}</td>
-        <td>{{row['1st sample']}}</td>
-        <td>{{row['last sample']}}</td>
-        <td><span class="glyphicon glyphicon-stop" style="color:{{colors[row['Patient']]}}"></span></td>
-        </tr>
-        {% endfor %}
-        </tbody>
-        </table>
+	<div style="padding:20px">
+          <table class="table">
+            <thead>
+              <tr>
+                <th rowspan="2">Patient</th>
+                <th rowspan="2">Subtype</th>
+                <th rowspan="2">&#35; samples</th>
+                <th rowspan="2">1st sample</th>
+                <th rowspan="2">Last sample</th>
+                <th rowspan="2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colspan="2" align="center">[days since infection]</td>
+                <td></td>
+              </tr>
+              {% for row in patientTable %}
+              <tr>
+                <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
+                <td>{{row['Subtype']}}</td>
+                <td>{{row['# samples']}}</td>
+                <td>{{row['1st sample']}}</td>
+                <td>{{row['last sample']}}</td>
+                <td><span class="glyphicon glyphicon-stop" style="color:{{colors[row['Patient']]}}"></span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+	  </table>
+	</div>
       </div>
       <div class="col-md-6">
         <div>
         <h5 class="text-muted" style="text-align:center">
           <b>Example:</b> Phylogeny of samples in the <strong>{{region}}</strong> region, colored by patient.
         </h5>
-        <svg id="treeSvgAll"></svg>
+	<div align="center">
+	  <svg id="treeSvgAll" style="max-width:80%"></svg>
+        </div>
         <h5 class="text-muted" style="text-align:center">Reference sequences are colored black.</h5>
         </div>
       </div>
