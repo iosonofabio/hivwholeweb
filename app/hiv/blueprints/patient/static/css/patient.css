@@ -16,5 +16,5 @@
     bottom: 0px;
     width: 130px; /* same as .patient-content left */
     background-color: #fff;
-    z-index: -1;
+    z-index: 900;
 }
