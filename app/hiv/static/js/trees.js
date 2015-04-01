@@ -503,6 +503,20 @@ function treeChart() {
 
             }
 
+            function leafLabelFunc(d) {
+                if (String(region).indexOf('minor') != -1) {
+                    var freqLabel = String((d.frequency * 100).toFixed(0)) + "%",
+                        timeLabel = String(Math.floor(d.DSI / 30.5)) + " m",
+                        label = freqLabel + ", " + timeLabel;
+                    
+                    return label;
+                } else {
+                    var name = String(d.name);
+
+                   return name.split('_').join(" ");
+                }
+            }
+
         });
 
         // NOTE: node.depth is a d3 construct to get the integer depth, we use depthScaled
@@ -615,17 +629,6 @@ function treeChart() {
                 msg = msg + "(none)"
 
             return msg;
-        }
-
-        function leafLabelFunc(d) {
-            var name = String(d.name);
-            
-            //FIXME: check the name of trees for minor regions
-            //// local trees have the sequences attached
-            //if (String(region).indexOf('minor') == -1)
-            //   return name.replace(/_/g, ' ');
-            //else
-               return name.split('_').slice(1).join(" ");
         }
 
     }

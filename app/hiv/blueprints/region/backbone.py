@@ -1,3 +1,3 @@
 # FIXME: add all regions
-regions = ('V3', 'p17', 'p24', 'PR', 'RT', 'vif', 'vpu', 'nef')
+regions = ('p17', 'p24', 'PR', 'RT', 'vif', 'vpu', 'V3', 'nef')
 

@@ -155,6 +155,20 @@
         <div id="tree" class="panel-collapse collapse">
           <div class="panel-body">
 	    <div align="center">
+              <div class="col-xs-8 col-sm-6">
+                <span>Representation:</span>
+                <div class="btn-group btn-pad">
+                  <button class="btn btn-default" type="radio" name="plotType" id="switchRadial" autocomplete="off">Radial</button>
+                  <button class="btn btn-default active" type="radio" name="plotType" id="switchRectangular" autocomplete="off">Horizontal</label>
+                </div>
+              </div>
+              <div class="col-xs-8 col-sm-6">
+                <span>Link color:</span>
+                <div class="btn-group btn-pad">
+                  <button class="btn btn-default active" type="radio" name="plotColorLink" id="switchColorLinkBlack" autocomplete="off">Black</button>
+                  <button class="btn btn-default" type="radio" name="plotColorLink" id="switchColorLinkDate" autocomplete="off">Date</label>
+		</div>
+              </div>
               <div style="padding-bottom:20px">
                 <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
               </div>
@@ -569,7 +583,29 @@ $('#region').change(function() {
 </script>
 
 
+<!-- Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken -->
+<script>
+  $('#switchRectangular').on('click', function () {
+   $('#switchRadial').removeClass('active');
+   $(this).addClass('active');
+   updateTree("treeSvg{{pname}}");
+  });
+  $('#switchRadial').on('click', function () {
+   $('#switchRectangular').removeClass('active');
+   $(this).addClass('active');
+   updateTree("treeSvg{{pname}}");
+  });
 
-<!-- NOTE: the tag below is a trick for the tree plot -->
-<div id="switchRectangular" class="active"></div>
+  $('#switchColorLinkBlack').on('click', function () {
+   $('#switchColorLinkDate').removeClass('active');
+   $(this).addClass('active');
+   updateTree("treeSvg{{pname}}");
+  });
+  $('#switchColorLinkDate').on('click', function () {
+   $('#switchColorLinkBlack').removeClass('active');
+   $(this).addClass('active');
+   updateTree("treeSvg{{pname}}");
+  });
+</script>
+
 {% endblock %}

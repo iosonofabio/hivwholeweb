@@ -19,11 +19,20 @@ data_folder = [data_folder_short, data_folder_full]
 class TreeModel(object):
     def __init__(self, pname, region):
         self.pname = pname
-        self.region = region
+        if 'minor' not in region:
+            self.region = region
+            self.minor = False
+        else:
+            self.region = region[:-len('_minor')]
+            self.minor = True
 
 
     def get_filename(self, full=True, format='newick'):
-        fn = 'consensi_tree_'+self.pname+'_'+self.region+'.'+format
+        if not self.minor:
+            fn = 'consensi_tree_'+self.pname+'_'+self.region+'.'+format
+        else:
+            fn = 'haplotype_tree_'+self.pname+'_'+self.region+'.'+format
+
         return data_folder[full]+'trees/'+fn
 
     

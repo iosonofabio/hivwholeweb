@@ -136,7 +136,7 @@ def trees():
     if request.method == 'GET':
         show_intro = True
         pname = 'all'
-        region = 'F1'
+        region = 'p17'
     else:
         show_intro = False
         pname = form.patient.data
@@ -149,10 +149,16 @@ def trees():
             'name': pname+', '+region,
             'id': pname+'_'+region}
 
+    if 'minor' in region:
+        plot_title = region[:-len('_minor')]+", with minor haplotypes"
+    else:
+        plot_title = region+", consensus sequences"
+
     return render_template('trees.html',
                            title='Phylogenetic trees',
                            data=data,
                            form=form,
+                           plotTitle=plot_title,
                            show_intro=show_intro,
                            section_name='Phylogenetic trees',
                           )
