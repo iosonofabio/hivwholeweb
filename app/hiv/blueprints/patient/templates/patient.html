@@ -54,7 +54,7 @@
         <div id="Intro" class="panel-collapse collapse in">
           <div class="panel-body" style="text-align:justify">
           <!-- Intro text -->  
-	  {% include ["snippets/intro_"+pname+".html", "snippets/intro.html"] ignore missing %}
+	  {% include ["snippets/intro_"+pname+".html", "snippets/introPatient.html"] ignore missing %}
           </div>
         </div>
       </div>
@@ -126,7 +126,10 @@
         </div>
         <div id="viral" class="panel-collapse collapse in">
           <div class="panel-body">
-            <svg class="d3-plot" id="physioSvg{{pname}}"></svg>
+	    <div align="center">
+              <svg class="d3-plot" id="physioSvg{{pname}}"></svg>
+            </div>
+	    {% include "snippets/physioPatient.html" ignore missing %}
           </div>
         </div>
       </div>
@@ -137,7 +140,10 @@
         </div>
         <div id="genome" class="panel-collapse collapse in">
           <div class="panel-body">
-            <svg class="d3-plot" id="genomeSvg{{pname}}"></svg>
+	    <div align="center">
+              <svg class="d3-plot" id="genomeSvg{{pname}}"></svg>
+            </div>
+	    {% include "snippets/genomePatient.html" ignore missing %}
           </div>
         </div>
       </div>
@@ -148,17 +154,20 @@
         </div>
         <div id="tree" class="panel-collapse collapse">
           <div class="panel-body">
-            <div style="padding-bottom:20px">
-              <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
+	    <div align="center">
+              <div style="padding-bottom:20px">
+                <svg class="d3-plot" id='treeSvg{{pname}}'></svg>
+              </div>
+              <div class="form-group form-inline">
+                <label>Region:</label>
+                <select class="form-control treeRegion">
+                  {% for region in treeRegions %}
+                   <option>{{region}}</option>
+                  {% endfor %} 
+                </select>
+              </div>
             </div>
-            <div class="form-group form-inline" align="center">
-             <label>Region:</label>
-             <select class="form-control treeRegion">
-               {% for region in treeRegions %}
-                <option>{{region}}</option>
-               {% endfor %} 
-             </select>
-            </div>
+	    {% include "snippets/treePatient.html" ignore missing %}
           </div>
         </div>
       </div>
@@ -169,17 +178,20 @@
         </div>
         <div id="divDiv" class="panel-collapse collapse">
           <div class="panel-body">
-            <div style="padding-bottom:20px">
-              <svg class="d3-plot" id='divDivSvg{{pname}}'></svg>
+	    <div align="center">
+              <div style="padding-bottom:20px">
+                <svg class="d3-plot" id='divDivSvg{{pname}}'></svg>
+              </div>
+              <div class="form-group form-inline" align="center">
+               <label>Region:</label>
+               <select class="form-control divDivRegion">
+                 {% for region in divDivRegions %}
+                  <option>{{region}}</option>
+                 {% endfor %} 
+               </select>
+              </div>
             </div>
-            <div class="form-group form-inline" align="center">
-             <label>Region:</label>
-             <select class="form-control divDivRegion">
-               {% for region in divDivRegions %}
-                <option>{{region}}</option>
-               {% endfor %} 
-             </select>
-            </div>
+	    {% include "snippets/divdivPatient.html" ignore missing %}
           </div>
         </div>
       </div>
@@ -190,7 +202,10 @@
          </div>
         <div id="divDivLocal" class="panel-collapse collapse">
           <div class="panel-body">
-            <svg class="d3-plot" id='divDivLocalSvg{{pname}}'></svg>
+	    <div align="center">
+              <svg class="d3-plot" id='divDivLocalSvg{{pname}}'></svg>
+            </div>
+	    {% include "snippets/divdivLocalPatient.html" ignore missing %}
           </div>
         </div>
       </div>
@@ -201,7 +216,10 @@
          </div>
         <div id="cov" class="panel-collapse collapse">
           <div class="panel-body">
-            <svg class="d3-plot" id='coverageSvg{{pname}}' height="600"></svg>
+	    <div align="center">
+              <svg class="d3-plot" id='coverageSvg{{pname}}' height="600"></svg>
+            </div>
+	    {% include "snippets/covPatient.html" ignore missing %}
           </div>
         </div>
       </div>
@@ -212,7 +230,10 @@
          </div>
         <div id="allFreq" class="panel-collapse collapse">
           <div class="panel-body">
-            <svg class="d3-plot" id='allFreqSvg{{pname}}' height="700"></svg>
+	    <div align="center">
+              <svg class="d3-plot" id='allFreqSvg{{pname}}' height="700"></svg>
+            </div>
+	    {% include "snippets/afPatient.html" ignore missing %}
           </div>
         </div>
       </div>

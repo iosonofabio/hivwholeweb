@@ -172,7 +172,7 @@ function updatePhysio(id, data) {
   return d3.svg.line()
             .x(function(d) { return x(d[0]); })
             .y(function(d) { return yscale(d[1]); })
-            .interpolate("monotone")(data);
+            .interpolate("linear")(data);
  }
 
  
