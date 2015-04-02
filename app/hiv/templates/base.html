@@ -9,8 +9,11 @@
     {% else %}
       <title>Intrapatient HIV evolution</title>
     {% endif %}
-    <link href="/static/css/starter-template.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/components/bootstrap/dist/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="/static/components/bootstrap/dist/css/bootstrap.min.css"> 
+    <link rel="stylesheet" type="text/css" href="/static/css/starter-template.css">      
+    <link rel="stylesheet" type="text/css" href="/static/css/global.css"> 
+ 
     <script src="/static/components/jquery/dist/jquery.min.js"></script>
     {% block head_end %}{% endblock %}
   </head>
@@ -45,7 +48,7 @@
     </nav>
     {% block contentwrapper %}{% block content %}{% endblock %}{% endblock %}
     {% block footerwrapper %}
-    <div class="footer navbar-default navbar-fixed-bottom">
+    <div class="nav navbar-default navbar-fixed-bottom">
       <div class="container-fluid">
        <ul class="nav navbar-nav navbar-right">
 	<li class="text-muted">Fabio Zanini, Richard Neher, <i>et al.</i>, 2014.</li>
