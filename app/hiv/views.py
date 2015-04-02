@@ -78,7 +78,7 @@ def data_proxy(path):
         pname = fields[1]
         region = fields[2]
         format = fields[3]
-        fn = sf+'/alignments/alignments_'+pname+'_'+region+'.'+format
+        fn = sf+'/alignments/haplotype_alignment_'+pname+'_'+region+'.'+format
         return hiv.send_static_file(fn)
 
     elif dtype == 'consensi':

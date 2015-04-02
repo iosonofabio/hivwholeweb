@@ -549,7 +549,7 @@ function treeChart() {
                 if (String(region).indexOf('minor') != -1) {
                     var freqLabel = String((d.frequency * 100).toFixed(0)) + "%",
                         timeLabel = String(Math.floor(d.DSI / 30.5)) + " m",
-                        label = freqLabel + ", " + timeLabel;
+                        label = freqLabel + ", " + timeLabe;
                     
                     return label;
                 } else {
@@ -654,6 +654,9 @@ function treeChart() {
 
             if (isNumeric(n.frequency))
                 msg = msg + "Frequency: " + (100 * n.frequency).toFixed(0) + "%</br>";
+
+            if (isNumeric(n.count))
+                msg = msg + "N. reads: " + n.count.toFixed(0) + "</br>";
 
             if ((typeof(n.muts) != "undefined") && (n.muts !== "undefined")){
                 msg = msg + "Mutations on this branch: ";

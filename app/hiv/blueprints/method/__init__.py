@@ -331,7 +331,7 @@ def haplotypes():
     if formpc.validate_on_submit():
         pname = formpc.patient.data
         region = formpc.region.data
-        return redirect('/download/haplotypes_'+pname+'_'+region+'.zip')
+        return redirect('/download/haplotypes_'+pname+'_'+region+'.fasta')
 
     elif form.validate_on_submit():
         # NOTE: we offer only genomewide HXB2 coordinates
