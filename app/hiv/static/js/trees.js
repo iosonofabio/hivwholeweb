@@ -680,7 +680,7 @@ function treeChart() {
                     
                     }
                 } else
-                    msg = msg + "(none)"
+                    msg = msg + "(none)";
             }
 
             return msg;
