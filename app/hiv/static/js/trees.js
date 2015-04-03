@@ -45,6 +45,9 @@ function updateTree(id, data) {
     if (data.optimizeSpace === true)
         chart.optimizeSpace(true);
 
+    if (data.tipMuts === false)
+        chart.tipMuts(false);
+
     svg.call(chart);
 
     function getNumberTerminals(n, number) {
@@ -69,7 +72,8 @@ function treeChart() {
         chartType = "radial",
         colorLinkType = "black",
         leafLabels = true,
-        optimizeSpace = false;
+        optimizeSpace = false,
+        tipMuts = true;
 
     // TREE CHART FUNCTION
     function chart(selection) {
@@ -658,7 +662,7 @@ function treeChart() {
             if (isNumeric(n.count))
                 msg = msg + "N. reads: " + n.count.toFixed(0) + "</br>";
 
-            if ((typeof(n.muts) != "undefined") && (n.muts !== "undefined")){
+            if ((tipMuts) && (typeof(n.muts) != "undefined") && (n.muts !== "undefined")){
                 msg = msg + "Mutations on this branch: ";
                 if (n.muts.length > 0) {
                     var muts = n.muts.split(" "),
@@ -727,6 +731,12 @@ function treeChart() {
     chart.optimizeSpace = function (_) {
         if (!arguments.length) return optimizeSpace;
         optimizeSpace = _;
+        return chart;
+    };
+
+    chart.tipMuts = function (_) {
+        if (!arguments.length) return tipMuts;
+        tipMuts = _;
         return chart;
     };
 
