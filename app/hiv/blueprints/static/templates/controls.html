@@ -17,84 +17,84 @@
       </div>
       <div id="sampleColl" class="panel-collapse collapse in">
         <div class="panel-body">
-	  <div display='block' align='center' style='padding-bottom:20px'>
-	    <img src='/static/images/controls/sketchPrep.svg' width='80%'>
-          </div>
-	  {% include 'snippets/samplePrep.html' ignore missing %}
-        </div>
-      </div>
+         <div display='block' align='center' style='padding-bottom:20px'>
+           <img src='/static/images/controls/sketchPrep.svg' width='80%'>
+           </div>
+           <div class="text-explanation">{% include 'snippets/samplePrep.html' ignore missing %}</div>
+       </div>
+     </div>
+   </div>
+   <div class="panel panel-default"> 
+    <div class="panel-heading">
+      <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+      <a data-toggle="collapse" data-parent="#expand" href="#seqQual">Sequencing quality</a>
     </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
-        <a data-toggle="collapse" data-parent="#expand" href="#seqQual">Sequencing quality</a>
-      </div>
-      <div id="seqQual" class="panel-collapse collapse in">
-        <div class="panel-body">
-	  <div display='block' align='center' style='padding-bottom:20px'>
-	    <img src='/static/images/controls/quality_along_read.svg' width='80%'>
-          </div>
-	  {% include 'snippets/seqQuality.html' ignore missing %}
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
-        <a data-toggle="collapse" data-parent="#expand" href="#phredQual">Phred quality assessment</a>
-      </div>
-      <div id="phredQual" class="panel-collapse collapse in">
-        <div class="panel-body">
-	  <div display='block' align='center' style='padding-bottom:20px'>
-	    <img src='/static/images/controls/phix_phred_errors.svg' width='50%'>
-          </div>
-	  {% include 'snippets/phredErrors.html' ignore missing %}
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
-        <a data-toggle="collapse" data-parent="#expand" href="#seqErr">Sequencing errors</a>
-      </div>
-      <div id="seqErr" class="panel-collapse collapse in">
-        <div class="panel-body">
-	  <div display='block' align='center' style='padding-bottom:20px'>
-	    <img src='/static/images/controls/ref_minor_allele.svg' width='80%'>
-          </div>
-	  {% include 'snippets/seqErrors.html' ignore missing %}
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
-        <a data-toggle="collapse" data-parent="#expand" href="#afOverlap">Reproducibility of variant frequencies</a>
-      </div>
-      <div id="afOverlap" class="panel-collapse collapse in">
-        <div class="panel-body">
-	  <div display='block' align='center' style='padding-bottom:20px'>
-	    <img src='/static/images/controls/allele_frequency_overlap.png' width='60%'>
-          </div>
-	  {% include 'snippets/afOverlap.html' ignore missing %}
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
-        <a data-toggle="collapse" data-parent="#expand" href="#nextera">Insert size distribution</a>
-      </div>
-      <div id="nextera" class="panel-collapse collapse in">
-        <div class="panel-body">
-	  <div display='block' align='center' style='padding-bottom:20px'>
-	    <img src='/static/images/controls/insert_size_distribution.svg' width='80%'>
-          </div>
-	  {% include 'snippets/nextera.html' ignore missing %}
-        </div>
-      </div>
-    </div>
+    <div id="seqQual" class="panel-collapse collapse in">
+      <div class="panel-body">
+       <div display='block' align='center' style='padding-bottom:20px'>
+         <img src='/static/images/controls/quality_along_read.svg' width='80%'>
+       </div>
+       <div class="text-explanation">{% include 'snippets/seqQuality.html' ignore missing %}</div>
+     </div>
+   </div>
+ </div>
+ <div class="panel panel-default"> 
+  <div class="panel-heading">
+    <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+    <a data-toggle="collapse" data-parent="#expand" href="#phredQual">Phred quality assessment</a>
   </div>
+  <div id="phredQual" class="panel-collapse collapse in">
+    <div class="panel-body">
+     <div display='block' align='center' style='padding-bottom:20px'>
+       <img src='/static/images/controls/phix_phred_errors.svg' width='50%'>
+     </div>
+     <div class="text-explanation">{% include 'snippets/phredErrors.html' ignore missing %}</div>
+   </div>
+ </div>
+</div>
+<div class="panel panel-default"> 
+  <div class="panel-heading">
+    <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+    <a data-toggle="collapse" data-parent="#expand" href="#seqErr">Sequencing errors</a>
+  </div>
+  <div id="seqErr" class="panel-collapse collapse in">
+    <div class="panel-body">
+     <div display='block' align='center' style='padding-bottom:20px'>
+       <img src='/static/images/controls/ref_minor_allele.svg' width='80%'>
+     </div>
+     <div class="text-explanation">{% include 'snippets/seqErrors.html' ignore missing %}</div>
+   </div>
+ </div>
+</div>
+<div class="panel panel-default"> 
+  <div class="panel-heading">
+    <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+    <a data-toggle="collapse" data-parent="#expand" href="#afOverlap">Reproducibility of variant frequencies</a>
+  </div>
+  <div id="afOverlap" class="panel-collapse collapse in">
+    <div class="panel-body">
+     <div display='block' align='center' style='padding-bottom:20px'>
+       <img src='/static/images/controls/allele_frequency_overlap.png' width='60%'>
+     </div>
+     <div class="text-explanation">{% include 'snippets/afOverlap.html' ignore missing %}</div>
+   </div>
+ </div>
+</div>
+<div class="panel panel-default"> 
+  <div class="panel-heading">
+    <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+    <a data-toggle="collapse" data-parent="#expand" href="#nextera">Insert size distribution</a>
+  </div>
+  <div id="nextera" class="panel-collapse collapse in">
+    <div class="panel-body">
+     <div display='block' align='center' style='padding-bottom:20px'>
+       <img src='/static/images/controls/insert_size_distribution.svg' width='80%'>
+     </div>
+     <div class="text-explanation">{% include 'snippets/nextera.html' ignore missing %}</div>
+   </div>
+ </div>
+</div>
+</div>
 </div>
 
 {% endblock %}
