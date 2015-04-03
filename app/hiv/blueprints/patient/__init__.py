@@ -21,70 +21,83 @@ def index(patient_number):
     formpc = PrecompiledHaplotypeForm()
 
     if request.method == 'POST':
-        if ((not formpc.validate_on_submit()) and
-            (not formht.validate_on_submit()) and
-            (not formco.validate_on_submit())):
-            flash('Form incorrectly filled!')
+        # We got a form submit request, figure out which one
+        subm_id = request.form['formBtn']
 
-        elif formco.validate_on_submit():
-            region = formco.region.data
-            return redirect('/download/consensi_'+pname+'_'+region+'.fasta')
+        if subm_id == 'submitCo':
+            if formco.validate_on_submit():
+                region = formco.region.data
+                return redirect('/download/consensi_'+pname+'_'+region+'.fasta')
+            else:
+                flash('Form for consensus sequences not filled correctly!')
 
-        elif formpc.validate_on_submit():
-            region = formpc.region.data
-            return redirect('/download/haplotypes_'+pname+'_'+region+'.fasta')
+        elif subm_id == 'submitPc':
+            if formpc.validate_on_submit():
+                region = formpc.region.data
+                return redirect('/download/haplotypes_'+pname+'_'+region+'.fasta')
+            else:
+                flash('Form for precompiled haplotype alignments not filled correctly!')
 
-        elif formht.validate_on_submit():
-            # NOTE: we offer only genomewide HXB2 coordinates
-            region = 'genomewide'
-            start = formht.start.data - 1 #Inclusive coordinates
-            end = formht.end.data
-            roi = (region, start, end)
+        elif subm_id == 'submitHt':
+            if formht.validate_on_submit():
+                # NOTE: we offer only genomewide HXB2 coordinates
+                region = 'genomewide'
+                start = formht.start.data - 1 #Inclusive coordinates
+                end = formht.end.data
+                roi = (region, start, end)
 
-            hm = LocalHaplotypeModel(pname, roi)
-            try:
-                hm.translate_coordinates()
-                cont = True
-            except ValueError:
-                flash('No PCR fragment covers such region, please select a narrower region')
-                cont = False
+                hm = LocalHaplotypeModel(pname, roi)
+                try:
+                    hm.translate_coordinates()
+                    cont = True
+                except ValueError:
+                    flash('No PCR fragment covers such region, please select a narrower region')
+                    cont = False
 
-            if cont:
+                if cont:
 
-                # Get the data from a temporary folder + file
-                # NOTE: the temp folders are cleaned regularly at a timeout specified
-                # in the config file, so no need to to that here.
-                fn = hm.get_data()
+                    # Get the data from a temporary folder + file
+                    # NOTE: the temp folders are cleaned regularly at a timeout specified
+                    # in the config file, so no need to to that here.
+                    fn = hm.get_data()
 
-                # TODO: refine this to show a success page with a download link etc. (that
-                # changes the policies on temporary files, storage use, etc., so watch out)
-                with open(fn, 'r') as f:
-                    fstr = f.read()
-                response = make_response(fstr)
-                response.headers["Content-Disposition"] = ("attachment; filename="+
-                                                           "haplotypes_"+pname+
-                                                           "_"+str(start+1)+
-                                                           "_"+str(end)+
-                                                           ".zip")
-                return response
+                    # TODO: refine this to show a success page with a download link etc. (that
+                    # changes the policies on temporary files, storage use, etc., so watch out)
+                    with open(fn, 'r') as f:
+                        fstr = f.read()
+                    response = make_response(fstr)
+                    response.headers["Content-Disposition"] = ("attachment; filename="+
+                                                               "haplotypes_"+pname+
+                                                               "_"+str(start+1)+
+                                                               "_"+str(end)+
+                                                               ".zip")
+                    return response
+
+            else:
+                flash('Form for new haplotype alignments not filled correctly!')
+
+        else:
+            # It is not a known form, default to GET response
+            pass
 
 
-    pnames = ['p'+str(i) for i in xrange(1, 12)]
-    table = PatientTableModel().get_table()
+    patient_table = PatientTableModel().get_table()
+    sample_table = SampleTableModel(pname).get_table()
+
     tree_regions = ['V3', 'V3_minor', 'p17', 'p17_minor', 'psi', 'RRE']
+    pnames = ['p'+str(i) for i in xrange(1, 12)]
     divdiv_regions = ['V3', 'psi', 'p17', 'RRE']
 
-    sample_table = SampleTableModel(pname).get_table()
 
 
     return render_template('patient.html',
                            pname=pname,
                            pnames=pnames,
-                           patientTable=table, 
+                           patientTable=patient_table, 
                            sampleTable=sample_table,
                            treeRegions=tree_regions,
                            divDivRegions=divdiv_regions,
-                           formCons=formco,
-                           formht=formht,
+                           formco=formco,
                            formpc=formpc,
+                           formht=formht,
                            title='Patient page')
