@@ -563,6 +563,7 @@
 
   $('select.divDivRegion').on('change', function(){
    var region = $('.divDivRegion option:selected').val();
+   emptyDivDiv("divDivSvg{{pname}}");
    loadDivDiv("divDivSvg{{pname}}", "{{pname}}", region);
  });
 
