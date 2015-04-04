@@ -5,7 +5,6 @@ from . import hiv
 # NOTE: this is slightly redundant as one can directly access the
 # static files, but allows us for abstraction if needed, by switching
 # off static file serving and changing
-# TODO: fix robots.txt
 @hiv.route('/download/<path:path>')
 def data_proxy(path):
     import re
