@@ -89,6 +89,17 @@ function treeChart() {
                 pname = data.pname,
                 region = data.region;
 
+            // minor haplotype trees require more margin because they have balls attached
+            if (region.indexOf("minor") != 1) {
+                margin.top += 5;
+                margin.bottom += 5;
+                height -= 10;
+
+                margin.left += 5;
+                margin.right += 5;
+                width -= 10;
+            }
+
             // Create outer chart (SVG) and make sure there are no other ones
             var svg = d3.select(this);
             svg.selectAll("*").remove();
@@ -158,10 +169,8 @@ function treeChart() {
                .separation(function(a, b) { return 1; });
 
             // plot the chart
-            if (chartType == "radial")
-                makeRadial();
-            else
-                makeRectangular();
+            if (chartType == "radial") makeRadial();
+            else makeRectangular();
 
             // RADIAL CHART
             function makeRadial() {
@@ -172,11 +181,8 @@ function treeChart() {
                     treeCenter = {'cx': r, 'cy': r};
 
                 // if the leaf labels are not shown, center the tree differently
-                if (leafLabels === true) {
-                    var rInternal = r - 170;
-                } else {
-                    var rInternal = r;
-                }
+                var rInternal = r;
+                if (leafLabels === true) rInternal -= 170;
 
                 // adjust the bar to calibration
                 var treeScale = 0.9 * rInternal / depth;
@@ -215,8 +221,8 @@ function treeChart() {
                 // SVG group to render tree in
                 var vis = svg.append("g")
                              .attr("transform", ("translate(" +
-                                                 (margin.top + treeCenter.cy) + "," +
-                                                 (margin.left + treeCenter.cx) + ")")
+                                                 (margin.left + treeCenter.cx) + "," +
+                                                 (margin.top + treeCenter.cy) + ")")
                                   );
 
                 //// Test dot in the treeCenter
@@ -397,14 +403,16 @@ function treeChart() {
             function makeRectangular() {
 
                 var vis = svg.append("g")
-                             .attr("transform", "translate(" + (margin.top) + "," + (margin.left) + ")");
+                             .attr("transform", "translate(" + (margin.left) + "," + (margin.top) + ")");
 
                 // activate tip on visualized svg
                 vis.call(tip);
 
                 // set up d3 cluster
                 // note: at present, x and y are swapped to keep consistency with the radial layout
-                cluster.size([height, 0.93 * width]);
+                var treeHeight = height,
+                    treeWidth = 0.93 * width;
+                cluster.size([treeHeight, treeWidth]);
 
                 // adjust the bar to calibration
                 var treeScale = cluster.size()[1] / depth;
