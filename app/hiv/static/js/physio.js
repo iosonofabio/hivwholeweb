@@ -120,7 +120,7 @@ function updatePhysio(id, data) {
       .attr("dy", "-4em")
       .attr("x", height / 2)
       .style("text-anchor", "middle")
-      .text("CD4+ counts [cells/ml]");
+      .text("CD4+ counts [cells/ul]");
 
  ccTextBox.append("rect")
       .attr("class", "circles ccAxis")
