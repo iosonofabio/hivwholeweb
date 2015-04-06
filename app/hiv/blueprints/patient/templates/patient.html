@@ -82,22 +82,22 @@
               <table class="table">
                 <thead>
                   <tr>
-                   <th>Time</th>
-                   <th colspan="6" align="center">Estimated number of RNA templates per PCR</th>
+                   <th style="text-align:right">Time</th>
+                   <th colspan="6" style="text-align:right">Estimated number of RNA templates per PCR</th>
                  </tr>
                  <tr>
-                   <th>[days since infection]</th>
-                   <th>F1</th>
-                   <th>F2</th>
-                   <th>F3</th>
-                   <th>F4</th>
-                   <th>F5</th>
-                   <th>F6</th>
+                   <th style="text-align:right">[days]</th>
+                   <th style="text-align:right">F1</th>
+                   <th style="text-align:right">F2</th>
+                   <th style="text-align:right">F3</th>
+                   <th style="text-align:right">F4</th>
+                   <th style="text-align:right">F5</th>
+                   <th style="text-align:right">F6</th>
                  </tr>
                </thead>
                <tbody>
                  {% for row in sampleTable %}
-                 <tr>
+                 <tr style="text-align:right">
                    <td>{{row.time}}</td>
                    <td>{{row.F1q}}</td>
                    <td>{{row.F2q}}</td>
