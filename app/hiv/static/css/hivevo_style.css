@@ -19,3 +19,80 @@
     text-align: justify;
     line-height: 1.5;
 }
+
+.axis {
+  font: 12px sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.axis .domain {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: .3;
+  stroke-width: 10px;
+  stroke-linecap: round;
+}
+
+.axis .halo {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 8px;
+  stroke-linecap: round;
+}
+
+.slider .handle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: .5;
+  stroke-width: 1.25px;
+}
+
+.treetip {
+  fill: "white";
+  fill-opacity: 0.0;
+  stroke-width: 0;
+}
+
+.leaf {
+  fill-opacity: 0.95;
+  stroke-width: 2;
+}
+
+
+.highlight {
+  stroke: steelblue;
+  fill: none;
+  stroke-width: 4;
+}
+
+.link {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.annoline {
+  fill: none;
+  stroke: lightgrey;
+  stroke-dasharray: 3, 3;
+  stroke-width: 2;
+}
+
+.annotext {
+  stroke-width: 0;
+}
+
+.lengthbar {
+  stroke: black;
+  stroke: solid;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lengthbartext {
+  stroke-width: 0;
+}

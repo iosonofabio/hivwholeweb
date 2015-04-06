@@ -78,12 +78,11 @@ function treeChart() {
     // TREE CHART FUNCTION
     function chart(selection) {
         selection.each(function (data) {
-
+            var colors = ["#5097BA", "#60AA9E", "#75B681", "#8EBC66", "#AABD52", "#C4B945", "#D9AD3D", "#E59637", "#E67030", "#DF4327"];
             var colorMap = d3.scale.linear()
                 .interpolate(d3.interpolateRgb)
-                .domain([0, 0.25, 0.33, 0.5, 0.67, 0.75, 1])
-                .range(["darkblue", "blue", "cyan", "green",
-                        "yellow", "orange", "red"]);
+                .domain([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+                .range(colors);
             
             var tree = data.tree,
                 pname = data.pname,
@@ -245,9 +244,7 @@ function treeChart() {
                      .append("path")
                      .attr("class", "link")
                      .attr("d", stepRadial)
-                     .attr("fill", "none")
                      .attr("stroke", colorLinkFunc)
-                     .attr("stroke-width", 2)
                      .on("mouseover", moverLinksRadial)
                      .on("mouseout", moutLinksRadial);
 
@@ -258,6 +255,17 @@ function treeChart() {
                         .each(plotBallsRadial);
 
                 }
+                var treetips = vis.selectAll("treetip")
+                       .data(cluster.links(nodes))
+                       .enter()
+                       .append("circle")
+                       .attr("class", "treetip")
+                       .attr("cx", function (d) {return d.target.x;})
+                       .attr("cy", function (d) {return d.target.y;})
+                       .attr("r", 5)
+                       .attr("stroke", colorLinkFunc)
+                       .on("mouseover", moverLinksRadial)
+                       .on("mouseout", moutLinksRadial);
            
                 // line connecting the leaves to their labels
                 if (leafLabels === true) {
@@ -268,16 +276,12 @@ function treeChart() {
                          .attr("class", "anno");
            
                     label.append("path")
-                         .attr("class", "anno")
-                         .attr("d", function(d) { return stepAnnoRadial(d, rInternal); })
-                         .attr("fill", "none")
-                         .attr("stroke", "lightgrey")
-                         .style("stroke-dasharray", ("3, 3"))
-                         .attr("stroke-width", 2);
-           
+                         .attr("class", "annoline")
+                         .attr("d", function(d) { return stepAnnoRadial(d, rInternal); });           
                      // leaf labels
                      label.append("text")
                          .attr("dy", ".31em")
+                         .attr("class", "annotext")
                          .attr("text-anchor", function(d) { return d.angle < 180 ? "start" : "end"; })
                          .attr("transform", function(d) {
                              return ("rotate(" + (d.angle - 90) + 
@@ -306,11 +310,10 @@ function treeChart() {
                        .attr("x1", function(d) { return d[0]; })
                        .attr("x2", function(d) { return d[1]; })
                        .attr("y1", function(d) { return d[2]; })
-                       .attr("y2", function(d) { return d[3]; })
-                       .style("stroke", "black")
-                       .style("stroke-width", 2);
-           
+                       .attr("y2", function(d) { return d[3]; });
+
                     bar.append("text")
+                       .attr("class", "lengthbartext")
                        .attr("x", -barLength / 2)
                        .attr("y", 25)
                        .text(barLengthText)
@@ -333,11 +336,7 @@ function treeChart() {
                       .attr("class", "highlight")
                       .attr("cx", t.x)
                       .attr("cy", t.y)
-                      .attr("r", 8)
-                      .style("stroke", "steelblue")
-                      .style("stroke-width", 3)
-                      .style("fill", "none");
-                
+                      .attr("r", 8);
                 }
            
                 function moutRadial(d) {
@@ -387,8 +386,7 @@ function treeChart() {
                         .attr("cx", d.target.x)
                         .attr("cy", d.target.y)
                         .attr("fill", colorLinkFunc(d, i))
-                        .attr("fill-opacity", 0.7);
-                
+                        .attr("stroke", d3.rgb(colorLinkFunc(d, i)).darker());
                 }
 
             }
@@ -418,19 +416,17 @@ function treeChart() {
 
                     // scale bar
                     var bar = vis.append("g")
-                        .attr("class", "lengthbar")
                         .attr("transform", "translate(" + 50 + "," + (height - 20) + ")");
            
                     bar.selectAll(".lengthbar")
                        .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
                        .enter()
                        .append("svg:line")
+                       .attr("class","lengthbar")
                        .attr("x1", function(d) { return d[0]; })
                        .attr("x2", function(d) { return d[1]; })
                        .attr("y1", function(d) { return d[2]; })
-                       .attr("y2", function(d) { return d[3]; })
-                       .style("stroke", "black")
-                       .style("stroke-width", 2);
+                       .attr("y2", function(d) { return d[3]; });
            
                     bar.append("text")
                        .attr("x", -barLength / 2)
@@ -451,9 +447,8 @@ function treeChart() {
                      .append("path")
                      .attr("class", "link")
                      .attr("d", stepRectangular)
-                     .attr("fill", "none")
+//                     .attr("fill", "none")
                      .attr("stroke", colorLinkFunc)
-                     .attr("stroke-width", 2)
                      .on("mouseover", moverLinksRectangular)
                      .on("mouseout", moutLinksRectangular);
 
@@ -461,8 +456,19 @@ function treeChart() {
                 if (region.indexOf("minor") != -1) {
                     link.filter(function(d) { return d.target.frequency != "undefined" })
                         .each(plotBallsRect);
-
                 }
+                var treetips = vis.selectAll("treetip")
+                     .data(cluster.links(nodes))
+                     .enter()
+                     .append("circle")
+                     .attr("class", "treetip")
+                     .attr("cx", function (d) {return d.target.y;})
+                     .attr("cy", function (d) {return d.target.x;})
+                     .attr("r", 5)
+                     .attr("stroke", colorLinkFunc)
+                     .on("mouseover", moverLinksRectangular)
+                     .on("mouseout", moutLinksRectangular);
+
 
                 // line connecting the leaves to their labels
                 if (leafLabels === true) {
@@ -473,15 +479,12 @@ function treeChart() {
                          .attr("class", "anno");
            
                     label.append("path")
-                         .attr("class", "anno")
+                         .attr("class", "annoline")
                          .attr("d", function(d) { return stepAnnoRectangular(d); })
-                         .attr("fill", "none")
-                         .attr("stroke", "lightgrey")
-                         .style("stroke-dasharray", ("3, 3"))
-                         .attr("stroke-width", 2);
 
                     // leaf labels
                     label.append("text")
+                         .attr("class", "annotext")
                          .attr("dy", ".31em")
                          .attr("text-anchor", "end")
                          .attr("transform", function(d) { return "translate(" + width + "," + d.x + ")"; })
@@ -506,10 +509,7 @@ function treeChart() {
                       .attr("class", "highlight")
                       .attr("cx", d.y)
                       .attr("cy", d.x)
-                      .attr("r", 8)
-                      .style("stroke", "steelblue")
-                      .style("stroke-width", 3)
-                      .style("fill", "none"); 
+                      .attr("r", 8);
                 }
            
                 function moutRectangular(d) {
@@ -543,8 +543,8 @@ function treeChart() {
                         .attr("r", r)
                         .attr("cx", d.target.y)
                         .attr("cy", d.target.x)
-                        .attr("fill", colorLinkFunc(d, i));
-                
+                        .attr("fill", colorLinkFunc(d, i))
+                        .attr("stroke", d3.rgb(colorLinkFunc(d, i)).darker());
                 }
 
             }
@@ -553,7 +553,7 @@ function treeChart() {
                 if (String(region).indexOf('minor') != -1) {
                     var freqLabel = String((d.frequency * 100).toFixed(0)) + "%",
                         timeLabel = String(Math.floor(d.DSI / 30.5)) + " m",
-                        label = freqLabel + ", " + timeLabe;
+                        label = freqLabel + ", " + timeLabel;
                     
                     return label;
                 } else {
