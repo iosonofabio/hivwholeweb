@@ -81,6 +81,23 @@
   stroke-width: 2;
 }
 
+
+.hugespacer {
+  height: 50px;
+}
+
+.bigspacer {
+  height: 30px;
+}
+
+.spacer {
+  height: 10px;
+}
+
+.smallspacer {
+  height: 5px;
+}
+
 .annotext {
   stroke-width: 0;
 }
