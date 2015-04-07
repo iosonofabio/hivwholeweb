@@ -27,6 +27,7 @@
   user-select: none;
 }
 
+/*plot styles*/
 .axis .domain {
   fill: none;
   stroke: #000;
@@ -49,6 +50,9 @@
   stroke-width: 1.25px;
 }
 
+
+/* tree styles */
+
 .treetip {
   fill: "white";
   fill-opacity: 0.0;
@@ -65,6 +69,7 @@
   stroke: steelblue;
   fill: none;
   stroke-width: 4;
+  fill-opacity: 1.0;
 }
 
 .link {
@@ -79,23 +84,6 @@
   stroke: lightgrey;
   stroke-dasharray: 3, 3;
   stroke-width: 2;
-}
-
-
-.hugespacer {
-  height: 50px;
-}
-
-.bigspacer {
-  height: 30px;
-}
-
-.spacer {
-  height: 10px;
-}
-
-.smallspacer {
-  height: 5px;
 }
 
 .annotext {
@@ -113,3 +101,23 @@
 .lengthbartext {
   stroke-width: 0;
 }
+
+
+/*spacers*/
+
+.hugespacer {
+  height: 50px;
+}
+
+.bigspacer {
+  height: 30px;
+}
+
+.spacer {
+  height: 10px;
+}
+
+.smallspacer {
+  height: 5px;
+}
+

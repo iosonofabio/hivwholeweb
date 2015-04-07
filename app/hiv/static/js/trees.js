@@ -340,7 +340,7 @@ function treeChart() {
                       .attr("class", "highlight")
                       .attr("cx", t.x)
                       .attr("cy", t.y)
-                      .attr("r", 8);
+                      .attr("r", 8)
                       .transition()
                       .duration(400);
                     tip.show(d);
@@ -394,7 +394,7 @@ function treeChart() {
                         .attr("cx", d.target.x)
                         .attr("cy", d.target.y)
                         .attr("fill", colorLinkFunc(d, i))
-                        .attr("stroke", d3.rgb(colorLinkFunc(d, i)).darker());
+                        .attr("stroke", d3.rgb(colorLinkFunc(d, i)).darker())
                         .attr("fill-opacity", 0.7)
                         .on("mouseover", moverRadial)
                         .on("mouseout", moutRadial);
@@ -520,7 +520,7 @@ function treeChart() {
                       .attr("class", "highlight")
                       .attr("cx", d.y)
                       .attr("cy", d.x)
-                      .attr("r", 8);
+                      .attr("r", 8)
                       .transition()
                       .duration(400)
                     tip.show(d);
@@ -560,7 +560,7 @@ function treeChart() {
                         .attr("cx", d.target.y)
                         .attr("cy", d.target.x)
                         .attr("fill", colorLinkFunc(d, i))
-                        .attr("stroke", d3.rgb(colorLinkFunc(d, i)).darker());
+                        .attr("stroke", d3.rgb(colorLinkFunc(d, i)).darker())
                         .on("mouseover", function() { return moverLinksRectangular(d)})
                         .on("mouseout", function() { return moutLinksRectangular(d)});
                 }
