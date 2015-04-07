@@ -3,8 +3,7 @@
 {{ super() }}
 <!-- display message if javascript is disabled -->
 <noscript>
-  <div class="bg-danger" style="margin-left:50px; margin-right:50px; margin-top:20px;
-  margin-bottom:20px; padding-top:20px; padding-left:20px; padding-bottom:20px">
+  <div class="bg-danger">
   <p class="text-danger"><span class="glyphicon glyphicon-warning-sign"></span><strong> Warning:</strong> You don't have JavaScript activated. For full functionality of our site JavaScript has to be enabled.</p>
   <a href="http://www.enable-javascript.com/" target="_blank">How to enable JavaScript?</a>
 </div>
@@ -68,11 +67,11 @@ function isNumeric(n) {
 {% block content %}
 <div class="container">
   <div class="jumbotron">
-   <h2 class="text-primary"><b>HIV EVO</b> <small><b>Intrapatient HIV evolution</b></small></h2>
+   <h2 class="jumbo-header"><b>HIV EVO</b> <small><b>Intrapatient HIV evolution</b></small></h2>
  </div>
  <div class="row">
   <div class="col-xs-6">   
-   <h4 class="subheader text-muted"><span class="glyphicon glyphicon-info-sign"></span> Deep longitudinal data</h4>
+   <h4 class="subheader"><span class="glyphicon glyphicon-info-sign"></span> Deep longitudinal data</h4>
    <hr>
    <ul>
     <li> 10 patients </li>
@@ -82,7 +81,7 @@ function isNumeric(n) {
   </ul>
 </div>
 <div class="col-xs-6">
-  <h4 class="subheader text-muted"><span class="glyphicon glyphicon-question-sign"></span> How to access and explore</h4>
+  <h4 class="subheader"><span class="glyphicon glyphicon-question-sign"></span> How to access and explore</h4>
   <hr>
   <ul>
     <li> Browse data by <a href="/patient/p1/">patient</a></li>
@@ -95,7 +94,7 @@ function isNumeric(n) {
 <div class="panel panel-default" style="margin-top:20px">    
   <div class="panel-body">
     <div class="col-md-6">
-      <h5 class="text-muted" style="text-align:center"><b>Table:</b> Overview of patient specific data.</h5>
+      <h5 class="caption"><b>Table:</b> Overview of patient specific data.</h5>
       <div style="padding:20px">
         <table class="table" style="text-align:right">
           <thead>
@@ -132,7 +131,7 @@ function isNumeric(n) {
     </div>
     <div class="col-md-6">
 
-      <h5 class="text-muted" style="text-align:center">
+      <h5 class="caption">
         <b>Example:</b> Phylogeny of samples in the <strong>{{region}}</strong> region, colored by patient.
       </h5>
       <div align="center">

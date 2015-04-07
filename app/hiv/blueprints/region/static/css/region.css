@@ -1,4 +1,4 @@
-.patient-content
+.region-content
 {
   position: relative;
   top: 0px; 
@@ -7,7 +7,7 @@
   right: 0px;
   padding-top: 20px;
 }
-.patient-sidebar
+.region-sidebar
 {
   padding-top: 70px;
   position: fixed;
