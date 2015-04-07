@@ -88,6 +88,17 @@ function treeChart() {
                 pname = data.pname,
                 region = data.region;
 
+            // minor haplotype trees require more margin because they have balls attached
+            if (region.indexOf("minor") != 1) {
+                margin.top += 5;
+                margin.bottom += 5;
+                height -= 10;
+
+                margin.left += 5;
+                margin.right += 5;
+                width -= 10;
+            }
+
             // Create outer chart (SVG) and make sure there are no other ones
             var svg = d3.select(this);
             svg.selectAll("*").remove();
@@ -157,10 +168,8 @@ function treeChart() {
                .separation(function(a, b) { return 1; });
 
             // plot the chart
-            if (chartType == "radial")
-                makeRadial();
-            else
-                makeRectangular();
+            if (chartType == "radial") makeRadial();
+            else makeRectangular();
 
             // RADIAL CHART
             function makeRadial() {
@@ -171,11 +180,8 @@ function treeChart() {
                     treeCenter = {'cx': r, 'cy': r};
 
                 // if the leaf labels are not shown, center the tree differently
-                if (leafLabels === true) {
-                    var rInternal = r - 170;
-                } else {
-                    var rInternal = r;
-                }
+                var rInternal = r;
+                if (leafLabels === true) rInternal -= 170;
 
                 // adjust the bar to calibration
                 var treeScale = 0.9 * rInternal / depth;
@@ -214,8 +220,8 @@ function treeChart() {
                 // SVG group to render tree in
                 var vis = svg.append("g")
                              .attr("transform", ("translate(" +
-                                                 (margin.top + treeCenter.cy) + "," +
-                                                 (margin.left + treeCenter.cx) + ")")
+                                                 (margin.left + treeCenter.cx) + "," +
+                                                 (margin.top + treeCenter.cy) + ")")
                                   );
 
                 //// Test dot in the treeCenter
@@ -321,12 +327,10 @@ function treeChart() {
                 }
 
                 function moverLinksRadial(d) {
-                    tip.show(d);
                     moverRadial(d.target);
                 }
            
                 function moutLinksRadial(d) {
-                    tip.hide(d);   
                     moutRadial(d.target);
                 }
 
@@ -337,11 +341,15 @@ function treeChart() {
                       .attr("cx", t.x)
                       .attr("cy", t.y)
                       .attr("r", 8);
+                      .transition()
+                      .duration(400);
+                    tip.show(d);
                 }
            
                 function moutRadial(d) {
-                  vis.selectAll(".highlight")
-                     .remove();
+                    tip.hide(d);   
+                    vis.selectAll(".highlight")
+                       .remove();
                 }
            
                 function projectRadial(d) {
@@ -387,6 +395,9 @@ function treeChart() {
                         .attr("cy", d.target.y)
                         .attr("fill", colorLinkFunc(d, i))
                         .attr("stroke", d3.rgb(colorLinkFunc(d, i)).darker());
+                        .attr("fill-opacity", 0.7)
+                        .on("mouseover", moverRadial)
+                        .on("mouseout", moutRadial);
                 }
 
             }
@@ -395,14 +406,16 @@ function treeChart() {
             function makeRectangular() {
 
                 var vis = svg.append("g")
-                             .attr("transform", "translate(" + (margin.top) + "," + (margin.left) + ")");
+                             .attr("transform", "translate(" + (margin.left) + "," + (margin.top) + ")");
 
                 // activate tip on visualized svg
                 vis.call(tip);
 
                 // set up d3 cluster
                 // note: at present, x and y are swapped to keep consistency with the radial layout
-                cluster.size([height, 0.93 * width]);
+                var treeHeight = height,
+                    treeWidth = 0.93 * width;
+                cluster.size([treeHeight, treeWidth]);
 
                 // adjust the bar to calibration
                 var treeScale = cluster.size()[1] / depth;
@@ -494,12 +507,10 @@ function treeChart() {
                 }
            
                 function moverLinksRectangular(d) {
-                    tip.show(d);
                     moverRectangular(d.target);
                 }
            
                 function moutLinksRectangular(d) {
-                    tip.hide(d);
                     moutRectangular(d.target);
                 }
 
@@ -510,11 +521,15 @@ function treeChart() {
                       .attr("cx", d.y)
                       .attr("cy", d.x)
                       .attr("r", 8);
+                      .transition()
+                      .duration(400)
+                    tip.show(d);
                 }
            
                 function moutRectangular(d) {
-                  vis.selectAll(".highlight")
-                     .remove();
+                    tip.hide(d);
+                    vis.selectAll(".highlight")
+                        .remove();
                 }
 
 
@@ -527,7 +542,8 @@ function treeChart() {
                 }
 
                 function stepAnnoRectangular(d) {
-                    // FIXME: the depth is a trick, we should allocate space for the labels and subtract 
+                    // FIXME: the depth is a trick, we should allocate space
+                    // for the labels and subtract, but that depends on fontsize
                     return (
                         "M" + d.y + "," + d.x +
                         "H" + (10 + depth * treeScale)
@@ -545,6 +561,8 @@ function treeChart() {
                         .attr("cy", d.target.x)
                         .attr("fill", colorLinkFunc(d, i))
                         .attr("stroke", d3.rgb(colorLinkFunc(d, i)).darker());
+                        .on("mouseover", function() { return moverLinksRectangular(d)})
+                        .on("mouseout", function() { return moutLinksRectangular(d)});
                 }
 
             }
@@ -625,13 +643,15 @@ function treeChart() {
         }
 
 
-        // Tooltip function
+        // Tooltip function, used for both edges and nodes
         function tooltipFunc(d) {
-            var n = d.target,
-                msg = "";
+            // get the child node anyway
+            if (d.hasOwnProperty('target')) d = d.target;
 
-            if (!(n.children)) {
-                var pname =  String(n.name).split('_')[0];
+            var msg = "";
+
+            if (!(d.children)) {
+                var pname =  String(d.name).split('_')[0];
                 if (pname[0] == "p")
                     msg = msg + "Patient: " + pname + "</br>";
                 else if (pname != "undefined") {
@@ -641,37 +661,37 @@ function treeChart() {
                         msg = msg + "Name: " + pname + "</br>";
                 }
             
-                if (isNumeric(n.CD4))
-                    msg = msg + "CD4+ cell count [cells/ml]: " + n.CD4 + "</br>";
+                if (isNumeric(d.CD4))
+                    msg = msg + "CD4+ cell count [cells/ml]: " + d.CD4 + "</br>";
 
-                if (isNumeric(n.VL))
-                    msg = msg + "Viral load [virions/ml]: " + n.VL + "</br>";
+                if (isNumeric(d.VL))
+                    msg = msg + "Viral load [virions/ml]: " + d.VL + "</br>";
 
             }
 
-            if ((typeof(n.subtype) != "undefined") && (n.subtype !== "undefined")) {
-                msg = msg + "Subtype: " + n.subtype + "</br>";
+            if ((typeof(d.subtype) != "undefined") && (d.subtype !== "undefined")) {
+                msg = msg + "Subtype: " + d.subtype + "</br>";
             }
 
-            if (isNumeric(n.DSI))
-                msg = msg + "Day since infection: " + n.DSI.toFixed(0) + "</br>";
+            if (isNumeric(d.DSI))
+                msg = msg + "Day since infection: " + d.DSI.toFixed(0) + "</br>";
 
-            if (isNumeric(n.frequency))
-                msg = msg + "Frequency: " + (100 * n.frequency).toFixed(0) + "%</br>";
+            if (isNumeric(d.frequency))
+                msg = msg + "Frequency: " + (100 * d.frequency).toFixed(0) + "%</br>";
 
-            if (isNumeric(n.count))
-                msg = msg + "N. reads: " + n.count.toFixed(0) + "</br>";
+            if (isNumeric(d.count))
+                msg = msg + "N. reads: " + d.count.toFixed(0) + "</br>";
 
-            if ((tipMuts) && (typeof(n.muts) != "undefined") && (n.muts !== "undefined")){
+            if ((tipMuts) && (typeof(d.muts) != "undefined") && (d.muts !== "undefined")){
                 msg = msg + "Mutations on this branch: ";
-                if (n.muts.length > 0) {
-                    var muts = n.muts.split(" "),
+                if (d.muts.length > 0) {
+                    var muts = d.muts.split(" "),
                         nMuts = muts.length,
                         nMutsPerLine = 10,
                         nMutLines = Math.ceil(nMuts / nMutsPerLine);
                     
                     if (nMutLines == 1)
-                        msg = msg + n.muts;
+                        msg = msg + d.muts;
                     else {
                         msg = msg + "</br>";
                         for(var i=0; i < nMutLines - 1; i++)
