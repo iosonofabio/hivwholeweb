@@ -159,6 +159,7 @@ function treeChart() {
             // tooltip
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
+                .offset([-10, 0])
                 .html(tooltipFunc);
 
             // prepare cluster representation
@@ -336,12 +337,12 @@ function treeChart() {
 
                 function moverRadial(d) {
                   var t = projectRadial(d);
-                  vis.append("circle")
+                  var circ = vis.append("circle")
                       .attr("class", "highlight")
                       .attr("cx", t.x)
                       .attr("cy", t.y)
-                      .attr("r", 8)
-                    tip.show(d);
+                      .attr("r", 8);
+                    tip.show(d, circ.node());
                 }
            
                 function moutRadial(d) {
@@ -514,14 +515,12 @@ function treeChart() {
 
 
                 function moverRectangular(d) {
-                  vis.append("circle")
-                      .attr("class", "highlight")
-                      .attr("cx", d.y)
-                      .attr("cy", d.x)
-                      .attr("r", 8)
-                      .transition()
-                      .duration(400)
-                    tip.show(d);
+                    var circ = vis.append("circle")
+                        .attr("class", "highlight")
+                        .attr("cx", d.y)
+                        .attr("cy", d.x)
+                        .attr("r", 8);
+                    tip.show(d, circ.node());
                 }
            
                 function moutRectangular(d) {

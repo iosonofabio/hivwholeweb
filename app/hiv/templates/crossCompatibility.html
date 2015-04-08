@@ -1,0 +1,19 @@
+<!-- support JS code for browser cross-compatibility -->
+<!-- nice IE has no way of finding a string in a list of strings (!) -->
+<script type="text/javascript">
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function(item) {
+        var i = this.length;
+        while (i--)
+           if (this[i] === item) return i;
+        return -1;
+    }
+}
+
+
+ <!-- JavaScript has no intrinsic way to determine numeric -->
+ function isNumeric(n) {
+   return !isNaN(parseFloat(n)) && isFinite(n);
+ }
+ </script>
+ <!-- end of cross-compatibility support -->

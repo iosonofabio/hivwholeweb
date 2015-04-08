@@ -133,7 +133,7 @@ font-style:italic;
 }
 
 .leaf {
-  fill-opacity: 0.95;
+  fill-opacity: 0.8;
   stroke-width: 2;
 }
 
@@ -142,7 +142,6 @@ font-style:italic;
   stroke: steelblue;
   fill: none;
   stroke-width: 4;
-  fill-opacity: 1.0;
 }
 
 .link {

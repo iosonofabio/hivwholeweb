@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+  <!-- HTML HEAD -->
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,14 +10,20 @@
     {% else %}
       <title>Intrapatient HIV evolution</title>
     {% endif %}
-    <link rel="stylesheet" href="/static/components/bootstrap/dist/css/bootstrap.min.css">
+
+    <!-- Load everything in the HEAD even if it slows down a bit, then it's cached --> 
+    <script src="/static/components/jquery/dist/jquery.min.js"></script>
+    {% include "bootstrap.html" %}
+    {% include "d3.html" %}
+    {% include "crossCompatibility.html" %}
     <link href="/static/css/starter-template.css" rel="stylesheet">
     <link href="/static/css/hivevo_style.css" rel="stylesheet">
-    <script src="/static/components/jquery/dist/jquery.min.js"></script>
     {% block head_end %}{% endblock %}
   </head>
-
+  <!-- end of HEAD -->
+  <!-- HTML BODY -->
   <body {% block body_attributes %}{% endblock %}>
+    <!-- navbar -->
     <nav class="navbar navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -34,27 +41,33 @@
 	    <li><a href="/region/V3/">Genomic regions</a></li>
 	    <li><a href="/method/">Analyses</a></li>
 	    <li><a href="/data/">Data</a></li>
-      <li><a href="/controls/">Controls</a></li>
+            <li><a href="/controls/">Controls</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
 	    <li><a href="/people/">People</a></li>
 	    <li><a href="/publications/">Publications</a></li>
 	    <li><a href="/impressum/">Impressum</a></li>
-	        </ul>
-	      </div>
+	  </ul>
+        </div>
       </div>
     </nav>
-    {% block contentwrapper %}{% block content %}{% endblock %}{% endblock %}
+    <!-- end of navbar -->
+    {% block contentwrapper %}
+    <!-- content block -->
+    {% block content %}{% endblock %}
+    <!-- end of content -->
+    {% endblock %}
+    <!-- footer block -->
     {% block footerwrapper %}
     <div class="nav footer navbar-fixed-bottom">
       <div class="container-fluid">
-       <ul class="nav navbar-nav navbar-right">
-      	<li class="text-muted">Fabio Zanini <i>et al.</i>, 2015.</li>
-       </ul>
+        <ul class="nav navbar-nav navbar-right">
+       	  <li class="text-muted">Fabio Zanini <i>et al.</i>, 2015.</li>
+        </ul>
       </div>
     </div>
     {% endblock %}
-
-  <script src="/static/components/bootstrap/dist/js/bootstrap.min.js"></script>
- </body>
+    <!-- end of footer -->
+  </body>
+  <!-- end of BODY -->
 </html>
