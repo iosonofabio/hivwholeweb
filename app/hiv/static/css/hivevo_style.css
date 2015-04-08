@@ -1,25 +1,98 @@
-.subheader {
-  margin-left:17px;
-}
-
+/* general styles */
 .container {
   padding-top:20px; 
 }
-
-.text-primary {
-  color: #b2df8a;
-}
-
 .text-explanation{
-    /*font: 12px sans-serif;*/
-    max-width: 600px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 30px;
-    text-align: justify;
-    line-height: 1.5;
+  /*font: 12px sans-serif;*/
+  max-width: 600px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 30px;
+  text-align: justify;
+  line-height: 1.5;
+}
+.bg-danger {
+  width: 80%; 
+  margin-left: 10%; 
+  margin-top: 20px;
+  margin-bottom: 20px; 
+  padding-top: 20px; 
+  padding-left: 20px; 
+  padding-bottom: 20px;
+}
+a:link {
+  color: tomato;
+}
+a:hover {
+  color: steelblue;
+}
+a:visited {
+  color: tomato;
+}
+.pagetitle {
+  color: steelblue;
+  text-align: center;
+}
+.header-panel {
+  background-color: white;
+  border: 1px lightgrey solid;
+}
+.text-primary {
+  color: steelblue;
 }
 
+/* tab styles */
+.tab-panel {
+  border: 1px lightgrey solid;
+}
+.bottom-border {
+  border-bottom: 1px lightgrey solid;
+}
+.panel-heading.tab {
+  color: steelblue;
+  background-color: whitesmoke;
+}
+.panel-heading > a {
+  color: steelblue;
+}
+.panel-heading > span {
+  color: steelblue;
+}
+
+/* welcome page styles */
+.jumbotron {
+  background-color: aliceblue;
+}
+.jumbo-header {
+  color: steelblue;
+}
+.subheader {
+  margin-left: 17px;
+  color: grey;
+}
+.caption {
+  text-align: center;
+  color: grey;
+}
+
+/* people page styles */
+.row.logos {
+  text-align: center;
+  padding: 20px;
+}
+.people-panel {
+  border: 1px lightgrey solid;
+}
+
+/*publication page styles */
+p.list {
+font-size:47px;
+color:lightgrey;
+font-weight:bold;
+font-style:italic;
+}
+
+/* axis styles */
 .axis {
   font: 12px sans-serif;
   -webkit-user-select: none;

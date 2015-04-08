@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container" style="padding:20px">
+<div class="container">
   <!-- header -->
-  <div class="panel panel-default text-primary" style="text-align:center">
+  <div class="panel header-panel">
     <div class="panel-body">
-      <h4><span class="glyphicon glyphicon-stats"></span>  Sequencing methodology and control experiments</h4>
+      <h4 class="pagetitle"><span class="glyphicon glyphicon-stats"></span>  Sequencing methodology and control experiments</h4>
     </div>
   </div>
   <div class="panel-group">
     <!-- expand nav -->
-    <div class="panel panel-default"> 
-      <div class="panel-heading">
-        <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+    <div class="panel tab-panel"> 
+      <div class="panel-heading tab">
+        <span class="glyphicon glyphicon-minus"></span>
         <a data-toggle="collapse" data-parent="#expand" href="#sampleColl">Overview of sequencing and analysis pipeline</a>
       </div>
       <div id="sampleColl" class="panel-collapse collapse in">
@@ -24,9 +24,9 @@
        </div>
      </div>
    </div>
-   <div class="panel panel-default"> 
-    <div class="panel-heading">
-      <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+   <div class="panel tab-panel"> 
+    <div class="panel-heading tab">
+      <span class="glyphicon glyphicon-minus"></span>
       <a data-toggle="collapse" data-parent="#expand" href="#seqQual">Sequencing quality</a>
     </div>
     <div id="seqQual" class="panel-collapse collapse in">
@@ -38,9 +38,9 @@
      </div>
    </div>
  </div>
- <div class="panel panel-default"> 
-  <div class="panel-heading">
-    <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+ <div class="panel tab-panel"> 
+  <div class="panel-heading tab">
+    <span class="glyphicon glyphicon-minus"></span>
     <a data-toggle="collapse" data-parent="#expand" href="#phredQual">Phred quality assessment</a>
   </div>
   <div id="phredQual" class="panel-collapse collapse in">
@@ -52,9 +52,9 @@
    </div>
  </div>
 </div>
-<div class="panel panel-default"> 
-  <div class="panel-heading">
-    <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+<div class="panel tab-panel"> 
+  <div class="panel-heading tab">
+    <span class="glyphicon glyphicon-minus"></span>
     <a data-toggle="collapse" data-parent="#expand" href="#seqErr">Sequencing errors</a>
   </div>
   <div id="seqErr" class="panel-collapse collapse in">
@@ -66,9 +66,9 @@
    </div>
  </div>
 </div>
-<div class="panel panel-default"> 
-  <div class="panel-heading">
-    <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+<div class="panel tab-panel"> 
+  <div class="panel-heading tab">
+    <span class="glyphicon glyphicon-minus"></span>
     <a data-toggle="collapse" data-parent="#expand" href="#afOverlap">Reproducibility of variant frequencies</a>
   </div>
   <div id="afOverlap" class="panel-collapse collapse in">
@@ -80,9 +80,9 @@
    </div>
  </div>
 </div>
-<div class="panel panel-default"> 
-  <div class="panel-heading">
-    <span class="text-primary text-primary glyphicon glyphicon-minus"></span>
+<div class="panel tab-panel"> 
+  <div class="panel-heading tab">
+    <span class="glyphicon glyphicon-minus"></span>
     <a data-toggle="collapse" data-parent="#expand" href="#nextera">Insert size distribution</a>
   </div>
   <div id="nextera" class="panel-collapse collapse in">
