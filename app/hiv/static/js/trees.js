@@ -341,8 +341,6 @@ function treeChart() {
                       .attr("cx", t.x)
                       .attr("cy", t.y)
                       .attr("r", 8)
-                      .transition()
-                      .duration(400);
                     tip.show(d);
                 }
            
