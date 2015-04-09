@@ -7,6 +7,11 @@ function emptyCoverage(id, keepData) {
 
 }
 
+var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹",
+    formatPower = function(d) { 
+        var tmp='';
+        if (d<0){tmp+='⁻';}
+        return tmp+(Math.abs(d) + "").split("").map(function(c) { return superscript[c]; }).join(""); };
 
 function updateCoverage(id, data) {
 
@@ -40,11 +45,15 @@ function updateCoverage(id, data) {
     
     var yAxis = d3.svg.axis()
         .scale(y)
-        .orient("left");
+        .orient("left")
+        .ticks(Math.round(Math.log(covmax) / Math.LN10)+1, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
+
    
     var yAxisRight = d3.svg.axis()
         .scale(y)
-        .orient("right");
+        .orient("right")
+        .ticks(Math.round(Math.log(covmax) / Math.LN10)+1, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
+
    
     var yAxisGrid = d3.svg.axis()
          .scale(y)

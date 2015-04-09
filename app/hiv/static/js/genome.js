@@ -328,10 +328,7 @@ function genomeChart() {
                     .attr("y", 0)
                     .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
                     .attr("height", heightBlock)
-                    .style("fill", bgColor)
-                    .style("fill-opacity", 0.5)
-                    .style("stroke-width", 1)
-                    .style("stroke", "black");
+                    .style("fill", bgColor);
 
                 // show text only of longer things (that's why we have a tooltip)
                 // FIXME: use a criterion that is more zoom-friendly
@@ -343,8 +340,7 @@ function genomeChart() {
                             return d.name;
                         else
                             return "";
-                    })
-                    .style("text-anchor", "middle");
+                    });
             }
 
             function getFeatureGroup(groupname) {

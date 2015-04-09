@@ -7,6 +7,11 @@ function emptyAlleleFrequencies(id, keepData) {
 
 }
 
+var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹",
+    formatPower = function(d) { 
+        var tmp='';
+        if (d<0){tmp+='⁻';}
+        return tmp+(Math.abs(d) + "").split("").map(function(c) { return superscript[c]; }).join(""); };
 
 function updateAlleleFrequencies(id, data) {
     var svg = d3.select("#"+id),
@@ -139,7 +144,7 @@ function updateAlleleFrequencies(id, data) {
             var vis = d3.select(this);
        
             var y = d3.scale.log()
-                 .domain([0.0009, 0.9991])
+                 .domain([0.0009, 1.1])
                  .range([heightAft, 0])
                  .clamp(true);
 
@@ -161,11 +166,15 @@ function updateAlleleFrequencies(id, data) {
             // Make y axes
             var yAxis = d3.svg.axis()
                 .scale(y)
-                .orient("left");
+                .orient("left")
+                .ticks(4, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
+
 
             var yAxisRight = d3.svg.axis()
                 .scale(y)
-                .orient("right");
+                .orient("right")
+                .ticks(4, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
+
 
             vis.append("g")
                  .attr("class", "d3-axis")
@@ -186,7 +195,7 @@ function updateAlleleFrequencies(id, data) {
             var aftLine = d3.svg.line()
                 .x(function(d) { return xT(d[0]); })
                 .y(function(d) { return y(d[1]); })
-                .interpolate('monotone');
+                .interpolate('linear');
    
             visAft.selectAll(".aft")
                  .data(data.aft)
@@ -233,18 +242,21 @@ function updateAlleleFrequencies(id, data) {
             var vis = d3.select(this);
        
             var y = d3.scale.log()
-                 .domain([0.0009, 0.9991])
+                 .domain([0.0009, 1.1])
                  .range([heightAft, 0])
                  .clamp(true);
        
             // Make y axes and grid
             var yAxis = d3.svg.axis()
                 .scale(y)
-                .orient("left");
+                .orient("left")
+                .ticks(4, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
        
             var yAxisRight = d3.svg.axis()
                 .scale(y)
-                .orient("right");
+                .orient("right")
+                .ticks(4, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
+
        
             var yAxisGrid = d3.svg.axis()
                  .scale(y)

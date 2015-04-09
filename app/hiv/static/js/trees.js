@@ -311,7 +311,7 @@ function treeChart() {
                         .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
            
                     bar.selectAll(".lengthbar")
-                       .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
+                       .data([[-barLength, 0, 0, 0]]) //, [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
                        .enter()
                        .append("svg:line")
                        .attr("x1", function(d) { return d[0]; })
@@ -431,7 +431,7 @@ function treeChart() {
                         .attr("transform", "translate(" + 50 + "," + (height - 20) + ")");
            
                     bar.selectAll(".lengthbar")
-                       .data([[-barLength, 0, 0, 0], [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
+                       .data([[-barLength, 0, 0, 0]]) //, [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
                        .enter()
                        .append("svg:line")
                        .attr("class","lengthbar")

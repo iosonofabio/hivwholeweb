@@ -8,6 +8,7 @@ function emptyDivs(id, keepData) {
 }
 
 
+
 function updateDivs(id, data, dtype) {
 
     var labelDtype = {"dg": "Divergence",
@@ -33,8 +34,9 @@ function updateDivs(id, data, dtype) {
     var dmax = d3.max(data.map(function(d) { return get_ymax(d[dtype]) }));
     var dmin = d3.min(data.map(function(d) { return get_ymin(d[dtype]) }));
  
-    var y = d3.scale.log()
-         .domain([1e-4, 0.5])
+    var y = d3.scale.linear()
+         .domain([0.0, dmax*1.1])
+//         .domain([1e-4, 0.5])
          .range([height, 0]);
    
     var x = d3.scale.linear()
@@ -58,10 +60,12 @@ function updateDivs(id, data, dtype) {
    
     var yAxis_left = d3.svg.axis()
         .scale(y)
+        .ticks(5)
         .orient("left");
 
     var yAxis_right = d3.svg.axis()
         .scale(y)
+        .ticks(5)
         .orient("right");
      
     var yAxisGrid = d3.svg.axis()

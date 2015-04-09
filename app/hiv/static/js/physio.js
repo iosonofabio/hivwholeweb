@@ -7,6 +7,11 @@ function emptyPhysio(id, keepData) {
 
 }
 
+var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹",
+    formatPower = function(d) { 
+        var tmp='';
+        if (d<0){tmp+='⁻';}
+        return tmp+(Math.abs(d) + "").split("").map(function(c) { return superscript[c]; }).join(""); };
 
 function updatePhysio(id, data) {
 
@@ -52,10 +57,12 @@ function updatePhysio(id, data) {
  
  var yAxis_vl = d3.svg.axis()
      .scale(y_vl)
-     .orient("left");
+     .orient("left")
+     .ticks(Math.round(Math.log(vlmax) / Math.LN10)-1, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
 
  var yAxis_cc = d3.svg.axis()
      .scale(y_cc)
+     .ticks(5)
      .orient("right");
 
  svg.attr("width", width + margin.left + margin.right)

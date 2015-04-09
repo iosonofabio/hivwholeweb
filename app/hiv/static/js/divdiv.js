@@ -13,7 +13,7 @@ function updateDivDiv(id, data) {
  var svg = d3.select("#"+id),
      divWidth = $('#'+id).parent().width();
 
- var margin = {top: 5, right: 80, bottom: 40, left: 80},
+ var margin = {top: 20, right: 80, bottom: 50, left: 80},
      width = 0.9 * divWidth - margin.left - margin.right,
      height = 330 - margin.top - margin.bottom;
 
@@ -28,8 +28,9 @@ function updateDivDiv(id, data) {
  var dsmax = get_ymax(data.ds);
  var dsmin = get_ymin(data.ds);
 
- var y = d3.scale.log()
-      .domain([1e-5, 0.5])
+ var y = d3.scale.linear()
+//      .domain([1e-5, 0.5])
+      .domain([0, 1.3*Math.max(dgmax,dsmax)])
       .range([height, 0]);
 
  var x = d3.scale.linear()
@@ -53,10 +54,12 @@ function updateDivDiv(id, data) {
 
  var yAxis_dg = d3.svg.axis()
      .scale(y)
+     .ticks(5)
      .orient("left");
 
  var yAxis_ds = d3.svg.axis()
      .scale(y)
+     .ticks(5)
      .orient("right");
 
  var yAxisGrid = d3.svg.axis()
@@ -176,7 +179,7 @@ function updateDivDiv(id, data) {
   return d3.svg.line()
             .x(function(d) { return x(d[0]); })
             .y(function(d) { return y(d[1]); })
-            .interpolate("monotone")(data);
+            .interpolate("linear")(data);
  }
 
  function get_tmax(data) {

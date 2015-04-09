@@ -7,6 +7,11 @@ function emptyDivDivLocal(id, keepData) {
 
 }
 
+var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹",
+    formatPower = function(d) { 
+        var tmp='';
+        if (d<0){tmp+='⁻';}
+        return tmp+(Math.abs(d) + "").split("").map(function(c) { return superscript[c]; }).join(""); };
 
 function updateDivDivLocal(id, data) {
 
@@ -41,7 +46,7 @@ function updateDivDivLocal(id, data) {
   
   
     var y = d3.scale.log()
-         .domain([0.0001, 1])
+         .domain([0.0001, 1.1])
          .range([height_single, 0]);
     
     var x = d3.scale.linear()
@@ -55,12 +60,14 @@ function updateDivDivLocal(id, data) {
     
     var yAxis = d3.svg.axis()
         .scale(y)
-        .orient("left");
+        .orient("left")
+        .ticks(4, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
+
   
     var yAxisRight = d3.svg.axis()
         .scale(y)
-        .orient("left")
-        .tickFormat("");
+        .orient("right")
+        .ticks(4, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
   
     var yGrid = d3.svg.axis()
         .scale(y)
@@ -411,10 +418,8 @@ function updateDivDivLocal(id, data) {
             .attr("y", 0)
             .attr("width", function(d) { return x(d.location[0][1]) - x(d.location[0][0]); })
             .attr("height", 20)
-            .style("fill", "steelblue")
-    	.style("fill-opacity", 0.5)
-    	.style("stroke-width", 1)
-    	.style("stroke", "black");
+            .style("fill", "steelblue");
+
     
        // show text only of longer things (that's why we have a tooltip)
        fea.append("text")
@@ -426,8 +431,7 @@ function updateDivDivLocal(id, data) {
                 } else {
                   return "";
                 }
-              })
-              .style("text-anchor", "middle");
+              });
        }
     
       plot_group("fragment", 0);
