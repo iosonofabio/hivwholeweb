@@ -25,11 +25,18 @@ function updateTree(id, data) {
     var chart = treeChart().svgWidth(0.9 * divWidth);
 
     // Figure out settings from the DOM, e.g. coloring and chart type
-    if ($("#switchRectangular").hasClass("active")) {
+    if ($("#switchRectangular").hasClass("active"))
         chart.chartType("rectangular");
-        chart.svgHeight(15 * getNumberTerminals(svg.datum().tree, 0));
-    } else
-        chart.svgHeight(0.9 * divWidth);
+    
+    // Set svg height
+    if (data.hasOwnProperty("svgHeight"))
+        chart.svgHeight(data.svgHeight);
+    else {
+        if (chart.chartType() == "rectangular") {
+            chart.svgHeight(15 * getNumberTerminals(svg.datum().tree, 0));
+        } else
+            chart.svgHeight(0.9 * divWidth);
+    }
 
     if ($("#switchColorLinkDate").hasClass("active"))
         chart.colorLinkType("date");
@@ -66,7 +73,7 @@ function treeChart() {
 
     var svgWidth = 400,
         svgHeight = 400,
-        margin = {top: 5, bottom: 5, left: 5, right: 5},
+        margin = {top: 15, bottom: 5, left: 5, right: 5},
         width = svgWidth - margin.left - margin.right,
         height = svgHeight - margin.top - margin.bottom,
         chartType = "radial",

@@ -333,7 +333,7 @@ function genomeChart() {
                 // show text only of longer things (that's why we have a tooltip)
                 // FIXME: use a criterion that is more zoom-friendly
                 fea.append("text")
-                    .attr("x", function(d) { return 0.5 * (x(d.location[0][1]) - x(d.location[0][0])); })
+                    .attr("x", function(d) { return 0.30 * (x(d.location[0][1]) - x(d.location[0][0])); })
                     .attr("y", heightBlock / 2 + fontSize)
                     .text(function(d) {
                         if ((d.location[0][1] - d.location[0][0]) > 350)
