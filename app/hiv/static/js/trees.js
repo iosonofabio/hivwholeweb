@@ -33,7 +33,8 @@ function updateTree(id, data) {
         chart.svgHeight(data.svgHeight);
     else {
         if (chart.chartType() == "rectangular") {
-            chart.svgHeight(15 * getNumberTerminals(svg.datum().tree, 0));
+            //chart.svgHeight(15 * getNumberTerminals(svg.datum().tree, 0));
+            chart.svgHeight(500);
         } else
             chart.svgHeight(0.9 * divWidth);
     }
