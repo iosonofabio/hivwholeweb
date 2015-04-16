@@ -471,11 +471,8 @@ function treeChart() {
                      .on("mouseover", moverLinksRectangular)
                      .on("mouseout", moutLinksRectangular);
 
-                // balls proportional to frequency for minor variants
-                if (region.indexOf("minor") != -1) {
-                    link.filter(function(d) { return d.target.frequency != "undefined" })
-                        .each(plotBallsRect);
-                }
+                link.each(plotBallsRect);
+
                 var treetips = vis.selectAll("treetip")
                      .data(cluster.links(nodes))
                      .enter()
@@ -556,8 +553,12 @@ function treeChart() {
 
 
                 function plotBallsRect(d, i) {
-                    var freq = d.target.frequency,
+                    if (typeof(d.target.frequency) != "undefined"){
+                        var freq = d.target.frequency,
                         r = 2 + (18 - 5) * ((Math.log(freq) / Math.LN10) + 2.0) / 2.0;
+                    }else{
+                      r = 2.0;
+                    }
                     vis.append("circle")
                         .attr("class", "leaf")
                         .attr("r", r)
@@ -601,6 +602,12 @@ function treeChart() {
             else
                 return accessor(n);
         }
+        function getMinTree(n, accessor) {
+            if (n.children)
+                return d3.min(n.children, function (d) { return getMinTree(d, accessor); });
+            else
+                return accessor(n);
+        }
 
         function setNTerminals(n) {
             if (n.children) {
@@ -610,25 +617,36 @@ function treeChart() {
                 n.nTerminals = 1;
         }
 
-        // Get weighted mean of DSIs of terminal nodes
+        // Get weighted minimun of the date since infection from the terminal nodes
         function setDSI(n) {
-            if (n.children) {
-                n.children.map(setDSI);
-                var dsicum = d3.sum(n.children, function (d) {
-                    var dsi = d.DSI;
-                    if (dsi == "undefined")
-                        return 0;
-                    return dsi * d.nTerminals;
-                });
-                var childrencum = d3.sum(n.children, function(d) {
-                    if (d.DSI == "undefined")
-                        return 0;
-                    return d.nTerminals;
-                });
-                if (childrencum == 0)
-                    n.DSI = "undefined";
-                else
-                    n.DSI = dsicum / childrencum;
+//            if (n.children) {
+//                n.children.map(setDSI);
+//                var dsicum = d3.sum(n.children, function (d) {
+//                    var dsi = d.DSI;
+//                    if (dsi == "undefined")
+//                        return 0;
+//                    return dsi * d.nTerminals;
+//                });
+//                var childrencum = d3.sum(n.children, function(d) {
+//                    if (d.DSI == "undefined")
+//                        return 0;
+//                    return d.nTerminals;
+//                });
+//                if (childrencum == 0)
+//                    n.DSI = "undefined";
+//                else
+//                    n.DSI = getMinTree(n, dsi);
+//            }
+            if (n.children){
+              n.children.map(setDSI);
+              n.DSI = getMinTree(n, function(d){return d.DSI;});
+            }
+            else{
+              if (typeof(n.DSI) == "undefined"){
+                n.DSI = "undefined";
+              }else{
+                n.DSI = n.DSI;
+              }
             }
         }
 
