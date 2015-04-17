@@ -1,13 +1,15 @@
 /* general styles */
 .container {
-  padding-top:20px; 
+  padding-top:20px;
+  max-width: 1500px 
 }
 .text-explanation{
   /*font: 12px sans-serif;*/
   max-width: 600px;
   margin-top: 20px;
   margin-bottom: 20px;
-  margin-left: 30px;
+  margin-left: 15%;
+  margin-right: 15%;
   text-align: justify;
   line-height: 1.5;
 }
@@ -21,16 +23,19 @@
   padding-bottom: 20px;
 }
 a:link {
-  color: tomato;
+  color: indianred;
 }
 a:hover {
-  color: steelblue;
+  color: dimgrey;
 }
 a:visited {
-  color: tomato;
+  color: indianred;
+}
+a:visited:hover {
+  color: dimgrey;
 }
 .pagetitle {
-  color: steelblue;
+  color: dimgrey;
   text-align: center;
 }
 .header-panel {
@@ -38,41 +43,65 @@ a:visited {
   border: 1px lightgrey solid;
 }
 .text-primary {
-  color: steelblue;
+  color: dimgrey;
+}
+body {
+  background-color: #fcfcfc;
+}
+
+/* table style */
+.numbers {
+  text-align: right;
+}
+.tablelinks:hover{
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+.colhead > th {
+  text-align: right;
+}
+.centerhead > th {
+  text-align: center;
+}
+.leftcol {
+  border-right: 1px lightgrey solid;
 }
 
 /* tab styles */
 .tab-panel {
   border: 1px lightgrey solid;
+  margin-top: 5px;
 }
 .bottom-border {
   border-bottom: 1px lightgrey solid;
 }
 .panel-heading.tab {
-  color: steelblue;
+  color: dimgrey;
   background-color: whitesmoke;
 }
 .panel-heading > a {
-  color: steelblue;
+  color: dimgrey;
 }
 .panel-heading > span {
-  color: steelblue;
+  color: dimgrey;
 }
+
 
 /* welcome page styles */
 .jumbotron {
-  background-color: aliceblue;
+  background-color: white;
+  border: 1px lightgrey solid;
 }
 .jumbo-header {
-  color: steelblue;
+  color: indianred;
 }
 .subheader {
   margin-left: 17px;
-  color: grey;
+  color: dimgrey;
 }
 .caption {
   text-align: center;
-  color: grey;
+  color: dimgrey;
 }
 
 /* people page styles */

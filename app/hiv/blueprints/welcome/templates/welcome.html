@@ -57,10 +57,10 @@
   <h4 class="subheader"><span class="glyphicon glyphicon-question-sign"></span> How to access and explore</h4>
   <hr>
   <ul>
-    <li> Browse data by <a href="/patient/p1/">patient</a></li>
-    <li> Compare patients and <a href="/region/V3/">genomic regions</a></li>
-    <li> The sequencing <a href="/method/">methods</a> and quality <a href="/controls/">controls</a></li>
-    <li> <a href="/data/">Download</a> the cleaned reads </li>
+    <li> browse data by <a href="/patient/p1/">patient</a></li>
+    <li> compare patients and <a href="/region/V3/">genomic regions</a></li>
+    <li> the sequencing <a href="/method/">methods</a> and quality <a href="/controls/">controls</a></li>
+    <li> <a href="/data/">download</a> the cleaned reads </li>
   </ul>
 </div>
 </div>
@@ -69,9 +69,9 @@
     <div class="col-md-6">
       <h5 class="caption"><b>Table:</b> Overview of patient specific data.</h5>
       <div style="padding:20px">
-        <table class="table" style="text-align:right">
+        <table class="table">
           <thead>
-            <tr>
+            <tr class="colhead">
               <th rowspan="2">Patient</th>
               <th rowspan="2">Subtype</th>
               <th rowspan="2">&#35; samples</th>
@@ -89,13 +89,13 @@
               <td></td>
             </tr>
             {% for row in patientTable %}
-            <tr>
+            <tr class="numbers tablelinks" onclick="window.document.location='/patient/{{row['Patient']}}/';" onmouseover="this./patient/{{row['Patient']}}/">
               <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
               <td>{{row['Subtype']}}</td>
               <td>{{row['# samples']}}</td>
               <td>{{row['1st sample']}}</td>
               <td>{{row['last sample']}}</td>
-              <td><span class="glyphicon glyphicon-stop" style="color:{{colors[row['Patient']]}}"></span></td>
+              <td><a href="/patient/{{row['Patient']}}/"><span class="glyphicon glyphicon-stop" style="color:{{colors[row['Patient']]}}"></span></a></td>
             </tr>
             {% endfor %}
           </tbody>

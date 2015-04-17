@@ -49,7 +49,8 @@
       <!-- Intro -->
       <div class="panel tab-panel">
         <div class="panel-heading tab"> 
-          <span class="glyphicon glyphicon-question-sign"></span> &nbsp;<a data-toggle="collapse" href="#Intro">Introduction</a>
+          <span class="glyphicon glyphicon-question-sign"></span>&nbsp;
+          <a data-toggle="collapse" href="#Intro">Introduction</a>
         </div>
         <div id="Intro" class="panel-collapse collapse in">
           <div class="panel-body">
@@ -63,7 +64,8 @@
       <!-- Summary -->
       <div class="panel tab-panel">
         <div class="panel-heading tab"> 
-          <span class="glyphicon glyphicon-info-sign"></span> &nbsp;<a data-toggle="collapse" href="#Sum">Summary</a>
+          <span class="glyphicon glyphicon-info-sign"></span>&nbsp;
+          <a data-toggle="collapse" href="#Sum">Summary</a>
         </div>
         <div id="Sum" class="panel-collapse collapse in">
           <div class="panel-body">
@@ -81,24 +83,24 @@
                 <!-- SAMPLE TABLE -->
                 <table class="table">
                   <thead>
-                    <tr>
-                      <th style="text-align:right">Time</th>
-                      <th colspan="6" style="text-align:right">Estimated number of RNA templates per PCR</th>
+                    <tr class="centerhead">
+                      <th class="leftcol">Time</th>
+                      <th colspan="6">Estimated number of RNA templates per PCR</th>
                     </tr>
-                    <tr>
-                      <th style="text-align:right">[days]</th>
-                      <th style="text-align:right">F1</th>
-                      <th style="text-align:right">F2</th>
-                      <th style="text-align:right">F3</th>
-                      <th style="text-align:right">F4</th>
-                      <th style="text-align:right">F5</th>
-                      <th style="text-align:right">F6</th>
+                    <tr class="colhead">
+                      <th class="leftcol">[days]</th>
+                      <th>F1</th>
+                      <th>F2</th>
+                      <th>F3</th>
+                      <th>F4</th>
+                      <th>F5</th>
+                      <th>F6</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for row in sampleTable %}
-                    <tr style="text-align:right">
-                      <td>{{row.time}}</td>
+                    <tr class="numbers">
+                      <td class="leftcol">{{row.time}}</td>
                       <td>{{row.F1q}}</td>
                       <td>{{row.F2q}}</td>
                       <td>{{row.F3q}}</td>
@@ -112,7 +114,7 @@
                 <!-- END SAMPLE TABLE -->
               </div>
               <div class="col-xs-6"  style="min-width:500px">
-                <p align="center">Phylogenetic tree of <b>V3</b> in patient {{pname}}.</p>
+                <p class="caption">Phylogenetic tree of <b>V3</b> in patient {{pname}}.</p>
                 <!-- <svg id='treeSvg{{pname}}Sum'></svg> -->
                 <img src='/static/data/trees/tree_{{pname}}_V3_example.svg' style="max-width:100%; max-height:100%">
                 <div class="text-explanation">{% include "snippets/summaryPatient.html" ignore missing %}</div>
@@ -126,7 +128,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/viral_load.svg"> 
-          <a data-toggle="collapse" data-parent="#expand" href="#viral">Viral load and CD4+ counts</a>
+          <a data-toggle="collapse" href="#viral">Viral load and CD4+ counts</a>
         </div>
         <div id="viral" class="panel-collapse collapse in">
           <div class="panel-body">
@@ -142,7 +144,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/genome.svg"> 
-          <a data-toggle="collapse" data-parent="#expand" href="#genome">Genome sequence</a>
+          <a data-toggle="collapse" href="#genome">Genome sequence</a>
         </div>
         <div id="genome" class="panel-collapse collapse in">
           <div class="panel-body">
@@ -159,7 +161,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/tree.svg"> 
-          <a data-toggle="collapse" data-parent="#expand" href="#tree">Phylogenetic trees</a>
+          <a data-toggle="collapse" href="#tree" name="phylo">Phylogenetic trees</a>
         </div>
         <div id="tree" class="panel-collapse collapse">
           <div class="panel-body">
@@ -201,7 +203,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/diversity.svg">
-          <a data-toggle="collapse" data-parent="#expand" href="#divDiv">Genetic divergence and diversity in specific regions</a>
+          <a data-toggle="collapse" href="#divDiv" name="diver">Genetic divergence and diversity in specific regions</a>
         </div>
         <div id="divDiv" class="panel-collapse collapse">
           <div class="panel-body">
@@ -227,7 +229,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/divdiv_local.svg">
-          <a data-toggle="collapse" data-parent="#expand" href="#divDivLocal">Genome wide divergence and diversity patterns</a>
+          <a data-toggle="collapse" href="#divDivLocal">Genome wide divergence and diversity patterns</a>
         </div>
         <div id="divDivLocal" class="panel-collapse collapse">
           <div class="panel-body">
@@ -243,7 +245,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/coverage.svg">
-          <a data-toggle="collapse" data-parent="#expand" href="#cov">Coverage</a>
+          <a data-toggle="collapse" href="#cov" name="cover">Coverage</a>
         </div>
         <div id="cov" class="panel-collapse collapse">
           <div class="panel-body">
@@ -259,7 +261,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/allele_frequencies.svg">
-          <a data-toggle="collapse" data-parent="#expand" href="#allFreq">Frequency dynamics of single nucleotide variants</a>
+          <a data-toggle="collapse" href="#allFreq" name="snp">Frequency dynamics of single nucleotide variants</a>
         </div>
         <div id="allFreq" class="panel-collapse collapse">
           <div class="panel-body">
@@ -273,7 +275,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/consensi.svg"> 
-          <a data-toggle="collapse" data-parent="#expand" href="#consensus">Consensus sequences</a>
+          <a data-toggle="collapse" href="#consensus">Consensus sequences</a>
         </div>
         <div id="consensus" class="panel-collapse collapse">
           <div class="panel-body" align="center">
@@ -293,7 +295,7 @@
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
           <img width="18" src="../../static/images/icons/haplotype_frequencies.svg">
-          <a data-toggle="collapse" data-parent="#expand" href="#haplo">Local haplotypes</a>
+          <a data-toggle="collapse" href="#haplo" name="types">Local haplotypes</a>
         </div>
         <div id="haplo" class="panel-collapse collapse">
           <div class="panel-body">

@@ -15,7 +15,7 @@
   top: 0px;
   bottom: 0px;
   width: 130px; /* same as .patient-content left */
-  background-color: #fff;
+  background-color: #fcfcfc;
   z-index: 900;
 }
 
@@ -26,22 +26,28 @@
   border:1px lightgrey solid;
 }
 .panel-heading.side {
-  color: steelblue;
+  color: dimgrey;
   background-color: whitesmoke;
   border-bottom: 1px lightgrey solid;
 }
 .list-group > a {
-  color: steelblue;
+  color: indianred;
   background-color: white;
 }
 .list-group > a:hover {
-  color: black;
-  background-color: whitesmoke;
+  color: white;
+  background-color: #AABD52;
+  border-color: lightgrey;
 }
 .list-group-item {
   border: 1px lightgrey solid;
 }
 .list-group-item.active {
-  background-color: steelblue;
+  background-color: #AABD52;
   color: white;
+  border-color:lightgrey;
+}
+.list-group-item.active:hover {
+  background-color:#AABD52;
+  border-color: lightgrey;
 }

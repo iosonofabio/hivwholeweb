@@ -6,6 +6,7 @@ html {
 body {
   padding-top: 50px;
   padding-bottom: 50px;
+  background-color: #fcfcfc;
 }
 
 /* footer style */
@@ -13,7 +14,7 @@ body {
   padding-top: 3px;
   padding-bottom: 3px;
   background-color: whitesmoke;
-  border: 1px lightgrey solid;
+  border-top: 1px lightgrey solid;
 }
 
 /* navigation styles */
@@ -21,25 +22,28 @@ body {
   padding-left: 0px;
   margin-bottom: 50px;
   background-color: whitesmoke;
-  border: 1px lightgrey solid;
+  border-bottom: 1px lightgrey solid;
 }
 /* home link */
 a > span.glyphicon {
-  color: steelblue;
+  color: indianred;
 }
 a:hover > span.glyphicon {
-  color: tomato;
+  color: grey;
+}
+a:hover > span.glyphicon.glyphicon-home {
+  color: white;
 }
 a:hover.navbar-brand {
-  background-color: white;
+  background-color: grey;
 }
 /* navigation links */
 .nav li > a {
-  color: steelblue;
+  color: indianred;
 }
 .nav li > a:hover {
-  color: tomato;
-  background-color: white;
+  color: white;
+  background-color: grey;
 }
 
 .sidebar {
