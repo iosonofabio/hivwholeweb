@@ -36,18 +36,18 @@
 }
 .list-group > a:hover {
   color: white;
-  background-color: #AABD52;
+  background-color: grey;
   border-color: lightgrey;
 }
 .list-group-item {
   border: 1px lightgrey solid;
 }
 .list-group-item.active {
-  background-color: #AABD52;
+  background-color: grey;
   color: white;
   border-color:lightgrey;
 }
 .list-group-item.active:hover {
-  background-color:#AABD52;
+  background-color:grey;
   border-color: lightgrey;
 }
