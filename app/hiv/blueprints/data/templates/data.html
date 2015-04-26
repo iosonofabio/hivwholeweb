@@ -9,10 +9,10 @@
     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
     <span class="sr-only">Error: </span>{{ message }}
     {% endfor %}
-</div>
-{% endif %}
-{% endwith %}
-<!-- end flashed messages -->
+  </div>
+  {% endif %}
+  {% endwith %}
+  <!-- end flashed messages -->
 
 <!-- header -->
 <div class="panel header-panel">
@@ -39,8 +39,10 @@
         <tr>
           <th>Patient</th>
           <th>Samples</th>
+          <th>Time of infection</th>
           <th>Viral load</th>
           <th>CD4+ counts</th>
+          <th>HLA type</th>
           <th>Reference</th>
           <th>SNV counts</th>
       </tr>
@@ -50,8 +52,10 @@
      <tr>
        <td>{{datum.pname}}</td>
        <td>{{datum.nsamples}}</td>
+       <td><a href="{{datum.ToI}}">csv</a></td>
        <td><a href="{{datum.vl}}">DAT</a></td>
        <td><a href="{{datum.cd4}}">DAT</a></td>
+       <td><a href="{{datum.HLA}}">csv</a></td>
        <td><a href="{{datum.refgb}}">GB</a> | <a href="{{datum.reffa}}">Fasta</a></td>
        <td><a href="{{datum.act}}">ZIP</a></td>
    </tr>
