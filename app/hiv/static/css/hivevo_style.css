@@ -13,6 +13,17 @@
   text-align: justify;
   line-height: 1.5;
 }
+.text-intro{
+  /*font: 12px sans-serif;*/
+  max-width: 600px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 3%;
+  margin-right: 5%;
+  text-align: justify;
+  line-height: 1.5;
+}
+
 .bg-danger {
   width: 80%; 
   margin-left: 10%; 

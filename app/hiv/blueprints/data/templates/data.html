@@ -44,6 +44,7 @@
           <th>CD4+ counts</th>
           <th>HLA type</th>
           <th>Reference</th>
+          <th>Estimated depth</th>
           <th>SNV counts</th>
       </tr>
   </thead>
@@ -57,6 +58,7 @@
        <td><a href="{{datum.cd4}}">DAT</a></td>
        <td><a href="{{datum.HLA}}">csv</a></td>
        <td><a href="{{datum.refgb}}">GB</a> | <a href="{{datum.reffa}}">Fasta</a></td>
+       <td><a href="{{datum.depth}}">csv</a></td>
        <td><a href="{{datum.act}}">ZIP</a></td>
    </tr>
    {% endfor %}

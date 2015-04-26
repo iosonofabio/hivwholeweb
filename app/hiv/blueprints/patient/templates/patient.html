@@ -84,11 +84,9 @@
                 <table class="table">
                   <thead>
                     <tr class="centerhead">
-                      <th class="leftcol">Time</th>
-                      <th colspan="6">Estimated number of RNA templates per PCR</th>
-                    </tr>
-                    <tr class="colhead">
-                      <th class="leftcol">[days]</th>
+                      <th class="leftcol">Time [days]</th>
+                      <th class="leftcol" colspan="1">RNA templates</th>
+                      <th>F1</th>
                       <th>F1</th>
                       <th>F2</th>
                       <th>F3</th>
@@ -101,6 +99,7 @@
                     {% for row in sampleTable %}
                     <tr class="numbers">
                       <td class="leftcol">{{row.time}}</td>
+                      <td class="leftcol">{{row.RNA}}</td>
                       <td>{{row.F1q}}</td>
                       <td>{{row.F2q}}</td>
                       <td>{{row.F3q}}</td>
