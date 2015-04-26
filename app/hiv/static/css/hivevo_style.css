@@ -43,6 +43,8 @@ a:visited:hover {
   border: 1px lightgrey solid;
   max-width: 1100px;
 }
+
+
 .text-primary {
   color: dimgrey;
 }
@@ -72,6 +74,7 @@ body {
 .tab-panel {
   border: 1px lightgrey solid;
   margin-top: 5px;
+  max-width: 1100px;
 }
 .bottom-border {
   border-bottom: 1px lightgrey solid;
@@ -79,12 +82,15 @@ body {
 .panel-heading.tab {
   color: dimgrey;
   background-color: whitesmoke;
+  max-width: 1100px;
 }
 .panel-heading > a {
   color: dimgrey;
+  max-width: 1100px;
 }
 .panel-heading > span {
   color: dimgrey;
+  max-width: 1100px;
 }
 
 
