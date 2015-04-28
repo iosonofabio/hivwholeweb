@@ -641,9 +641,14 @@ class SampleTableModel(object):
         self.pname = pname
 
 
-    def get_table_filename(self, full=True, format='tsv'):
+    def get_table_filename(self, full=True, format='tsv', quantitative=False):
         '''Get the filename of the samples table'''
-	fn = 'samples_'+self.pname+'.'+format
+        fn = 'samples'
+        if quantitative:
+            fn = fn+'_quantitative'
+        else:
+            fn = fn+'_qualitative'
+        fn = fn+'_'+self.pname+'.'+format
 	return data_folder[full]+'tables/'+fn
 
 
@@ -658,6 +663,8 @@ class SampleTableModel(object):
             for field in headerfields:
                 if field == 'days since infection':
                     field = 'time'
+                elif field == 'RNA templates':
+                    field = 'RNA'
 
                 if (fields is None) or (field in fields):
                     fieldinds.append(field)
@@ -671,7 +678,19 @@ class SampleTableModel(object):
                 for ifi, field in enumerate(fieldsline):
                     if ifi >= len(fieldinds):
                         break
-                    tline[fieldinds[ifi]] = '{:1.0f}'.format(float(field))
+
+                    # Qualitative description of PCR performance
+                    if fieldinds[ifi] in ['F'+str(i) for i in xrange(1, 7)]:
+                        # Use reduced alphabet for website
+                        if field in ['end lower', 'low diversity']:
+                            datafmt = 'low'
+                        else:
+                            datafmt = field
+
+                    # Any other field
+                    else:
+                        datafmt = '{:1.0f}'.format(float(field))
+                    tline[fieldinds[ifi]] = datafmt
                 table.append(tline)
 
         return table

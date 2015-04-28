@@ -87,7 +87,6 @@
                       <th class="leftcol">Time [days]</th>
                       <th class="leftcol" colspan="1">RNA templates</th>
                       <th>F1</th>
-                      <th>F1</th>
                       <th>F2</th>
                       <th>F3</th>
                       <th>F4</th>
@@ -100,12 +99,16 @@
                     <tr class="numbers">
                       <td class="leftcol">{{row.time}}</td>
                       <td class="leftcol">{{row.RNA}}</td>
-                      <td>{{row.F1q}}</td>
-                      <td>{{row.F2q}}</td>
-                      <td>{{row.F3q}}</td>
-                      <td>{{row.F4q}}</td>
-                      <td>{{row.F5q}}</td>
-                      <td>{{row.F6q}}</td>
+                      {% for fr in ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'] %}
+                      {% set tmp = row.get(fr) %}
+                      {% if tmp == 'low' %}
+                      <td style="color:orange">{{tmp}}</td>
+                      {% elif tmp == 'miss' %}
+                      <td style="color:red">{{tmp}}</td>
+                      {% else %}
+                      <td>{{tmp}}</td>
+                      {% endif %}
+                      {% endfor %}
                     </tr>
                     {% endfor %}
                   </tbody>
