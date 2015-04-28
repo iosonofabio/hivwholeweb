@@ -16,38 +16,22 @@ function updateDivDivLocal(id, data) {
         width = divWidth - margin.left - margin.right,
         height = 700 - margin.top - margin.bottom,
         height_genome = 200,
-        vpad = 25, height_single = (height - height_genome - 2 * vpad) / 2;
+        vpad = 25,
+        height_single = (height - height_genome - 2 * vpad) / 2;
 
     svg.attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.bottom + margin.top);
 
-    var chart = svg.append("g")
-         .attr("class", "d3-chart")
-         .attr("id", "divdiv-chart"+id)
-         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
-    var charts = {"dg": chart.append("g"),
-                  "ds": chart.append("g")
-                        .attr("transform", "translate(0," + (height_single + vpad) + ")"),
-                  "genome": chart.append("g")
-                        .attr("class", "d3-chart genome-chart"+id)
-                        .attr("transform", "translate(0," + (2 * height_single + 2 * vpad) + ")")};
-  
-    var data_gn = data.genome;
-    data = data.divdiv;
-  
-    var datal = data.dg.length;
-  
+    var datal = data.divdiv.dg.length;
   
     var y = d3.scale.log()
          .domain([0.0001, 1.1])
          .range([height_single, 0]);
     
     var x = d3.scale.linear()
-         .domain([0, data.dg[0][1].length * data.dx + data.block_length])
-         .range([20, width - 20]);
+         .domain([-100, data.divdiv.dg[0][1].length * data.divdiv.dx + data.divdiv.block_length + 100])
+         .range([0, width]);
     
-    // Axis stuff
     var xAxis = d3.svg.axis()
         .scale(x)
         .orient("bottom");
@@ -57,7 +41,6 @@ function updateDivDivLocal(id, data) {
         .orient("left")
         .ticks(4, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
 
-  
     var yAxisRight = d3.svg.axis()
         .scale(y)
         .orient("right")
@@ -68,18 +51,17 @@ function updateDivDivLocal(id, data) {
         .orient("left")
         .tickSize(-width, 0, 0)
         .tickFormat("");
-  
-    // X axis
-    chart.append("g")
-         .attr("class", "d3-axis")
-         .attr("transform", "translate(0," + height + ")")
-         .call(xAxis)
-         .append("text")
-         .attr("x", width / 2)
-         .attr("y", 40)
-         .style("text-anchor", "middle")
-         .text("Position [bp]");
-     
+
+    var vis = svg.append("g")
+         .attr("class", "d3-chart")
+         .attr("id", "divdiv-chart"+id)
+         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var charts = {"dg": vis.append("g").attr("id", "divDivLocalDg-chart"+id),
+                  "ds": vis.append("g").attr("id", "divDivLocalDs-chart"+id)
+                        .attr("transform", "translate(0," + (height_single + vpad) + ")"),
+                 };
+       
     // Divergence Y axis
     charts.dg.append("g")
          .attr("class", "d3-axis")
@@ -122,19 +104,20 @@ function updateDivDivLocal(id, data) {
   
   
     var lineFunc = d3.svg.line()
-                         .x(function(d, i) { return x(i * data.dx + 0.5 * data.block_length); })
+                         .x(function(d, i) { return x(i * data.divdiv.dx + 0.5 * data.divdiv.block_length); })
   		       .y(function(d) { return y(d); })
   		       .interpolate('monotone');
   
     var colors = d3.scale.linear()
-    .domain([0, data.len / 4, data.len / 3, data.len / 2, 2 * data.len / 3, 3 * data.len / 4, data.len])
+    .domain([0, data.divdiv.len / 4, data.divdiv.len / 3, data.divdiv.len / 2,
+             2 * data.divdiv.len / 3, 3 * data.divdiv.len / 4, data.divdiv.len])
     .interpolate(d3.interpolateRgb)
     .range(["darkblue", "blue", "cyan", "green", "yellow", "orange", "red"]);
 
     // Initial data
     charts.dg.append("svg:path")
           .attr("class", "lineDivergence")
-          .attr("d", lineFunc(data.dg[0][1]))
+          .attr("d", lineFunc(data.divdiv.dg[0][1]))
           .attr("stroke", "black")
           .attr("stroke-width", 2)
           .attr("fill", "none")
@@ -142,7 +125,7 @@ function updateDivDivLocal(id, data) {
    
     charts.ds.append("svg:path")
           .attr("class", "lineDiversity")
-          .attr("d", lineFunc(data.ds[0][1]))
+          .attr("d", lineFunc(data.divdiv.ds[0][1]))
           .attr("stroke", "black")
           .attr("stroke-width", 2)
           .attr("fill", "none")
@@ -154,20 +137,20 @@ function updateDivDivLocal(id, data) {
       .range([0, width])
       .clamp(true);
    
-    chart.append("g")
+    vis.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + (height + 70) + ")")
         .call(d3.svg.axis()
           .scale(xsl)
           .orient("bottom")
           .ticks(datal)
-          .tickFormat(function(d, i){ return data.dg[i][0]; })
+          .tickFormat(function(d, i){ return data.divdiv.dg[i][0]; })
           .tickPadding(12))
       .select(".domain")
       .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
         .attr("class", "halo");
    
-    chart.append("text")
+    vis.append("text")
         .attr("x", width / 2)
         .attr("y", height + 130)
         .style("text-anchor", "middle")
@@ -178,7 +161,7 @@ function updateDivDivLocal(id, data) {
         .extent([1, 1])
         .on("brush", brushed);
    
-    var slider = chart.append("g")
+    var slider = vis.append("g")
         .attr("class", "slider")
         .call(brush);
     
@@ -213,12 +196,12 @@ function updateDivDivLocal(id, data) {
       charts.dg.selectAll(".lineDivergence")
           .transition()
           .duration(1000)
-          .attr("d", lineFunc(data.dg[i_time][1]));
+          .attr("d", lineFunc(data.divdiv.dg[i_time][1]));
    
       charts.ds.selectAll(".lineDiversity")
           .transition()
           .duration(1000)
-          .attr("d", lineFunc(data.ds[i_time][1]));
+          .attr("d", lineFunc(data.divdiv.ds[i_time][1]));
    
     }
  
@@ -226,13 +209,13 @@ function updateDivDivLocal(id, data) {
     var gChart = genomeChart().resizeSvg(false)
         .drawBorderTop(false)
         .margin({left: margin.left, right: margin.right, bottom: margin.bottom,
-            top: margin.top + height_cov})
+                 top: margin.top + height - height_genome})
         .vpadBlockTop(vpad)
         .width(width)
         .height(height_genome)
-        .x(x)
-        .zoomCallbacks({'zoomin': {'middle': zoomIn},
-                        'zoomout': {'post': zoomOut}});
+        .x(x);
+        //.zoomCallbacks({'zoomin': {'middle': zoomIn},
+        //                'zoomout': {'post': zoomOut}});
 
     svg.datum(data)
         .call(gChart);

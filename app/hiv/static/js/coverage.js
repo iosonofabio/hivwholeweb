@@ -22,8 +22,8 @@ function updateCoverage(id, data) {
     svg.attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.bottom + margin.top);
    
-    var datal = data.cov.length;
-    var covmax = get_ymax(data.cov);
+    var datal = data.cov.length,
+        covmax = get_ymax(data.cov);
    
     var y = d3.scale.log()
          .domain([0.8, covmax])
@@ -40,13 +40,15 @@ function updateCoverage(id, data) {
     var yAxis = d3.svg.axis()
         .scale(y)
         .orient("left")
-        .ticks(Math.round(Math.log(covmax) / Math.LN10)+1, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
+        .ticks(Math.round(Math.log(covmax) / Math.LN10)+1,
+               function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
 
    
     var yAxisRight = d3.svg.axis()
         .scale(y)
         .orient("right")
-        .ticks(Math.round(Math.log(covmax) / Math.LN10)+1, function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
+        .ticks(Math.round(Math.log(covmax) / Math.LN10)+1,
+               function(d) { return 10 + formatPower(Math.round(Math.log(d) / Math.LN10)); });
 
    
     var yAxisGrid = d3.svg.axis()
@@ -55,12 +57,11 @@ function updateCoverage(id, data) {
          .tickSize(width, 0, 0)
          .tickFormat("");
    
-    var chart = svg.append("g")
+    var vis = svg.append("g")
          .attr("id", "main-chart"+id)
          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
    
-    var charts = {"cov": chart.append("g")
-                      .attr("id", "cov-chart"+id),
+    var charts = {"cov": vis.append("g").attr("id", "cov-chart"+id),
                   };
    
     // Draw the grid lines (they should stay behind)
@@ -116,7 +117,7 @@ function updateCoverage(id, data) {
       .range([0, width])
       .clamp(true);
    
-    chart.append("g")
+    vis.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + (height + 70) + ")")
         .call(d3.svg.axis()
@@ -129,7 +130,7 @@ function updateCoverage(id, data) {
       .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
         .attr("class", "halo");
    
-    chart.append("text")
+    vis.append("text")
         .attr("x", width / 2)
         .attr("y", height + 130)
         .style("text-anchor", "middle")
@@ -140,7 +141,7 @@ function updateCoverage(id, data) {
         .extent([1, 1])
         .on("brush", brushed);
    
-    var slider = chart.append("g")
+    var slider = vis.append("g")
         .attr("class", "slider")
         .call(brush);
     

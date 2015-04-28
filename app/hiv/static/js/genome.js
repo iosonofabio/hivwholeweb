@@ -133,7 +133,7 @@ function genomeChart() {
                         end = d.location[0][1],
                         zoomData = {'start': start, 'end': end};
 
-                    if (("zoomin" in zoomCallbacks) & ("pre" in zoomCallbacks.zoomin))
+                    if (("zoomin" in zoomCallbacks) && ("pre" in zoomCallbacks.zoomin))
                         zoomCallbacks.zoomin.pre(zoomData);
 
                     // delete boxes fully outside of window
@@ -151,7 +151,7 @@ function genomeChart() {
                     xAxis.scale(x);
                     xAxisObj.call(xAxis);
 
-                    if (("zoomin" in zoomCallbacks) & ("middle" in zoomCallbacks.zoomin))
+                    if (("zoomin" in zoomCallbacks) && ("middle" in zoomCallbacks.zoomin))
                         zoomCallbacks.zoomin.middle(zoomData);
 
                     // move, resize, and recenter boxes
@@ -216,11 +216,11 @@ function genomeChart() {
                     vis.selectAll(".featurebox")
                         .each(zoomIn);
 
-                    if (("zoomin" in zoomCallbacks) & ("post" in zoomCallbacks.zoomin))
+                    if (("zoomin" in zoomCallbacks) && ("post" in zoomCallbacks.zoomin))
                         zoomCallbacks.zoomin.post(zoomData);
     
                 } else {
-                    if (("zoomout" in zoomCallbacks) & ("pre" in zoomCallbacks.zoomout))
+                    if (("zoomout" in zoomCallbacks) && ("pre" in zoomCallbacks.zoomout))
                         zoomCallbacks.zoomout.pre();
     
                     // Restoring could be done more stylish, but it's ok
@@ -233,7 +233,7 @@ function genomeChart() {
 
                     plotAllFeatures();
 
-                    if (("zoomout" in zoomCallbacks) & ("post" in zoomCallbacks.zoomout))
+                    if (("zoomout" in zoomCallbacks) && ("post" in zoomCallbacks.zoomout))
                         zoomCallbacks.zoomout.post();
     
                 }
