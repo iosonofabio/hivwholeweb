@@ -7,12 +7,6 @@ function emptyCoverage(id, keepData) {
 
 }
 
-var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹",
-    formatPower = function(d) { 
-        var tmp='';
-        if (d<0){tmp+='⁻';}
-        return tmp+(Math.abs(d) + "").split("").map(function(c) { return superscript[c]; }).join(""); };
-
 function updateCoverage(id, data) {
 
     var svg = d3.select("#"+id),

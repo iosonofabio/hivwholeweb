@@ -1,0 +1,54 @@
+.method-content
+{
+  position: relative;
+  top: 0px; 
+  bottom: 0px;
+  left: 260px;
+  right: 0px;
+  padding-top: 20px;
+  max-width: 1100px;
+  text-align: center;
+}
+.method-sidebar
+{
+  padding-top: 70px;
+  position: fixed;
+  left: 10px;
+  top: 0px;
+  bottom: 0px;
+  width: 260px; /* same as .method-content left */
+  background-color: #fcfcfc;
+  z-index: 900;
+}
+
+/* sidebar styles */
+.sidebar-panel {
+  text-align: left;
+  border:1px lightgrey solid;
+}
+.panel-heading.side {
+  color: dimgrey;
+  background-color: whitesmoke;
+  border-bottom: 1px lightgrey solid;
+}
+.list-group > a {
+  color: indianred;
+  background-color: white;
+}
+.list-group > a:hover {
+  color: white;
+  background-color: grey;
+  border-color: lightgrey;
+}
+.list-group-item {
+  border: 1px lightgrey solid;
+}
+.list-group-item.active {
+  background-color: grey;
+  color: white;
+  border-color:lightgrey;
+}
+.list-group-item.active:hover {
+  background-color:grey;
+  border-color: lightgrey;
+}

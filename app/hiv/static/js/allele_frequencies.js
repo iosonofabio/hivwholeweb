@@ -7,12 +7,6 @@ function emptyAlleleFrequencies(id, keepData) {
 
 }
 
-var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹",
-    formatPower = function(d) { 
-        var tmp='';
-        if (d<0){tmp+='⁻';}
-        return tmp+(Math.abs(d) + "").split("").map(function(c) { return superscript[c]; }).join(""); };
-
 function updateAlleleFrequencies(id, data) {
     var svg = d3.select("#"+id),
         divWidth = $('#'+id).parent().width();

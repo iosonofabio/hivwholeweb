@@ -1,47 +1,45 @@
 <!-- Maybe inheriting directly from base.html would be better -->
-{% extends "no-sidebar.html" %}
+{% extends "base.html" %}
+{% block head_end %}
+{{ super() }}
+<link href="../static/css/method.css" rel="stylesheet">
+{% endblock %}
+
 {% block contentwrapper %}
 <div class="container-fluid">
- <div class="row">
-  <div class="col-sm-4 col-md-3 sidebar">
-   <ul class="nav nav-sidebar affix">
-    {% for section in config.BLUEPRINTS.METHOD.SECTIONS %}{% if section.url %}{% if section_name == section.name %}
-    <li class="active"><a href="/method{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
-    {% else %}
-    <li><a href="/method{{section.url}}"><img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}</a></li>
-    {% endif %}{% endif %}{% endfor %}
-   </ul>
+
+  <!-- sidebar -->
+  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 method-sidebar">
+    <div class="panel sidebar-panel">
+      <div class="panel-heading side">
+        <span class="glyphicon glyphicon-zoom-in"></span> Analyses
+      </div>
+      <div class="list-group">
+        {% for section in config.BLUEPRINTS.METHOD.SECTIONS %}
+        {% if section.url %}
+        {% if section_name == section.name %}
+        <a href="/method{{section.url}}" class="list-group-item active">
+          <img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}
+        </a>
+        {% else %}
+        <a href="/method{{section.url}}" class="list-group-item">
+          <img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}
+        </a>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+      </div> 
+    </div>
   </div>
-  <div class="col-sm-6 col-sm-offset-4 col-md-9 col-md-offset-0 main">
-  <!-- see above for inheritance from base as an alternative -->
-  {{ super() }}
-  </div> 
- </div> 
-</div>
+  <div class="clearfix visible-xs-block"></div>
+
+  <!-- content -->
+  <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 method-content">
+    {% block content %}{% endblock %}
+  </div>
+  <!-- end main content -->
+</div> 
+
+
 {% endblock %}
-<!--
-{% block footerwrapper %}
-<div class="footer navbar-fixed-bottom">
- <div class="container-fluid">
-  <ul class="nav navbar-nav">
-   <li class="text-muted hidden-xs" id="sidebar-toggle">Toggle sidebar</li>
-  </ul>
-  <ul class="nav navbar-nav navbar-right">
-   <li class="text-muted">Fabio Zanini, Richard Neher, <i>et al.</i>, 2014.</li>
-  </ul>
- </div>
-</div>
--->
-<!-- Toggle sidebar button -->
-<script type="text/javascript">
-$("#sidebar-toggle").click(function(e) {
-      e.preventDefault();
-      // FIXME: we'd need a more robust mechanism here, but replotting is not very
-      // flexible and the sidebar is memoryless for now. We could make it stateful
-      // by including it in every GET/POST request, but it's cumbersome and should
-      // probably be done by cookies instead.
-      $(".sidebar").toggleClass("toggled");
-      $(".main").toggleClass("toggled");
-  });
-</script>
-{% endblock %}
+
