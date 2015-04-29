@@ -43,6 +43,8 @@ function genomeChart() {
             "other": 5,
         },
         drawBorderTop = true,
+        drawBorderLeft = true,
+        drawBorderRight = true,
         resizeSvg = true,
         x = "undefined",
         /* pre, post callbacks for reusability */
@@ -51,6 +53,10 @@ function genomeChart() {
     function chart(selection) {
         // GENOME CHART FUNCTION
         selection.each(function (data) {
+
+            // get the genome data
+            var genome = data.genome,
+                features = genome.features;
     
             // tooltip (needs to be initialized)
             var tip = d3.tip()
@@ -70,9 +76,7 @@ function genomeChart() {
             // add tooltip
             vis.call(tip);
 
-            var genome = data.genome,
-                features = genome.features;
-    
+            // set a standard x scale if not specified
             if (x == "undefined")
                 x = d3.scale.linear()
                      .domain([-50, genome.len + 50])
@@ -95,20 +99,56 @@ function genomeChart() {
                     .text("Position [bp]");
     
             // add the rest of the rectangle box
-            xAxisObj.append("line")
-             .attr({"class": "bBox",
-                    "x1": x.range()[0], "x2": x.range()[0],
-                    "y1": 0, "y2": -height});
-            xAxisObj.append("line")
-             .attr({"class": "bBox",
-                    "x1": x.range()[1], "x2": x.range()[1],
-                    "y1": 0, "y2": -height});
+            if (drawBorderLeft)
+                xAxisObj.append("line")
+                 .attr({"class": "bBox",
+                        "x1": x.range()[0], "x2": x.range()[0],
+                        "y1": 0, "y2": -height});
+            if (drawBorderRight)
+                xAxisObj.append("line")
+                 .attr({"class": "bBox",
+                        "x1": x.range()[1], "x2": x.range()[1],
+                        "y1": 0, "y2": -height});
             if (drawBorderTop) {
                 xAxisObj.append("line")
                  .attr({"class": "bBox",
                         "x1": x.range()[0], "x2": x.range()[1],
                         "y1": -height, "y2": -height});
             }
+
+            // plot the labels for features on the left
+            var featureLabels = [
+                {
+                 "label": "PCR",
+                 "y": vpadBlockTop + (vpadBlock + heightBlock) * (featureHierarchy["fragment"] + 1),
+                },
+                {
+                 "label": "RF1",
+                 "y": vpadBlockTop + (vpadBlock + heightBlock) * featureHierarchy["gene"] + 0.5 * heightBlock,                
+                },
+                {
+                 "label": "RF2",
+                 "y": vpadBlockTop + (vpadBlock + heightBlock) * (featureHierarchy["gene"] + 1) + 0.5 * heightBlock,                
+                },
+                {
+                 "label": "RF3",
+                 "y": vpadBlockTop + (vpadBlock + heightBlock) * (featureHierarchy["gene"] + 2) + 0.5 * heightBlock,                
+                },
+                {
+                 "label": "other",
+                 "y": vpadBlockTop + (vpadBlock + heightBlock) * featureHierarchy["other"] + 0.5 * heightBlock,                
+                },
+            ];
+            vis.selectAll(".featureLabel")
+                .data(featureLabels)
+                .enter()
+                .append("text")
+                .attr("x", -7)
+                .attr("y", function(d) { return d.y; })
+                .text(function(d) { return d.label; })
+                .attr("dy", ".35em")
+                .attr("text-anchor", "end");
+
 
             // plot the various bars
             plotAllFeatures();
@@ -305,9 +345,11 @@ function genomeChart() {
             }
       
             function plotFeatureGroup(groupname) {
-                var group = getFeatureGroup(groupname),
-                    heightGroup = vpadBlockTop + (vpadBlock + heightBlock) * 
-                        featureHierarchy[groupname.split("-")[0]];
+                var featureName = groupname.split("-")[0],
+                    group = getFeatureGroup(groupname),
+                    yGroup = vpadBlockTop + (vpadBlock + heightBlock) * 
+                        featureHierarchy[featureName];
+
                 var fea = vis.selectAll("." + groupname)
                     .data(group)
                     .enter()
@@ -315,7 +357,7 @@ function genomeChart() {
                     .attr("class", "featurebox " + groupname)
                     .attr("id", function(d) { return d.name.replace(/[ ']/g, "-") + "-box"; })
                     .attr("transform", function(d) { return "translate(" + x(d.location[0][0]) +
-                          "," + (heightGroup + heightFeature(d)) + ")"; })
+                          "," + (yGroup + heightFeature(d)) + ")"; })
                     .on('mouseover', moverFeature)
                     .on('mouseout', moutFeature)
                     .on("click", function() { d3.event.stopPropagation(); })
@@ -453,6 +495,18 @@ function genomeChart() {
     chart.drawBorderTop = function (_) {
         if (!arguments.length) return drawBorderTop;
         drawBorderTop = _;
+        return chart;
+    }
+
+    chart.drawBorderLeft = function (_) {
+        if (!arguments.length) return drawBorderLeft;
+        drawBorderLeft = _;
+        return chart;
+    }
+
+    chart.drawBorderRight = function (_) {
+        if (!arguments.length) return drawBorderRight;
+        drawBorderRight = _;
         return chart;
     }
 
