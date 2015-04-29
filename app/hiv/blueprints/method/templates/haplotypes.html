@@ -1,17 +1,16 @@
 {% extends "sidebar.html" %}
 {% block content %}
- <h1>{{section_name}}</h1>
- {% if show_intro %}
-  <h4>
-   <p>Local haplotypes are used to study the joint evolution of sites within a genomic region, such as proteins or RNA structures.</p>
-  </h4> 
-  <p>They contain linkage information on neighbouring sites within approximately 400 bp. They are derived directly from the reads without any post-processing beyond trimming.</p>
-  <p>Keep in mind that although we tried to minimize the number of PCR cycles, some <i>in vitro</i> recombination is expected.</p>
- {% endif %}
- <br>
  
- <h3>Choose one option:</h3>
- <br>
+ {% if show_intro %}
+  <p class="text-explanation">
+   Local haplotypes are used to study the joint evolution of sites within a genomic region, such as proteins or RNA structures.<br>
+   They contain linkage information on neighbouring sites within approximately 400 bp. They are derived directly from the reads without any post-processing beyond trimming.<br>
+   Keep in mind that although we tried to minimize the number of PCR cycles, some <i>in vitro</i> recombination is expected.
+  </p>
+  <hr>
+ {% endif %}
+ <h5><b>Choose one option:</b></h5>
+ <hr>
  <div class="row">
    <div class="col-md-6">
      <div class="thumbnail">

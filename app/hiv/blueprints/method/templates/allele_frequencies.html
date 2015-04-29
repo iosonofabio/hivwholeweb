@@ -76,13 +76,15 @@
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- <h1>{{section_name}}</h1>
+ 
  {% if show_intro %}
-  <h4>
-   Mutations at different sites are present at different frequencies in the viral population. These frequencies change in time. Frequency changes are caused by depending on interactions with the host immune system and other selective pressures, by linkage and hitchhiking (genetic draft), and by genetic drift.
-  </h4>
+  <p class="text-explanation">
+      Mutations at different sites are present at different frequencies in the viral population. These frequencies change in time. Frequency changes are caused by depending on interactions with the host immune system and other selective pressures, by linkage and hitchhiking (genetic draft), and by genetic drift.
+  </p>
+  <hr>
  {% endif %}
-  <h3>{{data.name}}</h3>
+  <h5><b>Dataset {{data.name}}</b></h5>
+  <hr>
   <div class="svg-container genome">
    <svg class="d3-plot" id="allFreqSvg{{data.id}}" height="700"></svg>
   </div>

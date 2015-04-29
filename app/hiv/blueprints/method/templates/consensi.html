@@ -1,10 +1,11 @@
 {% extends "sidebar.html" %}
 {% block content %}
- <h1>{{section_name}}</h1>
+ 
  {% if show_intro %}
-  <h4>
-   Consensus sequence track the evolution of HIV in terms of major variants.
-  </h4>
+ <p class="text-explanation">
+   Consensus sequences track the evolution of HIV in terms of major variants.
+  </p>
+  <hr>
  {% endif %}
  <form role="form" action="" method="post" name="consensi_settings" class="form-horizontal">
   {{form.hidden_tag()}}

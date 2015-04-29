@@ -66,13 +66,15 @@
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- <h1>{{section_name}}</h1>
+ 
  {% if show_intro %}
-  <h4>
-   Local divergence and local diversity offer a useful overview on the evlutionary rates in different parts of the HIV genome.
-  </h4>
+  <p class="text-explanation">
+   Local divergence and local diversity offer a useful overview on the evolutionary rates in different parts of the HIV genome.
+  </p>
+  <hr>
  {% endif %}
- <h3>{{data.name}}</h3>
+ <h5><b>Dataset {{data.name}}</b></h5>
+ <hr>
  <div class="svg-container genome {{data.id}}">
   <svg class="d3-plot" id="divDivLocalSvg{{data.id}}"></svg>
  </div>
