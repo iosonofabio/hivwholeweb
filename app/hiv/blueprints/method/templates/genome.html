@@ -23,18 +23,20 @@
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- <h1>{{section_name}}</h1>
+ 
  {% if show_intro %}
-  <h4>
+  <p class="text-explanation">
    The HIV genome is annotated with genes, proteins, and RNA structures. The PCR fragments used for RNA amplification are also shown.
-  </h4>
+  </p>
+  <hr>
  {% endif %}
- <h3>{{data.name}}</h3>
+ <h5><b>Dataset {{data.name}}</b></h5>
+ <hr>
   <div>
    <svg class="d3-plot" id="genomeSvg{{data.id}}"></svg>
   </div> 
  <br>
- <div>
+ <div class="text-explanation">
  <b>Note</b>: Genome coordinates are inclusive at both ends and start from 1.
  </div>
  

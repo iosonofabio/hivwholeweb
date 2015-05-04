@@ -75,18 +75,20 @@
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- <h1>{{section_name}}</h1>
+ 
  {% if show_intro %}
-  <h4>
+  <p class="text-explanation">
    Coverage indicates how many times each base in the genome was sequenced. The reciprocal value is the maximal sequencing depth, but the total depth is often limited by the number of HIV molecules in the plasma samples or by the error rate of the PCR polymerase.
-  </h4>
+  </p>
+  <hr>
  {% endif %}
-  <h3>{{data.name}}</h3>
+  <h5><b>Dataset {{data.name}}</b></h5>
+  <hr>
   <div class="svg-container genome">
    <svg class="d3-plot" id="coverageSvg{{data.id}}" height="600"></svg>
   </div>
 
-  <p padding="10px">
+  <p class="text-explanation">
   <b>Legend</b>: the red bar is the estimate of the number of template molecules to PCR (if available). Coverage beyond this level is mostly oversequencing.
   </p>
 

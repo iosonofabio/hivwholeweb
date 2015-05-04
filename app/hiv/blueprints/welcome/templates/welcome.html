@@ -40,82 +40,84 @@
 {% block content %}
 <div class="container">
   <div class="jumbotron">
-   <h2 class="jumbo-header"><b>HIV EVO</b> <small><b>Intrapatient HIV evolution</b></small></h2>
- </div>
- <div class="row">
-  <div class="col-xs-6">   
-   <h4 class="subheader"><span class="glyphicon glyphicon-info-sign"></span> Deep longitudinal data</h4>
-   <hr>
-   <ul>
-    <li> 10 patients </li>
-    <li> more than 80 time points </li>
-    <li> defined time of infection </li>
-    <li> ? - ? follow-up without therapy </li>
-    <li> 6 - 12 samples per patient </li>
-    <li> whole genome </li>
-    <li> coverage >1000 with quantified template input </li>
-  </ul>
-</div>
-<div class="col-xs-6">
-  <h4 class="subheader"><span class="glyphicon glyphicon-question-sign"></span> How to access and explore</h4>
-  <hr>
-  <ul>
-    <li> browse data by <a href="/patient/p1/">patient</a></li>
-    <li> compare patients and <a href="/region/V3/">genomic regions</a></li>
-    <li> the sequencing <a href="/method/">methods</a> and quality <a href="/controls/">controls</a></li>
-    <li> <a href="/data/">download</a> the cleaned reads </li>
-  </ul>
-</div>
-</div>
-<div class="panel panel-default" style="margin-top:20px">    
-  <div class="panel-body">
-    <div class="col-md-6">
-      <h5 class="caption"><b>Table:</b> Overview of patient specific data.</h5>
-      <div style="padding:20px">
-        <table class="table">
-          <thead>
-            <tr class="colhead">
-              <th rowspan="2">Patient</th>
-              <th rowspan="2">Subtype</th>
-              <th rowspan="2">&#35; samples</th>
-              <th rowspan="2">1st sample</th>
-              <th rowspan="2">Last sample</th>
-              <th rowspan="2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td colspan="2" align="center">[days since infection]</td>
-              <td></td>
-            </tr>
-            {% for row in patientTable %}
-            <tr class="numbers tablelinks" onclick="window.document.location='/patient/{{row['Patient']}}/';" onmouseover="this./patient/{{row['Patient']}}/">
-              <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
-              <td>{{row['Subtype']}}</td>
-              <td>{{row['# samples']}}</td>
-              <td>{{row['1st sample']}}</td>
-              <td>{{row['last sample']}}</td>
-              <td><a href="/patient/{{row['Patient']}}/"><span class="glyphicon glyphicon-stop" style="color:{{colors[row['Patient']]}}"></span></a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <h2 class="jumbo-header"><b>HIV EVO</b> <small><b>Intrapatient HIV evolution</b></small></h2>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-body"> 
+      <div class="col-xs-6">  
+       <h4 class="subheader"><span class="glyphicon glyphicon-info-sign"></span> Deep longitudinal data</h4>
+       <hr>
+       <ul>
+        <li> 10 patients </li>
+        <li> more than 80 time points </li>
+        <li> defined time of infection </li>
+        <li> ? - ? follow-up without therapy </li>
+        <li> 6 - 12 samples per patient </li>
+        <li> whole genome </li>
+        <li> coverage >1000 with quantified template input </li>
+       </ul>
+      </div>    
+      <div class="col-xs-6">
+        <h4 class="subheader"><span class="glyphicon glyphicon-question-sign"></span> How to access and explore</h4>
+        <hr>
+        <ul>
+          <li> browse data by <a href="/patient/p1/">patient</a></li>
+          <li> compare patients and <a href="/region/V3/">genomic regions</a></li>
+          <li> the sequencing <a href="/method/">methods</a> and quality <a href="/controls/">controls</a></li>
+          <li> <a href="/data/">download</a> the cleaned reads </li>
+        </ul>
       </div>
     </div>
-    <div class="col-md-6">
-      <h5 class="caption">
-        <b>Example:</b> Phylogeny of samples in the <strong>{{region}}</strong> region, colored by patient.
-      </h5>
-      <div align="center">
-       <svg id="treeSvgAll" style="max-width:80%"></svg>
-       <h5 class="text-muted" style="text-align:center">Reference sequences are colored black.</h5>
+  </div>
+  <div class="panel panel-default" style="margin-top:20px">    
+    <div class="panel-body">
+      <div class="col-md-6">
+        <h5 class="caption"><b>Table:</b> Overview of patient specific data.</h5>
+        <div style="padding:20px">
+          <table class="table">
+            <thead>
+              <tr class="colhead">
+                <th rowspan="2">Patient</th>
+                <th rowspan="2">Subtype</th>
+                <th rowspan="2">&#35; samples</th>
+                <th rowspan="2">1st sample</th>
+                <th rowspan="2">Last sample</th>
+                <th rowspan="2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colspan="2" align="center">[days since infection]</td>
+                <td></td>
+              </tr>
+              {% for row in patientTable %}
+              <tr class="numbers tablelinks" onclick="window.document.location='/patient/{{row['Patient']}}/';" onmouseover="this./patient/{{row['Patient']}}/">
+                <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
+                <td>{{row['Subtype']}}</td>
+                <td>{{row['# samples']}}</td>
+                <td>{{row['1st sample']}}</td>
+                <td>{{row['last sample']}}</td>
+                <td><a href="/patient/{{row['Patient']}}/"><span class="glyphicon glyphicon-stop" style="color:{{colors[row['Patient']]}}"></span></a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h5 class="caption">
+          <b>Example:</b> Phylogeny of samples in the <strong>{{region}}</strong> region, colored by patient.
+        </h5>
+        <div align="center">
+         <svg id="treeSvgAll" style="max-width:80%"></svg>
+         <h5 class="text-muted" style="text-align:center">Reference sequences are colored black.</h5>
+       </div>
      </div>
    </div>
- </div>
-</div>
+  </div>
 <!-- NOTE: the tag below is a trick for the tree plot -->
 <div id="switchColorLinkPatient" class="active"></div>
 <div class="panel panel-default" style="margin-top:20px">    

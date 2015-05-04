@@ -6,13 +6,13 @@
 {% endblock %}
 
 {% block contentwrapper %}
-<div class="container-fluid">
+<div class="container">
 
   <!-- sidebar -->
-  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 method-sidebar">
+  <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 method-sidebar">
     <div class="panel sidebar-panel">
       <div class="panel-heading side">
-        <span class="glyphicon glyphicon-zoom-in"></span> Analyses
+        <span class="glyphicon glyphicon-book"></span> Analyses
       </div>
       <div class="list-group">
         {% for section in config.BLUEPRINTS.METHOD.SECTIONS %}
@@ -23,7 +23,7 @@
         </a>
         {% else %}
         <a href="/method{{section.url}}" class="list-group-item">
-          <img width="20" src="{{section.thumbnail_white}}" alt="{{section.name}}"> {{section.name}}
+          <img width="20" src="{{section.thumbnail}}" alt="{{section.name}}"> {{section.name}}
         </a>
         {% endif %}
         {% endif %}
@@ -34,8 +34,18 @@
   <div class="clearfix visible-xs-block"></div>
 
   <!-- content -->
-  <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 method-content">
-    {% block content %}{% endblock %}
+  <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 method-content">
+    <div class="panel header-panel">
+      <div class="panel-body">
+      <h4 class="pagetitle">{{section_name}}</h4>
+      </div>
+    </div>    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        {% block content %}{% endblock %}
+      </div>  
+    </div>
+
   </div>
   <!-- end main content -->
 </div> 

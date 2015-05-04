@@ -54,14 +54,13 @@ a:visited:hover {
   border: 1px lightgrey solid;
   max-width: 1100px;
 }
-
-
 .text-primary {
   color: dimgrey;
 }
 body {
   background-color: #fcfcfc;
 }
+
 
 /* table style */
 .numbers {
@@ -103,7 +102,6 @@ body {
   color: dimgrey;
   max-width: 1100px;
 }
-
 
 /* welcome page styles */
 .jumbotron {

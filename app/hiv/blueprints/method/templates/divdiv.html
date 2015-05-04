@@ -22,13 +22,15 @@
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- <h1>{{section_name}}</h1>
+ 
  {% if show_intro %}
-  <h4>
+  <p class="text-explanation">
    Genetic divergence measures the fraction of genetic sites that have mutated in the viral population from the initial virus. Diversity indicates the fraction of mutated sites within a single viral population.
-  </h4>
+  </p>
+  <hr>
  {% endif %}
-  <h3>{{data.name}}</h3>
+  <h5><b>Dataset {{data.name}}</b></h5>
+  <hr>
   <div class="svg-container">
    <svg class="d3-plot" id="svgDivDiv{{data.id}}"></svg>
   </div> 

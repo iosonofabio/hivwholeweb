@@ -29,13 +29,15 @@ function load() {
 {% endblock %}
 {% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- <h1>{{section_name}}</h1>
+ 
  {% if show_intro %}
-  <h4>
+  <p class="text-explanation">
    Phylogenetic trees give a general idea on how similar sequences are. Here we plot trees from consensus sequences from different time points, patients, and parts of the genome. You can specify which trees to display at the bottom of the page.
-  </h4>
+  </p>
+  <hr>
  {% endif %}
- <h3>{{plotTitle}}</h3>
+ <h5><b>Dataset {{plotTitle}}</b></h5>
+ <hr>
  <div class="col-xs-8 col-sm-6">
   <span>Representation:</span>
   <div class="btn-group btn-pad">
@@ -57,7 +59,7 @@ function load() {
  </div>
  <br>
 
- <p><b>Note</b>: if a color map is used, colors range from blue to red with increasing numbers.</p>
+ <p class="text-explanation"><b>Note</b>: if a color map is used, colors range from blue to red with increasing numbers.</p>
  <div class="btn-pad">
   <a role="button" class="btn btn-default" href="/download/tree_{{data.pname}}_{{data.region}}.json">Download tree</a>
  </div>
