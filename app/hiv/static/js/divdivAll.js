@@ -120,7 +120,7 @@ function updateDivs(id, data, dtype) {
         .call(yAxis_right);
    
     // prepare legend
-    var xLeg = 0.78 * width,
+    var xLeg = 0.73 * width,
         yLeg = height * (1.0 - 0.12 - 0.10 * Math.floor(data.length / 3));
     var legend = vis.append("g")
         .attr("class", "dataLegend")
@@ -137,7 +137,7 @@ function updateDivs(id, data, dtype) {
 
 
     function plotLegend(d, i) {
-        var xLeg = 0.075 * width * Math.floor(i / 4),
+        var xLeg = 0.085 * width * Math.floor(i / 4),
             yLeg = (i % 4) * 0.10 * height;
 
         var leg = legend.append("g")
@@ -152,7 +152,7 @@ function updateDivs(id, data, dtype) {
            .style("fill", colorFunc(d.patient));
 
         leg.append("text")
-            .attr("x", 25)
+            .attr("x", 15)
             .attr("y", 3)
             .style("text-anchor", "left")
             .text(d.patient);
