@@ -189,7 +189,11 @@
                 <label>Region:</label>
                 <select class="form-control treeRegion">
                   {% for region in treeRegions %}
+                  {% if region == 'p17_minor' %}
+                  <option selected="selected">{{region}}</option>
+                  {% else %}
                   <option>{{region}}</option>
+                  {% endif %}
                   {% endfor %} 
                 </select>
               </div>
