@@ -244,7 +244,7 @@ class AlleleFrequencyModel(object):
             # Ignore ancestral alleles
             aft_pos[:, act_pos[0].argmax()] = 0
 
-            cand = ((aft_pos > af_min).sum(axis=0) >= 4).nonzero()[0]
+            cand = ((aft_pos > af_min).sum(axis=0) >= 2).nonzero()[0]
             for ai in cand:
                 af = aft_pos[:, ai]
                 af[af < 2e-3] = 1e-3
