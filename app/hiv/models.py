@@ -47,8 +47,14 @@ class TreeModel(object):
         return tree
 
 
-    def get_json_filename(self):
-        return self.get_filename(full=False, format='json')
+    def get_json_filename(self, full=False):
+        return self.get_filename(full=full, format='json')
+
+
+    def get_json(self):
+        import json
+        with open(self.get_json_filename(full=True), 'r') as f:
+            return json.load(f)
 
 
 class PhysioModel(object):
@@ -601,6 +607,40 @@ class LocalHaplotypeModel(object):
         self.store_alignments(alis, fn_out)
 
         return fn_out
+
+
+class HaplotypePrecompiledModel(object):
+    def __init__(self, pname, region):
+        self.pname = pname
+        self.region = region
+
+
+    def get_haplotype_filename(self, full=True, format='fasta'):
+        fn = 'haplotype_alignment_'+self.pname+'_'+self.region+'.'+format
+        return data_folder[full]+'alignments/'+fn
+
+
+    def get_data(self, format='json'):
+        from Bio import AlignIO
+        fn = self.get_haplotype_filename(full=True, format='fasta')
+        ali = AlignIO.read(fn, 'fasta')
+
+        if format == 'biopython':
+            return ali
+
+        elif format == 'json':
+            alij = [{'name': s.name,
+                     'description': s.description,
+                     'sequence': str(s.seq),
+                     'days since infection': int(s.name.split('_')[1]),
+                     'frequency [%]': float(s.name.split('_')[-1][:-1]),
+                    }
+                   for s in ali]
+            return alij
+
+        else:
+            raise ValueError('Format not understood')
+
 
 
 class PatientTableModel(object):

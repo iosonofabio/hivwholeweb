@@ -39,8 +39,8 @@ from .blueprints.static import static
 hiv.register_blueprint(static)
 
 # RESTful API
-from .blueprints.api import api
-hiv.register_blueprint(api)
+from .blueprints.api import api_bp
+hiv.register_blueprint(api_bp)
 
 
 # Import the global views
