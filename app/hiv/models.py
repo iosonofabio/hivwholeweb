@@ -687,6 +687,16 @@ class SampleTableModel(object):
                         else:
                             datafmt = field
 
+                    # Provide RNA templates with 2 significant digits
+                    elif fieldinds[ifi] == 'RNA':
+                        from math import floor, log10
+                        fmtfun = lambda x: int(round(float(x), 1 - int(floor(log10(float(x))))))
+                        datafmt = fmtfun(field)
+                        if datafmt < 1000:
+                            datafmt = '{:2d}'.format(datafmt)
+                        else:
+                            datafmt = '{:2d} 000'.format(datafmt // 1000)                        
+
                     # Any other field
                     else:
                         datafmt = '{:1.0f}'.format(float(field))
