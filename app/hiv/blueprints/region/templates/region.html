@@ -43,76 +43,96 @@
         <div id="Sum" class="panel-collapse collapse in">
           <div class="panel-body">
             <div class="row">
-             <div class="col-xs-12">
-              <svg class="d3-plot" id="svgGenome" style="padding-bottom:20px"></svg>
+              <div class="col-xs-12">
+                <svg class="d3-plot" id="svgGenome" style="padding-bottom:20px"></svg>
+              </div>
             </div>
           </div>
         </div>
+      </div>    
+      <!-- expand nav -->
+      <!-- TREE -->
+      <div class="panel tab-panel"> 
+        <div class="panel-heading tab">
+          <span class="glyphicon glyphicon-minus"></span>
+          <a data-toggle="collapse" data-parent="#expand" href="#tree">Tree of all patients</a>
+        </div>
+        <div id="tree" class="panel-collapse collapse in" align="center">
+          <div class="panel-body">
+            <svg class="d3-plot" id="svgTree"></svg>
+          </div>
+        </div>
+        <div class="text-explanation">{% include "snippets/treeRegion.html" ignore missing %}</div>
       </div>
-    </div>    
-    <!-- expand nav -->
-    <div class="panel tab-panel"> 
-      <div class="panel-heading tab">
-       <span class="glyphicon glyphicon-minus"></span>
-       <a data-toggle="collapse" data-parent="#expand" href="#divergence">Divergence</a>
-     </div>
-     <div id="divergence" class="panel-collapse collapse in" align="center">
-      <div class="panel-body">
-        <svg class="d3-plot" id="svgDivergence"></svg>
+      <!-- TREE END -->
+      <!-- DIVERGENCE -->
+      <div class="panel tab-panel"> 
+        <div class="panel-heading tab">
+          <span class="glyphicon glyphicon-minus"></span>
+          <a data-toggle="collapse" data-parent="#expand" href="#divergence">Divergence</a>
+        </div>
+        <div id="divergence" class="panel-collapse collapse in" align="center">
+          <div class="panel-body">
+            <svg class="d3-plot" id="svgDivergence"></svg>
+          </div>
+        </div>
+        <div class="text-explanation">{% include "snippets/divergenceRegion.html" ignore missing %}</div>
       </div>
-     </div>
-     <div class="text-explanation">{% include "snippets/divergenceRegion.html" ignore missing %}</div>
-  </div>
-  <div class="panel tab-panel"> 
-    <div class="panel-heading tab">
-      <span class="glyphicon glyphicon-minus"></span>
-      <a data-toggle="collapse" data-parent="#expand" href="#diversity">Diversity</a>
+      <!-- DIVERGENCE END -->
+      <!-- DIVERSITY -->
+      <div class="panel tab-panel"> 
+        <div class="panel-heading tab">
+          <span class="glyphicon glyphicon-minus"></span>
+          <a data-toggle="collapse" data-parent="#expand" href="#diversity">Diversity</a>
+        </div>
+        <div id="diversity" class="panel-collapse collapse in" align="center">
+          <div class="panel-body">
+            <svg class="d3-plot" id="svgDiversity"></svg>
+          </div>
+        </div>
+        <div class="text-explanation">{% include "snippets/diversityRegion.html" ignore missing %}</div>
+      </div>
+      <!-- DIVERSITY END -->
     </div>
-    <div id="diversity" class="panel-collapse collapse in" align="center">
-      <div class="panel-body">
-        <svg class="d3-plot" id="svgDiversity"></svg>
-      </div>
-    </div>
-    <div class="text-explanation">{% include "snippets/diversityRegion.html" ignore missing %}</div>
-  </div>
-</div>
 
-</div>
+  </div>
 </div>
 
 <!-- Scripts at the end of page load -->
 <script type="text/javascript" src="/static/js/genome.js"></script>
 <script type="text/javascript">
-  function loadGenome(id, pname, highlight) {
-    d3.xhr("/method/genomes/")
+function loadGenome(id, pname, highlight) {
+  d3.xhr("/method/genomes/")
     .header("Content-Type", "application/json")
     .post(
-          JSON.stringify({patient: pname}),
-          function(error, request) {
-            var data = JSON.parse(request.responseText);
-            data = {pname: pname, genome: data.data};
-            if (highlight)
-              data.highlightedRegions = ["{{region}}"];
-            updateGenome(id, data);
-          }
-          );
-  }
+        JSON.stringify({patient: pname}),
+        function(error, request) {
+          var data = JSON.parse(request.responseText);
+          data = {pname: pname, genome: data.data};
+          if (highlight)
+            data.highlightedRegions = ["{{region}}"];
+          updateGenome(id, data);
+        }
+        );
+}
 </script>
 
 <script type="text/javascript" src="/static/js/divdivAll.js"></script>
+<script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
- function loadDivs(id, pnames, region, dtype, data) {
+function loadDivs(id, pnames, region, dtype, data) {
   data = data || [];
   var pname = pnames[0];
   d3.xhr("/method/divdiv/")
-  .header("Content-Type", "application/json")
-  .post(
+    .header("Content-Type", "application/json")
+    .post(
         JSON.stringify({patient: pname, region: region}),
         function(error, request) {
           var datum = JSON.parse(request.responseText).data;
           datum.patient = pname;
           data.push(datum);
           pnames.shift();
+          // recursive JS call :-)
           if (pnames.length > 0) 
             loadDivs(id, pnames, region, dtype, data);
           else
@@ -121,16 +141,37 @@
         );
 }
 
+function loadTree(id, pname, region) {
+  d3.xhr("/method/trees/")
+  .header("Content-Type", "application/json")
+  .post(
+   JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
+   function(error, request) {
+    var data = JSON.parse(request.responseText);
+    d3.json(data.tree, function(error, tree) {
+     data.tree = tree;      
+     data.pname = pname;
+     data.region = region;
+     data.leafLabels = false;
+     data.optimizeSpace = true;
+     data.tipMuts = false;
+     updateTree(id, data);
+   });     
+  });
+}
 </script>
 
 
 <!-- load at page opening -->
 <script>
-  loadGenome("svgGenome", "HXB2", true);
-  loadDivs("svgDivergence", {{pnames | tojson}}, "{{region}}", "dg");
-  loadDivs("svgDiversity", {{pnames | tojson}}, "{{region}}", "ds");
+loadGenome("svgGenome", "HXB2", true);
+loadDivs("svgDivergence", {{pnames | tojson}}, "{{region}}", "dg");
+loadDivs("svgDiversity", {{pnames | tojson}}, "{{region}}", "ds");
+loadTree("svgTree", "all", "{{region}}");
 </script>
 
 
+<!-- NOTE: the tag below is a trick for the tree plot -->
+<div id="switchColorLinkPatient" class="active"></div>
 
 {% endblock %}
