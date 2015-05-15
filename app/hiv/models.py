@@ -57,12 +57,12 @@ class PhysioModel(object):
 
 
     def get_viral_load_filename(self, full=True):
-        fn = 'viral_load_'+self.pname+'.dat'
+        fn = 'viral_load_'+self.pname+'.tsv'
         return data_folder[full]+'physiological/'+fn
 
 
     def get_cell_count_filename(self, full=True):
-        fn = 'cell_count_'+self.pname+'.dat'
+        fn = 'cell_count_'+self.pname+'.tsv'
         return data_folder[full]+'physiological/'+fn
 
 
@@ -85,7 +85,7 @@ class NTemplatesModel(object):
 
 
     def get_ntemplates_filename(self, full=True):
-        fn = 'ntemplates_'+self.pname+'.dat'
+        fn = 'ntemplates_'+self.pname+'.tsv'
         return data_folder[full]+'physiological/'+fn
 
 
@@ -166,12 +166,12 @@ class DivdivModel(object):
 
 
     def get_divergence_filename(self, full=True):
-        fn = 'divergence_'+self.pname+'_'+self.fragment+'.dat'
+        fn = 'divergence_'+self.pname+'_'+self.fragment+'.tsv'
         return data_folder[full]+'divdiv/'+fn
 
 
     def get_diversity_filename(self, full=True):
-        fn = 'diversity_'+self.pname+'_'+self.fragment+'.dat'
+        fn = 'diversity_'+self.pname+'_'+self.fragment+'.tsv'
         return data_folder[full]+'divdiv/'+fn
 
 
