@@ -55,7 +55,7 @@ def data_proxy(path):
             abort(404)
         pname = fields[1]
         format = fields[2]
-        fn = sf+'/one_site/allele_counts_'+pname+'_genomewide.'+format
+        fn = sf+'/single_nucleotide_variants/allele_counts_'+pname+'_genomewide.'+format
         return hiv.send_static_file(fn)
 
     elif dtype == 'divdiv':
@@ -97,7 +97,7 @@ def data_proxy(path):
         tind = fields[2]
         fragment = fields[3]
         format = fields[4]
-        fn = sf+'/patients/'+pname+'/samples/'+tind+'/'+fragment+'.'+format
+        fn = sf+'/reads/'+pname+'/sample_'+tind+'/'+fragment+'.'+format
         print fn
         return hiv.send_static_file(fn)
 
