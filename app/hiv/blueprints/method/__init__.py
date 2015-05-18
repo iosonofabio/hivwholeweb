@@ -5,9 +5,8 @@ from flask import (render_template, flash, redirect, request, jsonify,
 from .forms import (LocalHaplotypeForm, TreeForm, ConsensiForm, RegionFragForm,
                     PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm)
 from ...models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
-                     GenomeModel, AlleleFrequencyModel, SFSModel,
-                     NTemplatesModel,
-                     PropagatorModel, DivdivLocalModel, LocalHaplotypeModel)
+                     GenomeModel, AlleleFrequencyModel,
+                     NTemplatesModel, DivdivLocalModel, LocalHaplotypeModel)
 from .backbone import find_section
 
 

@@ -201,7 +201,7 @@ class CoverageModel(object):
 
     def get_coverage_filename(self, full=True):
         fn = 'coverage_'+self.pname+'_genomewide.npz'
-        return data_folder[full]+'one_site/'+fn
+        return data_folder[full]+'coverage/'+fn
 
 
     def get_data(self):
@@ -225,7 +225,7 @@ class AlleleFrequencyModel(object):
 
     def get_allele_counts_filename(self, full=True, format='npz'):
         fn = 'allele_counts_'+self.pname+'_genomewide.'+format
-        return data_folder[full]+'one_site/'+fn
+        return data_folder[full]+'single_nucleotide_variants/'+fn
 
 
     def get_data(self, cov_min=100, af_min=1e-1):
@@ -261,85 +261,6 @@ class AlleleFrequencyModel(object):
                 'tmax': times.max(),
                 'times': sorted(times_set),
                 'len': act.shape[2]}
-        return data
-
-
-class SFSModel(object):
-    def get_sfs_filename(self, full=True):
-        fn = 'sfs_allfrags_allpats.npz'
-        return data_folder[full]+'one_site/'+fn
-
-
-    def get_data(self):
-        import numpy as np
-        npz = np.load(self.get_sfs_filename())
-
-        # We need to zip the data to make it easier in D3.js
-        keys_zip = set()
-        keys_nonzip = set()
-        for key in npz:
-            for suffix in ['_bin_centers', '_sfs']:
-                if suffix in key:
-                    keys_zip.add(key[:-(len(suffix))])
-                    break
-            else:
-                keys_nonzip.add(key)
-
-        data = {}
-        for key in keys_zip:
-            # We need to mask nonstring characters (nice JS)
-            keynew = key.replace('.', '')
-            data[keynew] = zip(npz[key+'_bin_centers'], npz[key+'_sfs'])
-        for key in keys_nonzip:
-            keynew = key.replace('.', '')
-            data[keynew] = list(npz[key])
-
-        return data
-
-
-class PropagatorModel(object):
-    def get_propagator_filename(self, dt, full=True):
-        fn = 'propagator_allfrags_allpats_dt_'+'_'.join(map(str, dt))+'.npz'
-        return data_folder[full]+'one_site/'+fn
-
-
-    def get_data(self, dt=[500, 1000], full=True):
-        from itertools import izip
-        import numpy as np
-        npz = np.load(self.get_propagator_filename(dt, full=full))
-
-        # We need to zip the data to make it easier in D3.js
-        keys_zip = set()
-        keys_nonzip = set()
-        for key in npz:
-            for suffix in ['_final_frequency',
-                           '_prop',
-                           '_initial_frequency',
-                           '_dt']:
-                if suffix in key:
-                    keys_zip.add(key[:-(len(suffix))])
-                    break
-            else:
-                keys_nonzip.add(key)
-
-        data = {}
-        for key in keys_zip:
-            data_key = []
-            binsc = npz[key+'_final_frequency']
-            dt = list(npz[key+'_dt'])
-            for (xi, prop) in izip(npz[key+'_initial_frequency'],
-                                   npz[key+'_prop']):
-
-                # Zip deleting extreme bins
-                prop_zipped = zip(binsc[1:-1], prop[1:-1])
-                data_key.append({'dt': dt,
-                                 'xi': xi,
-                                 'prop': prop_zipped})
-            data[key] = data_key
-                
-        for key in keys_nonzip:
-            data[key] = list(npz[key])
-
         return data
 
 
