@@ -19,17 +19,22 @@ class Tree(Resource):
         try:
             return TreeModel(pname, region).get_json()
         except IOError:
-            abort(404,
-                  message="Patient and region {}, {} doesn't exist".format(pname, region))
+            msg = "No tree for patient {} and region {} found".format(pname, region)
+            abort(404, message=msg)
 
 
 class Physiological(Resource):
-    def get(self, pname):
+    def get(self, pname, fmt='json'):
         from ....models import PhysioModel
+        from flask import request
+        print request.headers.get('Accept')
+
         try:
-            return PhysioModel(pname).get_data()
+            return PhysioModel(pname).get_data(full_headers=True, fmt=fmt)
+            #TODO: return Flask response for non-JSON requests
         except IOError:
-            abort(404, message="Patient {} doesn't exist".format(pname))
+            msg = "No physiological data for patient {} found".format(pname)
+            abort(404, message=msg)
 
 
 class NTemplates(Resource):
@@ -38,7 +43,8 @@ class NTemplates(Resource):
         try:
             return NTemplatesModel(pname).get_data()
         except IOError:
-            abort(404, message="Patient {} doesn't exist".format(pname))
+            msg = "No template numbers data for patient {} found".format(pname)
+            abort(404, message=msg)
 
 
 class ReferenceSequence(Resource):
@@ -47,36 +53,53 @@ class ReferenceSequence(Resource):
         try:
             return GenomeModel(pname, region).get_data()
         except IOError:
-            abort(404,
-                  message="Patient and region {}, {} doesn't exist".format(pname, region))
+            msg = "No reference sequence for patient {} and region {} found".format(pname, region)
+            abort(404, message=msg)
 
 
 class Coverage(Resource):
-    def get(self, pname):
-        from ....models import CoverageModel
+    '''Coverage resource, both trajectories and single samples'''
+    def get(self, psname, region='genomewide'):
         try:
-            return CoverageModel(pname).get_data()
+            if '_' in psname:
+                from ....models import CoverageModel
+                return CoverageModel(psname, region).get_data()
+            else:
+                from ....models import CoverageTrajectoryModel
+                return CoverageTrajectoryModel(psname, region).get_data()
         except IOError:
-            abort(404, message="Patient {} doesn't exist".format(pname))
+            msg = "No coverage data for {} and region {} found".format(psname, region)
+            abort(404, message=msg)
 
 
-class AlleleFrequency(Resource):
-    def get(self, pname):
-        from ....models import AlleleFrequencyModel
+class AlleleFrequencies(Resource):
+    '''SNP resource, both trajectories and single samples'''
+    def get(self, psname, region='genomewide'):
         try:
-            return AlleleFrequencyModel(pname).get_data()
+            if '_' in psname:
+                from ....models import AlleleFrequencyModel
+                return AlleleFrequencyModel(psname, region).get_data()
+            else:
+                from ....models import AlleleFrequencyTrajectoryModel
+                return AlleleFrequencyTrajectoryModel(psname, region).get_data()
         except IOError:
-            abort(404, message="Patient {} doesn't exist".format(pname))
+            msg = "No SNP data for {} and region {} found".format(psname, region)
+            abort(404, message=msg)
 
 
 class Haplotypes(Resource):
-    def get(self, pname, region):
-        from ....models import HaplotypePrecompiledModel
+    '''SNP resource, both trajectories and single samples'''
+    def get(self, psname, region):
         try:
-            return HaplotypePrecompiledModel(pname, region).get_data(format='json')
+            if '_' in psname:
+                from ....models import HaplotypePrecompiledModel
+                return HaplotypePrecompiledModel(psname, region).get_data(format='json')
+            else:
+                from ....models import HaplotypePrecompiledTrajectoryModel
+                return HaplotypePrecompiledTrajectoryModel(psname, region).get_data(format='json')
         except IOError:
-            abort(404,
-                  message="Patient and region {}, {} doesn't exist".format(pname, region))
+            msg = "No haplotype data for {} and region {} found".format(psname, region)
+            abort(404, message=msg)
 
 
 

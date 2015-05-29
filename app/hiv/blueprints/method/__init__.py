@@ -4,9 +4,12 @@ from flask import (render_template, flash, redirect, request, jsonify,
                    make_response, abort)
 from .forms import (LocalHaplotypeForm, TreeForm, ConsensiForm, RegionFragForm,
                     PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm)
-from ...models import (TreeModel, PhysioModel, DivdivModel, CoverageModel,
-                     GenomeModel, AlleleFrequencyModel,
-                     NTemplatesModel, DivdivLocalModel, LocalHaplotypeModel)
+from ...models import (TreeModel, PhysioModel, DivdivModel,
+                       CoverageTrajectoryModel,
+                       GenomeModel, AlleleFrequencyTrajectoryModel,
+                       NTemplatesModel, DivdivLocalModel,
+                       LocalHaplotypeModel,
+                      )
 from .backbone import find_section
 
 
@@ -28,7 +31,7 @@ def index():
 def allele_frequencies():
     if request.json:
         pname = request.json['patient']
-        data = {'data': AlleleFrequencyModel(pname).get_data()}
+        data = {'data': AlleleFrequencyTrajectoryModel(pname).get_data()}
         return jsonify(**data)
 
     section = find_section(id='af')
@@ -59,7 +62,7 @@ def allele_frequencies():
 def coverage():
     if request.json:
         pname = request.json['patient']
-        data = {'data': CoverageModel(pname).get_data()}
+        data = {'data': CoverageTrajectoryModel(pname).get_data()}
         return jsonify(**data)
 
     form = PatSingleForm()

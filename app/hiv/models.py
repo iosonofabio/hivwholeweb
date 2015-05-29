@@ -72,16 +72,38 @@ class PhysioModel(object):
         return data_folder[full]+'physiological/'+fn
 
 
-    def get_data(self):
+    def get_data(self, full_headers=False, fmt='json'):
         import numpy as np
         vl = np.loadtxt(self.get_viral_load_filename(), skiprows=1)
         cc = np.loadtxt(self.get_cell_count_filename(), skiprows=1)
 
-        vl = map(list, vl)
-        cc = map(list, cc)
+        if fmt == 'json':
+            if full_headers:
+                vl = [{'time [days since infection]': x, 'VL [copies/ml]': y} for (x, y) in vl]
+                cc = [{'time [days since infection]': x, 'CC [cells/ul]': y} for (x, y) in cc]
+                data = {'viral load': vl,
+                        'CD4+ cell count': cc}
+            else:
+                vl = map(list, vl)
+                cc = map(list, cc)
+                data = {'vl': vl,
+                        'cc': cc}
 
-        data = {'vl': vl,
-                'cc': cc}
+        elif fmt == 'csv':
+            sep = '\t'
+            if full_headers:
+                header = sep.join(['Viral load [copies/ml]',
+                                   'CD4+ cell count [cells/ul]'])
+            else:
+                header = sep.join(['vl', 'cc'])
+
+            from collections import defaultdict
+            vld = defaultdict(lambda: 'NA', vl)
+            ccd = defaultdict(lambda: 'NA', cc)
+            times = np.unique(np.concatenate([vl[:, 0], cc[:, 0]]))
+            data = '\n'.join([header] + [sep.join(map(str, [vld[t], ccd[t]]))
+                                         for t in times])
+
         return data
 
 
@@ -195,12 +217,40 @@ class DivdivModel(object):
 
 
 class CoverageModel(object):
-    def __init__(self, pname):
-        self.pname = pname
+    def __init__(self, samplename, region='genomewide'):
+        self.samplename = samplename
+        self.region = region
 
 
     def get_coverage_filename(self, full=True):
-        fn = 'coverage_'+self.pname+'_genomewide.npz'
+        fn = 'coverage_'+self.samplename+'_'+self.region+'.npz'
+        return data_folder[full]+'coverage/'+fn
+
+
+    def get_data(self):
+        from itertools import izip
+        import numpy as np
+        npz = np.load(self.get_coverage_filename())
+        cov = npz['cov']
+
+        # Saturate to one, the JS client would take forever to do that
+        cov = list(np.maximum(0.8, cov))
+
+        data = {'cov': cov,
+                'region': self.region,
+                'sample': self.samplename,
+               }
+        return data
+
+
+class CoverageTrajectoryModel(object):
+    def __init__(self, pname, region='genomewide'):
+        self.pname = pname
+        self.region = region
+
+
+    def get_coverage_filename(self, full=True):
+        fn = 'coverage_'+self.pname+'_'+self.region+'.npz'
         return data_folder[full]+'coverage/'+fn
 
 
@@ -219,12 +269,54 @@ class CoverageModel(object):
 
 
 class AlleleFrequencyModel(object):
-    def __init__(self, pname):
-        self.pname = pname
+    def __init__(self, samplename, region='genomewide'):
+        self.samplename = samplename
+        self.region = region
 
 
     def get_allele_counts_filename(self, full=True, format='npz'):
-        fn = 'allele_counts_'+self.pname+'_genomewide.'+format
+        fn = 'allele_counts_'+self.samplename+'_'+self.region+'.'+format
+        return data_folder[full]+'single_nucleotide_variants/'+fn
+
+
+    def get_data(self, cov_min=100):
+        from itertools import izip
+        import numpy as np
+        npz = np.load(self.get_allele_counts_filename())
+        ac = npz['ac']
+        alpha = list(npz['alpha'])
+
+        cov = ac.sum(axis=0)
+        ind = cov >= cov_min
+        af = 1.0 * ac / np.maximum(cov, 1)
+        af[:, -ind] = np.nan
+
+        af = map(list, af)
+        L = len(af[0])
+
+        # Info message
+        msg = ('Each list corresponds to a nucleotide, according to the alphabet. '+
+               'Low coverage (<'+str(cov_min)+') positions are masked as NaNs.')
+
+        data = {'SNPs': af,
+                'length': L,
+                'samplename': self.samplename,
+                'region': self.region,
+                'alphabet': alpha,
+                'coverage_min': cov_min,
+                'info': msg,
+               }
+        return data
+
+
+class AlleleFrequencyTrajectoryModel(object):
+    def __init__(self, pname, region='genomewide'):
+        self.pname = pname
+        self.region = region
+
+
+    def get_allele_counts_filename(self, full=True, format='npz'):
+        fn = 'allele_counts_'+self.pname+'_'+self.region+'.'+format
         return data_folder[full]+'single_nucleotide_variants/'+fn
 
 
@@ -531,6 +623,42 @@ class LocalHaplotypeModel(object):
 
 
 class HaplotypePrecompiledModel(object):
+    def __init__(self, samplename, region):
+        self.samplename = samplename
+        self.region = region
+
+
+    def get_haplotype_filename(self, full=True, format='fasta'):
+        fn = 'haplotype_alignment_'+self.samplename+'_'+self.region+'.'+format
+        return data_folder[full]+'alignments/'+fn
+
+
+    def get_data(self, format='json'):
+        from Bio import AlignIO
+        fn = self.get_haplotype_filename(full=True, format='fasta')
+        ali = AlignIO.read(fn, 'fasta')
+
+        if format == 'biopython':
+            return ali
+
+        elif format == 'json':
+            alij = [{'name': s.name,
+                     'description': s.description,
+                     'sequence': str(s.seq),
+                     'frequency [%]': float(s.name.split('_')[-1][:-1]),
+                    }
+                   for s in ali]
+
+            return {'alignment': alij,
+                    'samplename': self.samplename,
+                    'region': self.region,
+                   }
+
+        else:
+            raise ValueError('Format not understood')
+
+
+class HaplotypePrecompiledTrajectoryModel(object):
     def __init__(self, pname, region):
         self.pname = pname
         self.region = region
