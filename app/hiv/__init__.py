@@ -38,10 +38,9 @@ hiv.config['BLUEPRINTS']['METHOD'] = {'SECTIONS': backbone.sections}
 from .blueprints.static import static
 hiv.register_blueprint(static)
 
+from .blueprints.download import download
+hiv.register_blueprint(download)
+
 # RESTful API
 from .blueprints.api import api_bp
 hiv.register_blueprint(api_bp)
-
-
-# Import the global views
-from . import views

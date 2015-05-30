@@ -10,8 +10,9 @@ content:    Models for the hivwholeweb site.
             This makes our 'models' a bit odd.
 '''
 import os
-data_folder_short = '/static/data/'
-data_folder_full = os.path.dirname(os.path.abspath(__file__))+data_folder_short
+from . import hiv
+data_folder_full = hiv.static_folder+'/'+hiv.config['DATA_SUBFOLDER']+'/'
+data_folder_short = '/'+os.path.basename(hiv.static_folder)+'/'+hiv.config['DATA_SUBFOLDER']+'/'
 data_folder = [data_folder_short, data_folder_full]
 
 
@@ -62,14 +63,23 @@ class PhysioModel(object):
         self.pname = pname
 
 
-    def get_viral_load_filename(self, full=True):
-        fn = 'viral_load_'+self.pname+'.tsv'
+    def get_viral_load_filename(self, full=True, format='tsv'):
+        fn = 'viral_load_'+self.pname+'.'+format
         return data_folder[full]+'physiological/'+fn
 
 
-    def get_cell_count_filename(self, full=True):
-        fn = 'cell_count_'+self.pname+'.tsv'
+    def get_cell_count_filename(self, full=True, format='tsv'):
+        fn = 'cell_count_'+self.pname+'.'+format
         return data_folder[full]+'physiological/'+fn
+
+
+    def get_physio_filename(self, kind, *args, **kwargs):
+        if kind in ['viralLoad', 'vl']:
+            return self.get_viral_load_filename(*args, **kwargs)
+        elif kind in ['cellCount', 'cc']:
+            return self.get_cell_count_filename(*args, **kwargs)
+        else:
+            ValueError('Data kind not understood: '+str(kind))
 
 
     def get_data(self, full_headers=False, fmt='json'):
@@ -128,23 +138,36 @@ class NTemplatesModel(object):
 
 
 class GenomeModel(object):
-    def __init__(self, pname, region='genomewide', type='patient reference'):
-        self.pname = pname
+    def __init__(self, psname, region='genomewide'):
+        self.psname = psname
         self.region = region
-        self.type = type
+
+        # Check whether we need a patient reference or a sample consensus
+        from . import hiv
+        if psname in hiv.config['PATIENTS']:
+            self.type = 'patient reference'
+        else:
+            self.type = 'consensus'
 
 
     def get_reference_filename(self, full=True, format='gb'):
-        fn = 'reference_'+self.pname+'_'+self.region+'.'+format
+        fn = 'reference_'+self.psname+'_'+self.region+'.'+format
+        return data_folder[full]+'sequences/'+fn
+
+
+    def get_consensus_filename(self, full=True, format='fasta'):
+        fn = 'consensus_'+self.psname+'_'+self.region+'.'+format
         return data_folder[full]+'sequences/'+fn
 
 
     def get_genome_filename(self, *args, **kwargs):
         if self.type == 'patient reference':
             return self.get_reference_filename(*args, **kwargs)
-        
+        elif self.type == 'consensus':
+            return self.get_consensus_filename(*args, **kwargs)
         else:
             raise ValueError('Genome type not found')
+
 
     def get_genome(self, format='gb'):
         from Bio import SeqIO
