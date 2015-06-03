@@ -17,12 +17,30 @@ api.add_resource(Tree, '/data/tree/<pname>/<region>')
 
 api.add_resource(Physiological,
                  '/data/physiological/<pname>',
-                 '/data/physiological/<pname>.<fmt>',
+                )
+
+api.add_resource(ViralLoad,
+                 '/data/viralLoad/<pname>',
+                )
+
+api.add_resource(CellCount,
+                 '/data/cellCount/<pname>',
                 )
 
 api.add_resource(NTemplates, '/data/numberTemplates/<pname>')
 
-api.add_resource(ReferenceSequence, '/data/referenceSequence/<pname>/<region>')
+api.add_resource(ReferenceSequence,
+                 '/data/referenceSequence/<pname>',
+                 '/data/referenceSequence/<pname>/<region>',
+                )
+
+api.add_resource(DivDiv,
+                 '/data/divdiv/<pname>/<region>',
+                )
+
+api.add_resource(DivDivSliding,
+                 '/data/divdivSliding/<pname>',
+                )
 
 api.add_resource(Coverage,
                  '/data/coverage/<psname>',
@@ -31,8 +49,8 @@ api.add_resource(Coverage,
 
 # FIXME: this should be way more flexible (only polymorphic sites are returned now)
 api.add_resource(AlleleFrequencies,
-                 '/data/singleNucleotideVariants/<psname>',
-                 '/data/singleNucleotideVariants/<psname>/<region>',
+                 '/data/singleNucleotidePolymorphisms/<psname>',
+                 '/data/singleNucleotidePolymorphisms/<psname>/<region>',
                 )
 
 api.add_resource(Haplotypes, '/data/haplotypes/<psname>/<region>')

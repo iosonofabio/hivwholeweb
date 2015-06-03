@@ -23,7 +23,7 @@ function updateCoverage(id, data) {
         .attr("height", height + margin.bottom + margin.top);
    
     var datal = data.cov.length,
-        covmax = get_ymax(data.cov);
+        covmax = getYmax(data.cov);
    
     var y = d3.scale.log()
          .domain([0.8, covmax])
@@ -248,7 +248,7 @@ function updateCoverage(id, data) {
         .call(gChart);
 
 
-    function get_ymax(data) {
+    function getYmax(data) {
         var ymax = d3.max(data[0][1]);
         var ytmp;
         for (i = 1; i < data.length; i++) {

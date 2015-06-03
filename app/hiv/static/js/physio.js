@@ -14,7 +14,6 @@ var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹",
         return tmp+(Math.abs(d) + "").split("").map(function(c) { return superscript[c]; }).join(""); };
 
 function updatePhysio(id, data) {
-
  var svg = d3.select('#'+id),
      divWidth = $('#'+id).parent().width();
 
@@ -26,11 +25,11 @@ function updatePhysio(id, data) {
 
  data = svg.datum();
 
- var colors = {"vl": "black", "cc": "steelblue"};
+ var colors = {"viral load": "black", "CD4+ cell count": "steelblue"};
 
- var tmax = get_tmax(data);
- var vlmax = get_ymax(data.vl);
- var ccmax = get_ymax(data.cc);
+ var tmax = getTmax(data);
+ var vlmax = getYmax(data['viral load']);
+ var ccmax = getYmax(data['CD4+ cell count']);
 
  var y_vl = d3.scale.log()
       .domain([40, 1.1 * vlmax])
@@ -40,7 +39,10 @@ function updatePhysio(id, data) {
       .domain([0, 1.1 * ccmax])
       .range([height, 0]);
 
- var y = {"vl": y_vl, "cc": y_cc};
+ var y = {
+     "viral load": y_vl,
+     "CD4+ cell count": y_cc,
+ };
  
  var x = d3.scale.linear()
       .domain([0, 1.1 * tmax])
@@ -113,7 +115,7 @@ function updatePhysio(id, data) {
       .attr("cy", "-5.1em")
       .attr("cx", -0.85 * height)
       .attr("r", 7)
-      .style("fill", colors.vl);
+      .style("fill", colors['viral load']);
 
  var ccTextBox = chart.append("g")
       .attr("class", "d3-axis")
@@ -135,24 +137,24 @@ function updatePhysio(id, data) {
       .attr("x", 0.1 * height)
       .attr("width", 14)
       .attr("height", 14)
-      .style("fill", colors.cc);
+      .style("fill", colors['CD4+ cell count']);
 
  chart.append("g")
       .attr("class", "circles VL")
       .selectAll()
-      .data(data.vl)
+      .data(data['viral load'])
       .enter()
       .append("circle")
       .attr("class", "circle")
       .attr("cx", function(d) { return x(d[0]); })
       .attr("cy", function(d) { return y_vl(d[1]); })
       .attr("r", 6)
-      .style("fill", colors.vl);
+      .style("fill", colors['viral load']);
 
  chart.append("g")
       .attr("class", "circles CC")
       .selectAll()
-      .data(data.cc)
+      .data(data['CD4+ cell count'])
       .enter()
       .append("rect")
       .attr("class", "rect")
@@ -160,10 +162,10 @@ function updatePhysio(id, data) {
       .attr("y", function(d) { return y_cc(d[1]) - 3; })
       .attr("width", 12)
       .attr("height", 12)
-      .style("fill", colors.cc);
+      .style("fill", colors['CD4+ cell count']);
 
- plotLine("vl");
- plotLine("cc");
+ plotLine("viral load");
+ plotLine("CD4+ cell count");
 
  function plotLine(dtype, d) {
      chart.append("path")
@@ -190,13 +192,13 @@ function updatePhysio(id, data) {
          .orient("bottom");
  }
 
- function get_tmax(data) {
-   var tvl = d3.max(data.vl, function(d) { return d[0]; });
-   var tcc = d3.max(data.cc, function(d) { return d[0]; });
+ function getTmax(data) {
+   var tvl = d3.max(data['viral load'], function(d) { return d[0]; });
+   var tcc = d3.max(data['CD4+ cell count'], function(d) { return d[0]; });
    return d3.max([tvl, tcc]);
  }
  
- function get_ymax(data) {
+ function getYmax(data) {
   return d3.max(data, function(d) { return d[1]; });
  }
 

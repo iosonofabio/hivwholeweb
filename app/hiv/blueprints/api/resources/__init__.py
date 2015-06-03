@@ -24,16 +24,32 @@ class Tree(Resource):
 
 
 class Physiological(Resource):
-    def get(self, pname, fmt='json'):
+    def get(self, pname):
         from ....models import PhysioModel
-        from flask import request
-        print request.headers.get('Accept')
-
         try:
-            return PhysioModel(pname).get_data(full_headers=True, fmt=fmt)
-            #TODO: return Flask response for non-JSON requests
+            return PhysioModel(pname).get_data(zipped=True)
         except IOError:
             msg = "No physiological data for patient {} found".format(pname)
+            abort(404, message=msg)
+
+
+class ViralLoad(Resource):
+    def get(self, pname):
+        from ....models import PhysioModel
+        try:
+            return PhysioModel(pname).get_data(zipped=True, obs=['viral load'])
+        except IOError:
+            msg = "No viral load data for patient {} found".format(pname)
+            abort(404, message=msg)
+
+
+class CellCount(Resource):
+    def get(self, pname):
+        from ....models import PhysioModel
+        try:
+            return PhysioModel(pname).get_data(zipped=True, obs=['CD4+ cell count'])
+        except IOError:
+            msg = "No CD4+ cell count data for patient {} found".format(pname)
             abort(404, message=msg)
 
 
@@ -48,7 +64,7 @@ class NTemplates(Resource):
 
 
 class ReferenceSequence(Resource):
-    def get(self, pname, region):
+    def get(self, pname, region='genomewide'):
         from ....models import GenomeModel
         try:
             return GenomeModel(pname, region).get_data()
@@ -69,6 +85,28 @@ class Coverage(Resource):
                 return CoverageTrajectoryModel(psname, region).get_data()
         except IOError:
             msg = "No coverage data for {} and region {} found".format(psname, region)
+            abort(404, message=msg)
+
+
+class DivDiv(Resource):
+    '''Divergence and diversity'''
+    def get(self, pname, region):
+        try:
+            from ....models import DivdivModel
+            return DivdivModel(pname, region).get_data()
+        except IOError:
+            msg = "No divergence/diversity data for {} and region {} found".format(pname, region)
+            abort(404, message=msg)
+
+
+class DivDivSliding(Resource):
+    '''Divergence and diversity'''
+    def get(self, pname):
+        try:
+            from ....models import DivdivLocalModel
+            return DivdivLocalModel(pname).get_data()
+        except IOError:
+            msg = "No divergence/diversity data for {} found".format(pname)
             abort(404, message=msg)
 
 

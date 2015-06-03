@@ -7,14 +7,14 @@
 
 <div class="container">
 
-  <!-- sidebar -->
+  <!-- SIDEBAR -->
   <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 region-sidebar">
     <div class="panel sidebar-panel">
       <div class="panel-heading side">
         <span class="glyphicon glyphicon-zoom-in"></span> Regions
       </div>
       <div class="list-group">
-        {% for rtmp in regions %}
+        {% for rtmp in config['REGIONS_SNP'] %}
         {% if rtmp == region %}
         <a href="/region/{{rtmp}}" class="list-group-item active">{{rtmp}}</a>
         {% else %}
@@ -25,6 +25,7 @@
     </div>
   </div>
   <div class="clearfix visible-xs-block"></div>
+  <!-- SIDEBAR -->
 
   <!-- content -->
   <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 region-content">
@@ -165,8 +166,8 @@ function loadTree(id, pname, region) {
 <!-- load at page opening -->
 <script>
 loadGenome("svgGenome", "HXB2", true);
-loadDivs("svgDivergence", {{pnames | tojson}}, "{{region}}", "dg");
-loadDivs("svgDiversity", {{pnames | tojson}}, "{{region}}", "ds");
+loadDivs("svgDivergence", {{config['PATIENTS'] | tojson}}, "{{region}}", "dg");
+loadDivs("svgDiversity", {{config['PATIENTS'] | tojson}}, "{{region}}", "ds");
 loadTree("svgTree", "all", "{{region}}");
 </script>
 

@@ -1,0 +1,35 @@
+          <table class="table">
+            <thead>
+              <tr class="colhead">
+                <th rowspan="2">Patient</th>
+                <th rowspan="2">Subtype</th>
+                <th rowspan="2">&#35; samples</th>
+                <th rowspan="2">1st sample</th>
+                <th rowspan="2">Last sample</th>
+                <th rowspan="2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colspan="2" align="center">[days since infection]</td>
+                <td></td>
+              </tr>
+              {% for row in patientTable %}
+              <tr class="hover numbers tablelinks" onclick="window.document.location='/patient/{{row['Patient']}}/'">
+                <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
+                <td>{{row['Subtype']}}</td>
+                <td>{{row['# samples']}}</td>
+                <td>{{row['1st sample']}}</td>
+                <td>{{row['last sample']}}</td>
+                <td>
+                  <a href="/patient/{{row['Patient']}}/">
+                    <span class="glyphicon glyphicon-stop" style="color:{{config.COLORS_PATIENTS[row['Patient']]}}"></span>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>

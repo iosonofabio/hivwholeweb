@@ -7,7 +7,7 @@ function updateHaplo(id, data) {
         vis = svg.append("g")
          .attr("id", "haploThumbnailVis")
          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-         .datum(data.data);
+         .datum(data);
   
     var x = d3.scale.linear()
         .domain([1, data.len + 50])

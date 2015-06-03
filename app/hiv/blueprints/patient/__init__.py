@@ -10,17 +10,18 @@ patient = Blueprint('patient', __name__,
                     template_folder='templates')
 
 
-@patient.route('/p<int:patient_number>/', methods=['GET', 'POST'])
-def index(patient_number):
-    if patient_number not in range(1, 12):
+@patient.route('/<pname>/', methods=['GET', 'POST'])
+def index(pname):
+    from ... import hiv
+    if pname not in hiv.config['PATIENTS']:
         abort(404)
-    pname = 'p'+str(patient_number)
 
     formco = ConsensiForm()
     formht = RoiForm()
     formpc = PrecompiledHaplotypeForm()
 
     if request.method == 'POST':
+
         # We got a form submit request, figure out which one
         subm_id = request.form['formBtn']
 
@@ -84,31 +85,10 @@ def index(patient_number):
     patient_table = PatientTableModel().get_table()
     sample_table = SampleTableModel(pname).get_table()
 
-    tree_regions = ['V3',
-                    'p17',
-                    'psi',
-                    'RRE',
-                    'p17_minor',
-                    'RT1_minor',
-                    'RT2_minor',
-                    'RT3_minor',
-                    'p15_minor',
-                    'IN1_minor',
-                    'IN2_minor',
-                    'V3_minor',
-                   ]
-    pnames = ['p'+str(i) for i in xrange(1, 12)]
-    divdiv_regions = ['V3', 'psi', 'p17', 'RRE']
-
-
-
     return render_template('patient.html',
                            pname=pname,
-                           pnames=pnames,
                            patientTable=patient_table, 
                            sampleTable=sample_table,
-                           treeRegions=tree_regions,
-                           divDivRegions=divdiv_regions,
                            formco=formco,
                            formpc=formpc,
                            formht=formht,

@@ -82,37 +82,23 @@ class PhysioModel(object):
             ValueError('Data kind not understood: '+str(kind))
 
 
-    def get_data(self, full_headers=False, fmt='json'):
+    def get_data(self, obs=['viral load', 'CD4+ cell count'], full_headers=False, zipped=True):
         import numpy as np
         vl = np.loadtxt(self.get_viral_load_filename(), skiprows=1)
         cc = np.loadtxt(self.get_cell_count_filename(), skiprows=1)
 
-        if fmt == 'json':
-            if full_headers:
-                vl = [{'time [days since infection]': x, 'VL [copies/ml]': y} for (x, y) in vl]
-                cc = [{'time [days since infection]': x, 'CC [cells/ul]': y} for (x, y) in cc]
-                data = {'viral load': vl,
-                        'CD4+ cell count': cc}
-            else:
-                vl = map(list, vl)
-                cc = map(list, cc)
-                data = {'vl': vl,
-                        'cc': cc}
-
-        elif fmt == 'csv':
-            sep = '\t'
-            if full_headers:
-                header = sep.join(['Viral load [copies/ml]',
-                                   'CD4+ cell count [cells/ul]'])
-            else:
-                header = sep.join(['vl', 'cc'])
-
-            from collections import defaultdict
-            vld = defaultdict(lambda: 'NA', vl)
-            ccd = defaultdict(lambda: 'NA', cc)
-            times = np.unique(np.concatenate([vl[:, 0], cc[:, 0]]))
-            data = '\n'.join([header] + [sep.join(map(str, [vld[t], ccd[t]]))
-                                         for t in times])
+        if not zipped:
+            vl = vl.T
+            cc = cc.T
+        vl = map(list, vl)
+        cc = map(list, cc)
+        data = {'time unit': '[days since infection]'}
+        if 'viral load' in obs:
+            data['viral load'] = vl
+            data['viral load unit'] = '[copies/ml]'
+        if 'CD4+ cell count' in obs:
+            data['CD4+ cell count'] = cc
+            data['CD4+ cell count unit'] = '[cells/ul]'
 
         return data
 
@@ -146,6 +132,8 @@ class GenomeModel(object):
         from . import hiv
         if psname in hiv.config['PATIENTS']:
             self.type = 'patient reference'
+        elif psname in hiv.config['REFERENCES']:
+            self.type = 'external reference'
         else:
             self.type = 'consensus'
 
@@ -161,7 +149,7 @@ class GenomeModel(object):
 
 
     def get_genome_filename(self, *args, **kwargs):
-        if self.type == 'patient reference':
+        if self.type in ['patient reference', 'external reference']:
             return self.get_reference_filename(*args, **kwargs)
         elif self.type == 'consensus':
             return self.get_consensus_filename(*args, **kwargs)
@@ -226,10 +214,14 @@ class DivdivModel(object):
         return data_folder[full]+'divdiv/'+fn
 
 
-    def get_data(self):
+    def get_data(self, zipped=True):
         import numpy as np
         dg = np.loadtxt(self.get_divergence_filename(), skiprows=1)
         ds = np.loadtxt(self.get_diversity_filename(), skiprows=1)
+
+        if not zipped:
+            dg = dg.T
+            ds = ds.T
 
         dg = map(list, dg)
         ds = map(list, ds)
@@ -380,7 +372,8 @@ class AlleleFrequencyTrajectoryModel(object):
 
 
 class DivdivLocalModel(object):
-    def __init__(self, pname, observables=['dg', 'ds'],
+    def __init__(self, pname,
+                 observables=['dg', 'ds'],
                  itimes=None, roi=None):
         self.pname = pname
         self.observables = observables

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, abort
-from . import backbone
+
+from ... import hiv
 
 
 
@@ -11,13 +12,11 @@ region = Blueprint('region', __name__,
 
 @region.route('/<regionname>/', methods=['GET'])
 def index(regionname):
-    if regionname not in backbone.regions:
+    if regionname not in hiv.config['REGIONS_SNP']:
         abort(404)
 
     pnames = ['p'+str(i) for i in xrange(1, 12)]
 
     return render_template('region.html',
                            region=regionname,
-                           regions=backbone.regions, 
-                           pnames=pnames,
                            title='Region page')

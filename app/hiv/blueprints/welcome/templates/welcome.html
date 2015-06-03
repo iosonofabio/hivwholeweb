@@ -8,35 +8,7 @@
   <a href="http://www.enable-javascript.com/" target="_blank">How to enable JavaScript?</a>
 </div>
 </noscript>
-
-<!-- phylogenetic tree -->
-<script type="text/javascript" src="/static/js/trees.js"></script>
-<script type="text/javascript">
-  function loadTree(id, pname, region) {
-   d3.xhr("/method/trees/")
-   .header("Content-Type", "application/json")
-   .post(
-    JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
-    function(error, request) {
-     var data = JSON.parse(request.responseText);
-     d3.json(data.tree, function(error, tree) {
-      data.tree = tree;      
-      data.pname = pname;
-      data.region = region;
-      data.leafLabels = false;
-      data.optimizeSpace = true;
-      data.tipMuts = false;
-      updateTree(id, data);
-    });     
-   });
- }
-
- function load() {
-   loadTree("treeSvgAll", "all", "{{region}}");
- }
-</script>
 {% endblock %}
-{% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
 <div class="container">
   <div class="jumbotron">
@@ -45,27 +17,14 @@
   <div class="panel panel-default">
     <div class="panel-body"> 
       <div class="col-xs-6">  
-       <h4 class="subheader"><span class="glyphicon glyphicon-info-sign"></span> Deep longitudinal data</h4>
-       <hr>
-       <ul>
-        <li> 10 patients </li>
-        <li> more than 80 time points </li>
-        <li> defined time of infection </li>
-        <li> 4.5 - 16 years follow-up without therapy </li>
-        <li> 6 - 12 samples per patient </li>
-        <li> whole genome </li>
-        <li> coverage >1000 with quantified template input </li>
-       </ul>
+        <h4 class="subheader"><span class="glyphicon glyphicon-info-sign"></span> Deep longitudinal data</h4>
+        <hr>
+          {% include "snippets/intro.html" %}
       </div>    
       <div class="col-xs-6">
         <h4 class="subheader"><span class="glyphicon glyphicon-question-sign"></span> How to access and explore</h4>
         <hr>
-        <ul>
-          <li> browse data by <a href="/patient/p1/">patient</a></li>
-          <li> compare patients and <a href="/region/V3/">genomic regions</a></li>
-          <li> the sequencing <a href="/method/">methods</a> and quality <a href="/controls/">controls</a></li>
-          <li> <a href="/data/">download</a> the cleaned reads </li>
-        </ul>
+          {% include "snippets/access.html" %}
       </div>
     </div>
   </div>
@@ -74,37 +33,7 @@
       <div class="col-md-6">
         <h5 class="caption"><b>Table:</b> Overview of patient specific data.</h5>
         <div style="padding:20px">
-          <table class="table">
-            <thead>
-              <tr class="colhead">
-                <th rowspan="2">Patient</th>
-                <th rowspan="2">Subtype</th>
-                <th rowspan="2">&#35; samples</th>
-                <th rowspan="2">1st sample</th>
-                <th rowspan="2">Last sample</th>
-                <th rowspan="2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td colspan="2" align="center">[days since infection]</td>
-                <td></td>
-              </tr>
-              {% for row in patientTable %}
-              <tr class="numbers tablelinks" onclick="window.document.location='/patient/{{row['Patient']}}/';" onmouseover="this./patient/{{row['Patient']}}/">
-                <td><a href="/patient/{{row['Patient']}}/">{{row['Patient']}}</a></td>
-                <td>{{row['Subtype']}}</td>
-                <td>{{row['# samples']}}</td>
-                <td>{{row['1st sample']}}</td>
-                <td>{{row['last sample']}}</td>
-                <td><a href="/patient/{{row['Patient']}}/"><span class="glyphicon glyphicon-stop" style="color:{{colors[row['Patient']]}}"></span></a></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          {% include "snippets/table.html" %}
         </div>
       </div>
       <div class="col-md-6">
@@ -112,42 +41,50 @@
           <b>Example:</b> Phylogeny of samples in the <strong>{{region}}</strong> region, colored by patient.
         </h5>
         <div align="center">
-         <svg id="treeSvgAll" style="max-width:80%"></svg>
-         <h5 class="text-muted" style="text-align:center">Reference sequences are colored black.</h5>
-       </div>
-     </div>
-   </div>
+          <svg id="treeSvgAll" style="max-width:80%"></svg>
+          <h5 class="text-muted" style="text-align:center">Reference sequences are colored black.</h5>
+        </div>
+      </div>
+    </div>
   </div>
-<!-- NOTE: the tag below is a trick for the tree plot -->
-<div id="switchColorLinkPatient" class="active"></div>
-<div class="panel panel-default" style="margin-top:20px">    
-<div class="panel-body">
- <div class="row">
-  <div class="col-xs-6">   
-   <h4 class="subheader"><span class="glyphicon glyphicon-pencil"></span> Rationale and methods</h4>
-<hr>
-<div class="text-intro">
-<p>We extracted viral RNA from frozen serum samples from 11 untreated HIV patients, with approximately 8 time points per patient, spanning at least five years from an established time of infection. To maximize sensitivity, depth and coverage, we developed a protocol for whole-genome sequencing using six overlapping primer sets. We optimized the library preparation protocol to obtain long inserts starting from less than 1 ng of DNA and sequenced all samples on the Illumina MiSeq platform, obtaining around 10,000x coverage. We are able to call minor alleles as rare as 0.2% in the viral population and preserve linkage information over 500 bp.</p>
+  <div class="panel panel-default" style="margin-top:20px">    
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-6">   
+          <h4 class="subheader"><span class="glyphicon glyphicon-pencil"></span> Rationale and methods</h4>
+          <hr>
+          <div class="text-intro">{% include "snippets/rationale.html" %}</div>
+        </div>
+        <div class="col-xs-6">
+          <h4 class="subheader"><span class="glyphicon glyphicon-exclamation-sign"></span> Data use </h4>
+          <hr>
+          <div class="text-intro">{% include "snippets/data.html" %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<p>This deep whole genome data set covering many years in 11 patients provides a comprehensive portrait of HIV-1 intra-patient evolution that should be suitable for many different types of analyses. We are planning to release the dataset soon and will in addition to raw reads provide pre-analyzed data such as consensus sequences, minor single nucleotide variant frequencies and tools to extract haplotypes up to 500 bp in length in most regions of the HIV-1 genome.   </p>
+  <!-- NOTE: the tag below is a trick for the tree plot -->
+  <div id="switchColorLinkPatient" class="active"></div>
 </div>
-</div>
-<div class="col-xs-6">
-  <h4 class="subheader"><span class="glyphicon glyphicon-exclamation-sign"></span> Data use </h4>
-  <hr>
-<div class="text-intro">
-  This web page and the data provided are part of a forthcoming publication:<p></p>
-  <p>
-  <i>Whole-genome deep sequencing of longitudinal HIV-1 samples from patients followed from early into chronic infection</i><br>
-  Fabio Zanini, Johanna Brodin, Lina Thebo, Christa Lanz, Jan Albert and Richard Neher. <b>submitted for publication</b></p>
-  <p></p>
-  The data provided cannot be used in publication until the final form of the above article appears. After that, please cite this article if you use the data. We would be grateful if you let us know when your work using this data gets published.
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+
+<!-- phylogenetic tree -->
+<script type="text/javascript" src="/static/js/trees.js"></script>
+<script type="text/javascript">
+function loadTree(id, pname, region) {
+  d3.json("/api/data/tree/"+pname+"/"+region, function(error, tree) {
+    var data = {
+      'tree': tree,
+      'pname': pname,
+      'region': region,
+      'leafLabels': false,
+      'optimizeSpace': true,
+      'tipMuts': false,
+    };      
+    updateTree(id, data);
+    });
+}
+
+loadTree("treeSvgAll", "all", "{{region}}");
+</script>
 {% endblock %}
-
-
