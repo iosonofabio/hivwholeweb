@@ -23,22 +23,25 @@ $(document).ready(function(){
         Credits
       </div>
       <div class="panel-body" style="text-align:justify">
-        <p>Research by 
-        <a href="#" data-toggle="popover" tabindex="0" data-trigger="focus" title="E-mail" data-content="fabio.zanini _AT_ tuebingen.mpg.de">Fabio Zanini</a>, 
-        <a href="#" data-toggle="popover" tabindex="1" data-trigger="focus" title="E-mail" data-content="lina.thebo _AT_ ki.se">Lina Thebo</a>, 
-        <a href="#" data-toggle="popover" tabindex="2" data-trigger="focus" title="E-mail" data-content="christa.lanz _AT_ tuebingen.mpg.de">Christa Lanz</a>, 
-        <a href="#" data-toggle="popover" tabindex="3" data-trigger="focus" title="E-mail" data-content="johanna.brodin _AT_ ki.se">Johanna Brodin</a>, 
-        <a href="#" data-toggle="popover" tabindex="4" data-trigger="focus" title="E-mail" data-content="goran.bratt _AT_ sodersjukhuset.se">Göran Bratt</a>, 
-        <a href="#" data-toggle="popover" tabindex="5" data-trigger="focus" title="E-mail" data-content="jan.albert _AT_ ki.se">Jan Albert</a>
+        <ul>
+          <li>Research by 
+        <a href="#" data-toggle="popover-html" tabindex="0" data-trigger="focus" title="Fabio Zanini" data-text="fabio.zanini _AT_ tuebingen.mpg.de" data-img="fzanini.jpg">Fabio Zanini</a>,
+        <a href="#" data-toggle="popover-html" tabindex="1" data-trigger="focus" title="Lina Thebo" data-text="lina.thebo _AT_ ki.se" data-img="lina.jpg">Lina Thebo</a>, 
+        <a href="#" data-toggle="popover-html" tabindex="2" data-trigger="focus" title="Christa Lanz" data-text="christa.lanz _AT_ tuebingen.mpg.de" data-img="christa.jpg">Christa Lanz</a>, 
+        <a href="#" data-toggle="popover-html" tabindex="3" data-trigger="focus" title="Johanna Brodin" data-text="johanna.brodin _AT_ ki.se" data-img="jbrodin.jpg">Johanna Brodin</a>,
+        <a href="#" data-toggle="popover-html" tabindex="4" data-trigger="focus" title="Goran Bratt" data-text="goran.bratt _AT_ sodersjukhuset.se" data-img="gbratt.jpg">Göran Bratt</a>, 
+        <a href="#" data-toggle="popover-html" tabindex="5" data-trigger="focus" title="Jan Albert" data-text="jan.albert _AT_ ki.se" data-img="jalbert.jpg">Jan Albert</a>
          and 
-        <a href="#" data-toggle="popover" tabindex="6" data-trigger="focus" title="E-mail" data-content="richard.neher _AT_ tuebingen.mpg.de">Richard Neher</a>.</p>
-        <p>Website concept, design and implementation by 
-        <a href="#" data-toggle="popover" tabindex="0" data-trigger="focus" title="E-mail" data-content="fabio.zanini _AT_ tuebingen.mpg.de">Fabio Zanini</a>
+        <a href="#" data-toggle="popover-html" tabindex="1" data-trigger="focus" title="Richard Neher" data-text="richard.neher _AT_ tuebingen.mpg.de" data-img="rneher.jpg">Richard Neher</a>.</li>
+        <li>Website concept, design and implementation by 
+        <a href="#" data-toggle="popover-html" tabindex="0" data-trigger="focus" title="Fabio Zanini" data-text="fabio.zanini _AT_ tuebingen.mpg.de" data-img="fzanini.jpg">Fabio Zanini</a>
          and 
-        <a href="#" data-toggle="popover" tabindex="1" data-trigger="focus" title="E-mail" data-content="richard.neher _AT_ tuebingen.mpg.de">Richard Neher</a>.</p>
-        <p>Webdesign by 
-        <a href="#" data-toggle="popover" tabindex="2" data-trigger="focus" title="Email" data-content="bianca.regenbogen _AT_ tuebingen.mpg.de">Bianca Regenbogen</a> and <a href="#" data-toggle="popover" tabindex="0" data-trigger="focus" title="E-mail" data-content="fabio.zanini _AT_ tuebingen.mpg.de">Fabio Zanini</a>.</p>
-        <a href="/people" title="Contacts"><span class="glyphicon glyphicon-envelope"></span> Contacts</a>    
+        <a href="#" data-toggle="popover-html" tabindex="1" data-trigger="focus" title="Richard Neher" data-text="richard.neher _AT_ tuebingen.mpg.de" data-img="rneher.jpg">Richard Neher</a>.</li>
+        <li>Webdesign by 
+        <a href="#" data-toggle="popover-html" tabindex="2" data-trigger="focus" title="Bianca Regenbogen" data-text="bianca.regenbogen _AT_ tuebingen.mpg.de" data-img="bianca.jpg">Bianca Regenbogen</a> and <a href="#" data-toggle="popover-html" tabindex="0" data-trigger="focus" title="Fabio Zanini" data-text="fabio.zanini _AT_ tuebingen.mpg.de" data-img="fzanini.jpg">Fabio Zanini</a>.</li>
+
+        <li>Logo by <a href="#" data-toggle="popover-html" tabindex="2" data-trigger="focus" title="Diep Tran" data-text="diep.tran _AT_ tuebingen.mpg.de" data-img="diep.jpg">Diep Tran</a>.</li>
+        </ul>
       </div>  
     </div>
     <!-- Summary -->
@@ -82,5 +85,18 @@ The layout, graphics employed and any other contents on the homepage of the Max 
     
 
 
+<script type="text/javascript">
+$(document).ready(function(){
+  $('[data-toggle="popover-html"]').popover({
+    'html': true,
+    'content': function() {
+      var s = '<p><img src="/static/images/people/'+$(this).data('img')+'" style="height:200px;"/></p>';
+      s = s+'<p>'+$(this).data('text')+'</p>';
+      s = '<div style="text-align: center;">'+s+'</div>';
+      return s;
+    },
+  });
+});
+</script>
 
 {% endblock %}

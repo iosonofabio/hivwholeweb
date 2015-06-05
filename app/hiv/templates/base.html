@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <!-- HTML HEAD -->
+  <!-- HEAD -->
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +11,7 @@
       <title>Intrapatient HIV evolution</title>
     {% endif %}
 
-    <!-- Piwik -->
+    <!-- PIWIK -->
     <script type="text/javascript">
       var _paq = _paq || [];
       _paq.push(['trackPageView']);
@@ -25,7 +25,7 @@
       })();
     </script>
     <noscript><p><img src="http://piwik.tuebingen.mpg.de/piwik.php?idsite=18" style="border:0;" alt="" /></p></noscript>
-    <!-- End Piwik Code -->
+    <!-- PIWIK -->
 
     <!-- Load everything in the HEAD even if it slows down a bit, then it's cached --> 
     <script src="/static/components/jquery/dist/jquery.min.js"></script>
@@ -36,10 +36,10 @@
     <link href="/static/css/hivevo_style.css" rel="stylesheet">
     {% block head_end %}{% endblock %}
   </head>
-  <!-- end of HEAD -->
-  <!-- HTML BODY -->
+  <!-- HEAD -->
+  <!-- BODY -->
   <body {% block body_attributes %}{% endblock %}>
-    <!-- navbar -->
+    <!-- TOP NAVBAR -->
     <nav class="navbar navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -67,13 +67,11 @@
         </div>
       </div>
     </nav>
-    <!-- end of navbar -->
-    {% block contentwrapper %}
-    <!-- content block -->
-    {% block content %}{% endblock %}
-    <!-- end of content -->
-    {% endblock %}
-    <!-- footer block -->
+    <!-- TOP NAVBAR -->
+    <!-- CONTENT -->
+    {% block contentwrapper %}{% block content %}{% endblock %}{% endblock %}
+    <!-- CONTENT -->
+    <!-- FOOTER -->
     {% block footerwrapper %}
     <div class="nav footer navbar-fixed-bottom">
       <div class="container-fluid">
@@ -83,7 +81,7 @@
       </div>
     </div>
     {% endblock %}
-    <!-- end of footer -->
+    <!-- FOOTER -->
   </body>
-  <!-- end of BODY -->
+  <!-- BODY -->
 </html>
