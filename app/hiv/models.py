@@ -815,7 +815,7 @@ class ReadsTableModel(SampleTableModel):
     def get_reads_filename(self, i, fragment, full=True, format='bam'):
         '''Get the filename of the table with the presence of reads files'''
 	fn = fragment+'.'+format
-	fn = data_folder[full]+'reads/'+self.pname+'/sample_'+str(i)+'/'+fn
+	fn = data_folder[full]+'reads/'+self.pname+'_sample_'+str(i)+'_'+fn
         return fn
 
 
