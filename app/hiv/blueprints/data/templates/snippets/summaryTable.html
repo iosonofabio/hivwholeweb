@@ -1,0 +1,30 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Patient</th>
+      <th>Samples</th>
+      <th>Time of infection</th>
+      <th>Viral load</th>
+      <th>CD4+ counts</th>
+      <th>HLA type</th>
+      <th>Reference</th>
+      <th>Estimated depth</th>
+      <th>SNV counts</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for datum in data %}
+    <tr>
+      <td>{{datum.pname}}</td>
+      <td>{{datum.nsamples}}</td>
+      <td><a href="{{datum.ToI}}">TSV</a></td>
+      <td><a href="{{datum.vl}}">TSV</a></td>
+      <td><a href="{{datum.cd4}}">TSV</a></td>
+      <td><a href="{{datum.HLA}}">TSV</a></td>
+      <td><a href="{{datum.refgb}}">GB</a> | <a href="{{datum.reffa}}">Fasta</a></td>
+      <td><a href="{{datum.depth}}">TSV</a></td>
+      <td><a href="{{datum.act}}">ZIP</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container" style="padding:20px">
-  <!-- flashed messages -->
+  <!-- FLASHED MESSAGES -->
   {% with messages = get_flashed_messages() %}
   {% if messages %}
   <div class="alert alert-danger" role="alert">
@@ -12,8 +12,7 @@
   </div>
   {% endif %}
   {% endwith %}
-  <!-- end flashed messages -->
-
+  <!-- FLASHED MESSAGES -->
   <!-- BANNER -->
   <div class="panel header-panel">
     <div class="panel-body">
@@ -37,36 +36,7 @@
       Clinical and summary data
     </div>
     <div class="panel-body">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Patient</th>
-            <th>Samples</th>
-            <th>Time of infection</th>
-            <th>Viral load</th>
-            <th>CD4+ counts</th>
-            <th>HLA type</th>
-            <th>Reference</th>
-            <th>Estimated depth</th>
-            <th>SNV counts</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for datum in data %}
-          <tr>
-            <td>{{datum.pname}}</td>
-            <td>{{datum.nsamples}}</td>
-            <td><a href="{{datum.ToI}}">TSV</a></td>
-            <td><a href="{{datum.vl}}">TSV</a></td>
-            <td><a href="{{datum.cd4}}">TSV</a></td>
-            <td><a href="{{datum.HLA}}">TSV</a></td>
-            <td><a href="{{datum.refgb}}">GB</a> | <a href="{{datum.reffa}}">Fasta</a></td>
-            <td><a href="{{datum.depth}}">TSV</a></td>
-            <td><a href="{{datum.act}}">ZIP</a></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% include "snippets/summaryTable.html" ignore missing %}
     </div>
     <div class='text-explanation'>
       {% include "snippets/summaryData.html" ignore missing %}
@@ -123,7 +93,40 @@
     </div>
   </div>
   <!-- HAPLOTYPES -->
-  <!-- FIXME: the API should go lower, but there is a bug?? -->
+  <!-- READS -->
+  <div class="panel tab-panel">
+    <div class="panel-heading tab bottom-border"> 
+      Sequencing Reads
+    </div>
+    <div class="panel-body">
+      <!-- TABS FOR PATIENT READS -->
+      <ul class="nav nav-tabs">
+        {% for datum in data %}
+        {% if datum.pname == "p1" %}
+        <li class="active"><a data-toggle="tab" href="#reads{{datum.pname}}">{{datum.pname}}</a></li>
+        {% else %}
+        <li><a data-toggle="tab" href="#reads{{datum.pname}}">{{datum.pname}}</a></li>
+        {% endif %}
+        {% endfor %}
+      </ul> 
+      <!-- TABS FOR PATIENT READS -->
+      <div class="tab-content">
+        {% for datum in data %}
+        {% if datum.pname == "p1" %}
+        <div id="reads{{datum.pname}}" class="tab-pane fade in active">
+        {% else %}
+        <div id="reads{{datum.pname}}" class="tab-pane fade">
+        {% endif %}
+          {% include "snippets/readTable.html" ignore missing %}
+        </div>
+        {% endfor %}
+        <div class="text-explanation">
+          {% include "snippets/readDownload.html" ignore missing %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- READS -->
   <!-- API -->
   <div class="panel tab-panel">
     <div class="panel-heading tab bottom-border"> 
@@ -136,79 +139,6 @@
     </div>
   </div>
   <!-- API -->
-  <!-- READS -->
-  <div class="panel tab-panel">
-    <div class="panel-heading tab"> 
-      <a data-toggle="collapse" href="#raw">Sequencing Reads</a>
-    </div>
-    <div id="raw" class="panel-collapse collapse in">
-      <div class="panel-body">
-
-        <!-- tab design draft for read data -->
-        <ul class="nav nav-tabs">
-          {% for datum in data %}
-          {% if datum.pname == "p1" %}
-          <li class="active"><a data-toggle="tab" href="#reads{{datum.pname}}">{{datum.pname}}</a></li>
-          {% else %}
-          <li><a data-toggle="tab" href="#reads{{datum.pname}}">{{datum.pname}}</a></li>
-          {% endif %}
-          {% endfor %}
-        </ul> 
-
-        <div class="tab-content">
-          <!-- need for a jinja for cycle over the patients -->
-          {% for datum in data %}
-          {% if datum.pname == "p1" %}
-          <div id="reads{{datum.pname}}" class="tab-pane fade in active">
-            {% else %}
-            <div id="reads{{datum.pname}}" class="tab-pane fade">
-              {% endif %}
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Sample</th>
-                    <th colspan="6" align="center">PCR amplicon</th>
-                  </tr>
-                  <tr>
-                    <th>[days since infection]</th>
-                    <th>F1</th>
-                    <th>F2</th>
-                    <th>F3</th>
-                    <th>F4</th>
-                    <th>F5</th>
-                    <th>F6</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for sample in datum.reads %}
-                  {% set sampleloop = loop %}
-                  <tr>
-                    <td>{{sample.time}}</td>
-                    {% for fr in fragments %}
-                    <td>
-                      {% if sample.get(fr) %}
-                      <a href="/download/reads_{{datum.pname}}_{{sampleloop.index}}_{{fr}}.bam">BAM</a></td>
-                    {% else %}
-                    -
-                    {% endif %}
-                    </td>
-                    {% endfor %}
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-
-            </div>
-            {% endfor %}
-          </div>
-          <div class="text-explanation">
-            {% include "snippets/readDownload.html" ignore missing %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- READS -->
 </div>
 
 <!-- JavaScript loading at the end to not slow down page load -->
