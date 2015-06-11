@@ -1,11 +1,23 @@
+# vim: fdm=indent
+'''
+author:     Fabio Zanini
+date:       11/06/15
+content:    Blueprint for static html pages (people, impressum, etc.).
+'''
+# Modules
 from flask import Blueprint, render_template
 
-# People page
+
+
+# Blueprint
 static = Blueprint('static', __name__,
                     url_prefix='',
                     static_folder='static',
                     template_folder='templates')
 
+
+
+# Views
 @static.route('/people/', methods=['GET'])
 def people():
     return render_template('people.html',

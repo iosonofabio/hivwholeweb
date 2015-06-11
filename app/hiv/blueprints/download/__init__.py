@@ -1,7 +1,28 @@
+# vim: fdm=indent
+'''
+author:     Fabio Zanini
+date:       11/06/15
+content:    Blueprint for the download of data files.
+
+            NOTE: this is a direct access to existing files using Flask's
+            'serve_static_file' function, which calls the web server facilities.
+            It is faster than the API and delivers in several formats, whereas
+            the API is JSON only.
+
+            NOTE: one COULD allow direct access to the file path from the web,
+            but this blueprint creates a shim that decouples filenames on the
+            hard drives from web URIs, greatly increasing flexibility in case
+            file system optimizations are required (e.g. hierarchical directory
+            tree). The current example of this is the agnostic behaviour of the
+            download view towards underscore (_) VS slash (/).
+'''
+# Modules
 from flask import Blueprint, render_template, abort
 from ... import hiv
 
 
+
+# Blueprint
 download = Blueprint('download', __name__,
                      url_prefix='/download',
                      #static_folder='static',
@@ -9,10 +30,7 @@ download = Blueprint('download', __name__,
 
 
 
-# Proxy view factory for static files, for download
-# NOTE: this is slightly redundant as one can directly access the
-# static files, but allows us for abstraction if needed, by switching
-# off static file serving and changing
+# Views
 @download.route('/<path:path>')
 def data_proxy(path):
     def send_static_file(fn):

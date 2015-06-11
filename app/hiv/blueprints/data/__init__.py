@@ -1,13 +1,24 @@
+# vim: fdm=indent
+'''
+author:     Fabio Zanini
+date:       11/06/15
+content:    Blueprint for the data page.
+'''
+# Modules
 from flask import (Blueprint, render_template, abort, flash,
                    redirect, request, jsonify, make_response)
 
 
+
+# Blueprint
 data = Blueprint('data', __name__,
                  url_prefix='/data',
                  static_folder='static',
                  template_folder='templates')
 
 
+
+# Views
 @data.route('/', methods=['GET', 'POST'])
 def index():
     # Haplotype forms

@@ -1,16 +1,17 @@
+# vim: fdm=indent
+'''
+author:     Fabio Zanini
+date:       11/06/15
+content:    Blueprint for the methods page.
+'''
 from re import split as resplit
 from flask import Blueprint, render_template
 from flask import (render_template, flash, redirect, request, jsonify,
                    make_response, abort)
 from .forms import (LocalHaplotypeForm, TreeForm, ConsensiForm, RegionFragForm,
                     PatSingleForm, PatFragSingleForm, PrecompiledHaplotypeForm)
-from ...models import (TreeModel, PhysioModel, DivdivModel,
-                       CoverageTrajectoryModel,
-                       GenomeModel, AlleleFrequencyTrajectoryModel,
-                       NTemplatesModel, DivdivLocalModel,
-                       LocalHaplotypeModel,
-                      )
-from .backbone import find_section
+from .config import sections
+from ... import hiv
 
 
 
@@ -18,6 +19,7 @@ method = Blueprint('method', __name__,
                     url_prefix='/method',
                     static_folder='static',
                     template_folder='templates')
+hiv.config['BLUEPRINTS']['METHOD'] = {'SECTIONS': sections}
 
 
 @method.route('/')
@@ -27,14 +29,14 @@ def index():
                            section_name='Method')
 
 
-@method.route(find_section(id='af')['url'], methods=['GET', 'POST'])
+@method.route('/singleNucleotidePolymorphisms/', methods=['GET', 'POST'])
 def allele_frequencies():
     if request.json:
+        from ...models import AlleleFrequencyTrajectoryModel
         pname = request.json['patient']
         data = {'data': AlleleFrequencyTrajectoryModel(pname).get_data()}
         return jsonify(**data)
 
-    section = find_section(id='af')
 
     form = PatSingleForm()
     if request.method == 'GET':
@@ -51,16 +53,18 @@ def allele_frequencies():
             'id': pname}
 
     return render_template('allele_frequencies.html',
-                           title=section['name'],
+                           title='Single nucleotide polymorphisms',
+                           section_name='Single nucleotide polymorphisms',
                            data=data,
                            form=form,
                            show_intro=show_intro,
-                           section_name=section['name'],
                           )
 
-@method.route(find_section(id='cov')['url'], methods=['GET', 'POST'])
+
+@method.route('/coverage/', methods=['GET', 'POST'])
 def coverage():
     if request.json:
+        from ...models import CoverageTrajectoryModel
         pname = request.json['patient']
         data = {'data': CoverageTrajectoryModel(pname).get_data()}
         return jsonify(**data)
@@ -81,16 +85,17 @@ def coverage():
 
     return render_template('coverage.html',
                            title='Coverage',
+                           section_name='Coverage',
                            data=data,
                            form=form,
                            show_intro=show_intro,
-                           section_name='Coverage',
                           )
 
 
-@method.route(find_section(id='physio')['url'], methods=['GET', 'POST'])
+@method.route('/physiological/', methods=['GET', 'POST'])
 def physio():
     if request.json:
+        from ...models import PhysioModel
         pname = request.json['patient']
         data = {'data': PhysioModel(pname).get_data()}
         return jsonify(**data)
@@ -111,17 +116,18 @@ def physio():
 
     return render_template('physio.html',
                            title='Viral load and CD4+ counts',
+                           section_name='Viral load and CD4+ counts',
                            data=data,
                            form=form,
                            show_intro=show_intro,
-                           section_name='Viral load and CD4+ counts',
                           )
 
 
 
-@method.route(find_section(id='tree')['url'], methods=['GET', 'POST'])
+@method.route('/trees/', methods=['GET', 'POST'])
 def trees():
     if request.json:
+        from ...models import TreeModel
         req = request.json
         tree = TreeModel(req['patient'], req['region'])
 
@@ -158,17 +164,18 @@ def trees():
 
     return render_template('trees.html',
                            title='Phylogenetic trees',
+                           section_name='Phylogenetic trees',
                            data=data,
                            form=form,
                            plotTitle=plot_title,
                            show_intro=show_intro,
-                           section_name='Phylogenetic trees',
                           )
 
 
-@method.route(find_section(id='divdiv')['url'], methods=['GET', 'POST'])
+@method.route('/divdiv/', methods=['GET', 'POST'])
 def divdiv():
     if request.json:
+        from ...models import DivdivModel
         req = request.json
         pname = request.json['patient']
         region = request.json['region']
@@ -194,21 +201,20 @@ def divdiv():
 
     return render_template('divdiv.html',
                            title='Divergence and diversity',
+                           section_name='Divergence and diversity',
                            data=data,
                            form=form,
                            show_intro=show_intro,
-                           section_name='Divergence and diversity',
                           )
 
 
-@method.route(find_section(id='genome')['url'], methods=['GET', 'POST'])
+@method.route('/genomes/', methods=['GET', 'POST'])
 def genomes():
     if request.json:
+        from ...models import GenomeModel
         pname = request.json['patient']
         data = {'data': GenomeModel(pname).get_data()}
         return jsonify(**data)
-
-    section = find_section(id='genome')
 
     form = PatSingleForm()
     if request.method == 'GET':
@@ -225,26 +231,25 @@ def genomes():
             'id': pname}
 
     return render_template('genome.html',
-                           title=section['name'],
+                           title='Genome sequences',
+                           section_name='Genome sequences',
                            data=data,
                            form=form,
                            show_intro=show_intro,
-                           section_name=section['name'],
                           )
 
 
-@method.route(find_section(id='consensi')['url'], methods=['GET', 'POST'])
+@method.route('/consensi/', methods=['GET', 'POST'])
 def consensi():
     form = ConsensiForm()
-    section = find_section(id='consensi')
 
     if request.method == 'GET':
         show_intro = True
         return render_template('consensi.html',
                        title='Consensus sequences',
+                       section_name='Consensus sequences',
                        form=form,
                        show_intro=show_intro,
-                       section_name=section['name'],
                       )
 
 
@@ -253,19 +258,21 @@ def consensi():
         flash('Select one region and one patient!')
         return render_template('consensi.html',
                        title='Consensus sequences',
+                       section_name='Consensus sequences',
                        form=form,
                        show_intro=show_intro,
-                       section_name=section['name'],
                       )
 
     pname = form.patient.data
     region = form.region.data
-    return redirect('/download/consensi_'+pname+'_'+region+'.fasta')
+    return redirect('/download/consensi/'+pname+'_'+region+'.fasta')
 
 
-@method.route(find_section(id='divdiv_local')['url'], methods=['GET', 'POST'])
+@method.route('/divdivLocal/', methods=['GET', 'POST'])
 def divdiv_local():
     if request.json:
+        from ...models import DivdivLocalModel
+
         req = request.json
         pname = req['patient']
         kwargs = {}
@@ -275,8 +282,6 @@ def divdiv_local():
 
         data = {'data': DivdivLocalModel(pname, **kwargs).get_data()}
         return jsonify(**data)
-
-    section = find_section(id='divdiv_local')
 
     form = PatSingleForm()
     if request.method == 'GET':
@@ -293,29 +298,28 @@ def divdiv_local():
             'id': pname}
 
     return render_template('divdiv_local.html',
-                           title=section['name'],
+                           title='Local divergence and diversity',
+                           section_name='Local divergence and diversity',
                            data=data,
                            form=form,
                            show_intro=show_intro,
-                           section_name=section['name'],
                           )
 
 
-@method.route(find_section(id='haplo')['url'], methods=['GET', 'POST'])
+@method.route('/haplotypes/', methods=['GET', 'POST'])
 def haplotypes():
 
     form = LocalHaplotypeForm()
     formpc = PrecompiledHaplotypeForm()
-    section = find_section(id='haplo')
 
     if request.method == 'GET':
         show_intro = True
         return render_template('haplotypes.html',
-                               title=section['name'],
+                               title='Haplotypes',
+                               section_name='Haplotypes',
                                show_intro=show_intro,
                                form=form,
                                formpc=formpc,
-                               section_name=section['name'],
                               )
 
     show_intro = False
@@ -323,19 +327,21 @@ def haplotypes():
         flash('Form incorrectly filled!')
 
         return render_template('haplotypes.html',
-                       title=section['name'],
-                       show_intro=show_intro,
-                       form=form,
-                       formpc=formpc,
-                       section_name=section['name'],
-                      )
+                               title='Haplotypes',
+                               section_name='Haplotypes',
+                               show_intro=show_intro,
+                               form=form,
+                               formpc=formpc,
+                              )
 
     if formpc.validate_on_submit():
         pname = formpc.patient.data
         region = formpc.region.data
-        return redirect('/download/haplotypes_'+pname+'_'+region+'.fasta')
+        return redirect('/download/haplotypes/'+pname+'/'+region+'.fasta')
 
     elif form.validate_on_submit():
+        from ...models import LocalHaplotypeModel
+
         # NOTE: we offer only genomewide HXB2 coordinates
         region = 'genomewide'
         pname = form.patient.data
@@ -350,12 +356,12 @@ def haplotypes():
             flash('No PCR fragment covers such region, please select a narrower region')
 
             return render_template('haplotypes.html',
-                           title=section['name'],
-                           show_intro=show_intro,
-                           form=form,
-                           formpc=formpc,
-                           section_name=section['name'],
-                          )
+                                   title='Haplotypes',
+                                   section_name='Haplotypes',
+                                   show_intro=show_intro,
+                                   form=form,
+                                   formpc=formpc,
+                                  )
 
 
         # Get the data from a temporary folder + file
@@ -376,14 +382,13 @@ def haplotypes():
         return response
 
 
-@method.route('/n_templates/', methods=['POST'])
+@method.route('/nTemplates/', methods=['POST'])
 def n_templates():
     if request.json:
+        from ...models import NTemplatesModel
         pname = request.json['patient']
         data = {'data': NTemplatesModel(pname).get_data()}
         return jsonify(**data)
 
     else:
         abort(403)
-
-

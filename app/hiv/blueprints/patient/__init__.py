@@ -1,15 +1,27 @@
+# vim: fdm=indent
+'''
+author:     Fabio Zanini
+date:       11/06/15
+content:    Blueprint for the patient page.
+'''
+# Modules
 from flask import (Blueprint, render_template, abort, request,
                    redirect, flash, make_response)
 from ...models import (PatientTableModel, SampleTableModel,
                        LocalHaplotypeModel)
 from .forms import RoiForm, PrecompiledHaplotypeForm, ConsensiForm
 
+
+
+# Blueprint
 patient = Blueprint('patient', __name__,
                     url_prefix='/patient',
                     static_folder='static',
                     template_folder='templates')
 
 
+
+# Views
 @patient.route('/<pname>/', methods=['GET', 'POST'])
 def index(pname):
     from ... import hiv
