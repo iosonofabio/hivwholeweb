@@ -3,10 +3,10 @@
 {{ super() }}
 <!-- display message if javascript is disabled -->
 <noscript>
-  <div class="bg-danger">
-  <p class="text-danger"><span class="glyphicon glyphicon-warning-sign"></span><strong> Warning:</strong> You don't have JavaScript activated. For full functionality of our site JavaScript has to be enabled.</p>
-  <a href="http://www.enable-javascript.com/" target="_blank">How to enable JavaScript?</a>
-</div>
+  <div class="alert alert-danger">
+    <p><span class="glyphicon glyphicon-warning-sign"></span><strong> Warning:</strong> You don't have JavaScript activated. For full functionality of our site JavaScript has to be enabled.</p>
+    <a href="http://www.enable-javascript.com/" target="_blank">How to enable JavaScript?</a>
+  </div>
 </noscript>
 {% endblock %}
 {% block content %}

@@ -1,7 +1,7 @@
 /* general styles */
 .container {
-  padding-top:20px;
-  max-width: 1500px 
+  padding-top: 20px;
+  max-width: 1500px
 }
 .text-explanation{
   /*font: 12px sans-serif;*/
@@ -23,14 +23,14 @@
   text-align: justify;
   line-height: 1.5;
 }
-
-.bg-danger {
-  width: 80%; 
-  margin-left: 10%; 
+.alert {
+  max-width: 1500px;
+  margin-right: 10%;
+  margin-left: 10%;
   margin-top: 20px;
-  margin-bottom: 20px; 
-  padding-top: 20px; 
-  padding-left: 20px; 
+  margin-bottom: 20px;
+  padding-top: 20px;
+  padding-left: 20px;
   padding-bottom: 20px;
 }
 a:link {
@@ -60,7 +60,6 @@ a:visited:hover {
 body {
   background-color: #fcfcfc;
 }
-
 
 /* table style */
 .numbers {
@@ -131,13 +130,15 @@ body {
   max-width: 1100px;
 }
 
-
 /*publication page styles */
 p.list {
-font-size:47px;
-color:lightgrey;
-font-weight:bold;
-font-style:italic;
+  font-size: 47px;
+  color: lightgrey;
+  font-weight: bold;
+  font-style: italic;
+}
+.content {
+  max-width: 1100px;
 }
 
 /* axis styles */
