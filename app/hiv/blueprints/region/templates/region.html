@@ -6,7 +6,6 @@
 {% block content %}
 
 <div class="container">
-
   <!-- SIDEBAR -->
   <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 region-sidebar">
     <div class="panel sidebar-panel">
@@ -26,8 +25,7 @@
   </div>
   <div class="clearfix visible-xs-block"></div>
   <!-- SIDEBAR -->
-
-  <!-- content -->
+  <!-- CONTENT -->
   <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 region-content">
     <!-- header -->
     <div class="panel header-panel">
@@ -61,11 +59,13 @@
         <div id="tree" class="panel-collapse collapse in" align="center">
           <div class="panel-body">
             <svg class="d3-plot" id="svgTree"></svg>
+            <!-- NOTE: the tag below is a trick for the tree plot -->
+            <div id="switchColorLinkPatient" class="active"></div>
           </div>
         </div>
         <div class="text-explanation">{% include "snippets/treeRegion.html" ignore missing %}</div>
       </div>
-      <!-- TREE END -->
+      <!-- TREE -->
       <!-- DIVERGENCE -->
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
@@ -79,7 +79,7 @@
         </div>
         <div class="text-explanation">{% include "snippets/divergenceRegion.html" ignore missing %}</div>
       </div>
-      <!-- DIVERGENCE END -->
+      <!-- DIVERGENCE -->
       <!-- DIVERSITY -->
       <div class="panel tab-panel"> 
         <div class="panel-heading tab">
@@ -93,13 +93,13 @@
         </div>
         <div class="text-explanation">{% include "snippets/diversityRegion.html" ignore missing %}</div>
       </div>
-      <!-- DIVERSITY END -->
+      <!-- DIVERSITY -->
     </div>
-
   </div>
+  <!-- CONTENT -->
 </div>
 
-<!-- Scripts at the end of page load -->
+<!-- JS -->
 <script type="text/javascript" src="/static/js/genome.js"></script>
 <script type="text/javascript">
 function loadGenome(id, pname, highlight) {
@@ -161,8 +161,6 @@ function loadTree(id, pname, region) {
   });
 }
 </script>
-
-
 <!-- load at page opening -->
 <script>
 loadGenome("svgGenome", "HXB2", true);
@@ -170,9 +168,4 @@ loadDivs("svgDivergence", {{config['PATIENTS'] | tojson}}, "{{region}}", "dg");
 loadDivs("svgDiversity", {{config['PATIENTS'] | tojson}}, "{{region}}", "ds");
 loadTree("svgTree", "all", "{{region}}");
 </script>
-
-
-<!-- NOTE: the tag below is a trick for the tree plot -->
-<div id="switchColorLinkPatient" class="active"></div>
-
 {% endblock %}

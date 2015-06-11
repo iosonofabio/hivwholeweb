@@ -513,27 +513,26 @@ loadHaplo("haploThumbnail");
 
 <!-- Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken -->
 <script>
-  $('#switchRectangular').on('click', function () {
-   $('#switchRadial').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg");
- });
-  $('#switchRadial').on('click', function () {
-   $('#switchRectangular').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg");
- });
-
-  $('#switchColorLinkBlack').on('click', function () {
-   $('#switchColorLinkDate').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg");
- });
-  $('#switchColorLinkDate').on('click', function () {
-   $('#switchColorLinkBlack').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg");
- });
-</script>
-
+$('#switchRectangular').on('click', function () {
+  $('#switchRadial').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+$('#switchRadial').on('click', function () {
+  $('#switchRectangular').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});   
+$('#switchColorLinkBlack').on('click', function () {
+  $('#switchColorLinkDate').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+$('#switchColorLinkDate').on('click', function () {
+  $('#switchColorLinkBlack').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+</ script>
+   
 {% endblock %}

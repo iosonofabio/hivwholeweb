@@ -1,35 +1,5 @@
 {% extends "sidebar.html" %}
-{% block head_end %}
-{{ super() }}
-<script type="text/javascript" src="/static/js/trees.js"></script>
-<script type="text/javascript">
-function load_single(id, pname, region) {
- d3.xhr("{{ url_for('.trees') }}")
-  .header("Content-Type", "application/json")
-  .post(
-    JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
-    function(error, request) {
-     var data = JSON.parse(request.responseText);
-     data.pname = pname;
-     data.region = region;
-
-     var treefn = data.tree;
-
-     d3.json(treefn, function(error, tree) {
-      data.tree = tree;      
-      updateTree(id, data);
-     });     
-    });
-}
-
-function load() {
- load_single("treeSvg{{data.id}}", "{{data.pname}}", "{{data.region}}");
-}
-</script>
-{% endblock %}
-{% block body_attributes %}onload="load()"{% endblock %}
 {% block content %}
- 
  {% if show_intro %}
   <p class="text-explanation">
    Phylogenetic trees give a general idea on how similar sequences are. Here we plot trees from consensus sequences from different time points, patients, and parts of the genome. You can specify which trees to display at the bottom of the page.
@@ -55,7 +25,7 @@ function load() {
   </div>
  </div>
  <div>
-  <svg id='treeSvg{{data.id}}'></svg>
+  <svg id='treeSvg'></svg>
  </div>
  <br>
 
@@ -77,47 +47,64 @@ function load() {
   <button type="submit" class="btn btn-default">Plot</button>
  </form>
 
- <script>
-  // Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken
-  $('#switchRectangular').on('click', function () {
-   $('#switchRadial').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg{{data.id}}");
+<!-- JS -->
+<script type="text/javascript" src="/static/js/trees.js"></script>
+<script type="text/javascript">
+function loadTree(id, pname, region) {
+  d3.json("/api/data/tree/"+pname+"/"+region, function(error, tree) {
+    var data = {
+      'tree': tree,
+      'pname': pname,
+      'region': region,
+    };
+    updateTree(id, data);
   });
-  $('#switchRadial').on('click', function () {
-   $('#switchRectangular').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg{{data.id}}");
-  });
+}
 
-  $('#switchColorLinkBlack').on('click', function () {
-   $('#switchColorLinkDate').removeClass('active');
-   $('#switchColorLinkSubtype').removeClass('active');
-   $('#switchColorLinkPatient').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg{{data.id}}");
-  });
-  $('#switchColorLinkDate').on('click', function () {
-   $('#switchColorLinkBlack').removeClass('active');
-   $('#switchColorLinkSubtype').removeClass('active');
-   $('#switchColorLinkPatient').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg{{data.id}}");
-  });
-  $('#switchColorLinkSubtype').on('click', function () {
-   $('#switchColorLinkBlack').removeClass('active');
-   $('#switchColorLinkDate').removeClass('active');
-   $('#switchColorLinkPatient').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg{{data.id}}");
-  });
-  $('#switchColorLinkPatient').on('click', function () {
-   $('#switchColorLinkBlack').removeClass('active');
-   $('#switchColorLinkSubtype').removeClass('active');
-   $('#switchColorLinkDate').removeClass('active');
-   $(this).addClass('active');
-   updateTree("treeSvg{{data.id}}");
-  });
+loadTree("treeSvg", "{{data.pname}}", "{{data.region}}");
+</script>
 
- </script>
+<script>
+// Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken
+//NOTE: this is not optimal, as in different situations we want to show some button or not.
+// One would need a frontend JS framework for this.
+$('#switchRectangular').on('click', function () {
+  $('#switchRadial').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+$('#switchRadial').on('click', function () {
+  $('#switchRectangular').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+$('#switchColorLinkBlack').on('click', function () {
+  $('#switchColorLinkDate').removeClass('active');
+  $('#switchColorLinkSubtype').removeClass('active');
+  $('#switchColorLinkPatient').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+$('#switchColorLinkDate').on('click', function () {
+  $('#switchColorLinkBlack').removeClass('active');
+  $('#switchColorLinkSubtype').removeClass('active');
+  $('#switchColorLinkPatient').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+$('#switchColorLinkSubtype').on('click', function () {
+  $('#switchColorLinkBlack').removeClass('active');
+  $('#switchColorLinkDate').removeClass('active');
+  $('#switchColorLinkPatient').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+$('#switchColorLinkPatient').on('click', function () {
+  $('#switchColorLinkBlack').removeClass('active');
+  $('#switchColorLinkSubtype').removeClass('active');
+  $('#switchColorLinkDate').removeClass('active');
+  $(this).addClass('active');
+  updateTree("treeSvg");
+});
+</script>
 {% endblock %}
