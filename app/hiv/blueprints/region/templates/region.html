@@ -138,27 +138,20 @@ function loadDivs(id, pnames, region, dtype, data) {
             loadDivs(id, pnames, region, dtype, data);
           else
             updateDivs(id, data, dtype);
-        }
-        );
+        });
 }
 
 function loadTree(id, pname, region) {
-  d3.xhr("/method/trees/")
-  .header("Content-Type", "application/json")
-  .post(
-   JSON.stringify({patient: pname, region: region, treeFormat: "json"}),
-   function(error, request) {
-    var data = JSON.parse(request.responseText);
-    d3.json(data.tree, function(error, tree) {
-     data.tree = tree;      
-     data.pname = pname;
-     data.region = region;
-     data.leafLabels = false;
-     data.optimizeSpace = true;
-     data.tipMuts = false;
-     updateTree(id, data);
+  d3.json("/api/data/tree/"+pname+"/"+region, function(error, tree) {
+    var data = {};
+    data.tree = tree;      
+    data.pname = pname;
+    data.region = region;
+    data.leafLabels = false;
+    data.optimizeSpace = true;
+    data.tipMuts = false;
+    updateTree(id, data);
    });     
-  });
 }
 </script>
 <!-- load at page opening -->
