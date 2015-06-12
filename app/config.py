@@ -33,7 +33,8 @@ DATA_SUBFOLDER = 'data'
 REFERENCES = ['HXB2']
 
 # Only patients from the paper #1 are listed
-PATIENTS = ('p1', 'p2', 'p3', 'p5', 'p6', 'p8', 'p9', 'p10', 'p11')
+PATIENTS = ['p1', 'p2', 'p3', 'p5', 'p6', 'p8', 'p9', 'p10', 'p11']
+
 # first 11 colors of d3 category20
 COLORS_PATIENTS = {'p1': '#1f77b4',
                    'p2': '#aec7e8',

@@ -92,83 +92,20 @@ def coverage():
                           )
 
 
-@method.route('/physiological/', methods=['GET', 'POST'])
+@method.route('/physiological/', methods=['GET'])
 def physio():
-    if request.json:
-        from ...models import PhysioModel
-        pname = request.json['patient']
-        data = {'data': PhysioModel(pname).get_data()}
-        return jsonify(**data)
-
-    form = PatSingleForm()
-    if request.method == 'GET':
-        show_intro = True
-        pname = 'p1'
-    else:
-        show_intro = False
-        pname = form.patient.data
-        if not form.validate_on_submit():
-            flash('Select a patient!')
-
-    data = {'pname': pname,
-            'name': pname,
-            'id': pname}
-
     return render_template('physio.html',
                            title='Viral load and CD4+ counts',
                            section_name='Viral load and CD4+ counts',
-                           data=data,
-                           form=form,
-                           show_intro=show_intro,
                           )
 
 
 
-@method.route('/trees/', methods=['GET', 'POST'])
+@method.route('/trees/', methods=['GET'])
 def trees():
-    if request.json:
-        from ...models import TreeModel
-        req = request.json
-        tree = TreeModel(req['patient'], req['region'])
-
-        # Newick returns the string, JSON returns a JSON
-        data = {}
-        if ('treeFormat' in req) and (req['treeFormat'].lower() == 'json'):
-            data['tree'] = tree.get_json_filename()
-        else:
-            data['tree'] = tree.get_newick_string()
-
-        return jsonify(**data)
-
-    form = TreeForm()
-    if request.method == 'GET':
-        show_intro = True
-        pname = 'all'
-        region = 'p17'
-    else:
-        show_intro = False
-        pname = form.patient.data
-        region = form.region.data
-        if not form.validate_on_submit():
-            flash('Select one region and one patient!')
-
-    data = {'pname': pname,
-            'region': region,
-            'name': pname+', '+region,
-            'id': pname+'_'+region}
-
-    if 'minor' in region:
-        plot_title = region[:-len('_minor')]+", with minor haplotypes"
-    else:
-        plot_title = region+", consensus sequences"
-
     return render_template('trees.html',
                            title='Phylogenetic trees',
                            section_name='Phylogenetic trees',
-                           data=data,
-                           form=form,
-                           plotTitle=plot_title,
-                           show_intro=show_intro,
                           )
 
 

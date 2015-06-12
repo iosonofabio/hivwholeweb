@@ -17,7 +17,7 @@ content:    Blueprint for the RESTful API.
 '''
 # Modules
 from flask import Blueprint
-from flask_restful import Api, Resource
+from flask_restful import Api
 from .resources import *
 
 
