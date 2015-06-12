@@ -31,11 +31,11 @@
 <script type="text/javascript">
 function loadPhysio(id, pname) {
   d3.json("/api/data/physiological/"+pname, function(error, physio) {
-    updatePhysio(id, physio);
     // DOM manipulations
     $('#plotTitle').html("\<b\>Patient "+pname+"\</b\>");
     $('a#downloadVL').attr("href", "/download/viralLoad_"+pname+".tsv");
     $('a#downloadCC').attr("href", "/download/cellCount_"+pname+".tsv");
+    updatePhysio(id, physio);
   });
 }
 

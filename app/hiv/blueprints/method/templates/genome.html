@@ -1,54 +1,63 @@
 {% extends "sidebar.html" %}
-{% block head_end %}
-{{ super() }}
+{% block content %}
+<p class="text-explanation">
+The HIV genome is annotated with genes, proteins, and RNA structures. The PCR fragments used for RNA amplification are also shown.
+</p>
+<hr>
+<h5 id="plotTitle"></h5>
+<hr>
+<!-- PLOT -->
+<div>
+  <svg class="d3-plot" id="genomeSvg"></svg>
+</div> 
+<!-- PLOT -->
+<br>
+<div class="text-explanation">
+  <b>Note</b>: Genome coordinates are inclusive at both ends and start from 1.
+</div>
+
+<!-- DOWNLOAD -->
+<div class="btn-pad">
+  <a role="button" class="btn btn-default" id="downloadGenome">Download annotated sequence</a>
+</div>
+<!-- DOWNLOAD -->
+
+<!-- FORM -->
+<div class="form-group form-inline" align="center">
+  <label>Patient:</label>
+  <select class="form-control formPatient">
+    {% for patient in config['PATIENTS'] %}
+      <option>{{patient}}</option>
+    {% endfor %} 
+  </select>
+</div>
+<!-- FORM -->
+
 <script type="text/javascript" src="/static/js/genome.js"></script>
 <script type="text/javascript">
- function loadGenome(id, pname, callback) {
-     d3.xhr("{{ url_for('.genomes') }}")
-    .header("Content-Type", "application/json")
-    .post(
-      JSON.stringify({patient: pname}),
-      function(error, request) {
-       var data = JSON.parse(request.responseText);
-       data = {pname: pname, genome: data.data};
-       callback(id, data);
-      }
-   );
- }
+function loadGenome(id, pname) {
+  d3.json("/api/data/referenceSequence/"+pname, function(error, genome) {
+    var data = {
+      'genome': genome,
+      'pname': pname,
+    };
+    // DOM manipulations
+    $('#plotTitle').html("\<b\>Patient "+pname+"\</b\>");
+    $('a#downloadGenome').attr("href", "/download/genome_"+pname+".gb");
+    updateGenome(id, data);  
+  });
+}
 
- function load() {
-  loadGenome("genomeSvg{{data.id}}", "{{data.pname}}", updateGenome);
- }
+loadGenome("genomeSvg", $('.formPatient option:selected').val());
 </script>
-{% endblock %}
-{% block body_attributes %}onload="load()"{% endblock %}
-{% block content %}
- 
- {% if show_intro %}
-  <p class="text-explanation">
-   The HIV genome is annotated with genes, proteins, and RNA structures. The PCR fragments used for RNA amplification are also shown.
-  </p>
-  <hr>
- {% endif %}
- <h5><b>Dataset {{data.name}}</b></h5>
- <hr>
-  <div>
-   <svg class="d3-plot" id="genomeSvg{{data.id}}"></svg>
-  </div> 
- <br>
- <div class="text-explanation">
- <b>Note</b>: Genome coordinates are inclusive at both ends and start from 1.
- </div>
- 
- <div class="btn-pad">
-  <a role="button" class="btn btn-default" href="/download/genome_{{data.pname}}.gb">Download annotated sequence</a>
- </div>
 
- <form role="form" action="" method="post" name="genome_settings" class="form-inline">
-  {{form.hidden_tag()}}
-  <div class="form-group">
-   {{form.patient.label}} {{form.patient}}
-  </div>
-  <button type="submit" class="btn btn-default">Plot</button>
- </form>
+<!-- jquery event handling for selections -->
+<script>
+$('select.formPatient').on('change', function(){
+  var patient = $('.formPatient option:selected').val();
+  emptyGenome("genomeSvg");
+  loadGenome("genomeSvg", patient);
+});
+</script>
+
 {% endblock %}

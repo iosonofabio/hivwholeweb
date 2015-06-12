@@ -2,7 +2,6 @@
 {% block head_end %}
 {{ super() }}
 <style>
-
 .axis {
   font: 12px sans-serif;
   -webkit-user-select: none;
@@ -31,62 +30,61 @@
   stroke-opacity: .5;
   stroke-width: 1.25px;
 }
-
 </style>
+{% endblock %}
+{% block content %}
+<p class="text-explanation">
+Local divergence and local diversity offer a useful overview on the evolutionary rates in different parts of the HIV genome.
+</p>
+<hr>
+<h5 id="plotTitle"></h5>
+<hr>
+
+<!-- PLOT -->
+<div class="svg-container genome {{data.id}}">
+  <svg class="d3-plot" id="divDivLocalSvg"></svg>
+</div>
+<!-- PLOT -->
+<!-- FORM -->
+<div class="form-group form-inline" align="center">
+  <label>Patient:</label>
+  <select class="form-control formPatient">
+    {% for patient in config['PATIENTS'] %}
+      <option>{{patient}}</option>
+    {% endfor %} 
+  </select>
+</div>
+<!-- FORM -->
+
+ <!-- JS -->
 <script src="/static/js/genome.js"></script>
 <script type="text/javascript" src="/static/js/divdiv_local.js"></script>
 <script type="text/javascript">
-  function load_single(id, pname) {
-   d3.xhr("{{ url_for('.divdiv_local') }}")
-    .header("Content-Type", "application/json")
-    .post(
-      JSON.stringify({patient: pname}),
-      function(error, request) {
-       var data_dd = JSON.parse(request.responseText);
+function loadDivDivLocal(id, pname) {
+  d3.json("/api/data/divdivSliding/"+pname, function(error, divdiv) {
+    d3.json("/api/data/referenceSequence/"+pname, function(error, genome) {
+      var data = {
+        'genome': genome,
+        'divdiv': divdiv,
+        'pname': pname,
+      };
+      // DOM manipulations
+      $('#plotTitle').html("\<b\>Patient "+pname+"\</b\>");
+      updateDivDivLocal(id, data);
+    });
+  });
+}
 
-       d3.xhr("{{ url_for('.genomes') }}")
-       .header("Content-Type", "application/json")
-       .post(
-         JSON.stringify({patient: pname}),
-         function(error, request) {
-          var data_gn = JSON.parse(request.responseText);
-	  var data = {"divdiv": data_dd.data, "genome": data_gn.data};
-	  updateDivDivLocal(id, data);
-         }
-       );
-
-      }
-   );
-  }
-
- function load() {
-  load_single("divDivLocalSvg{{data.id}}", "{{data.pname}}");
- }
+loadDivDivLocal("divDivLocalSvg", $('.formPatient option:selected').val());
 </script>
+
+<!-- jquery event handling for selections -->
+<script>
+$('select.formPatient').on('change', function(){
+  var patient = $('.formPatient option:selected').val();
+  emptyDivDivLocal("divDivLocalSvg");
+  loadDivDivLocal("divDivLocalSvg", patient);
+});
+</script>
+
 {% endblock %}
-{% block body_attributes %}onload="load()"{% endblock %}
-{% block content %}
- 
- {% if show_intro %}
-  <p class="text-explanation">
-   Local divergence and local diversity offer a useful overview on the evolutionary rates in different parts of the HIV genome.
-  </p>
-  <hr>
- {% endif %}
- <h5><b>Dataset {{data.name}}</b></h5>
- <hr>
- <div class="svg-container genome {{data.id}}">
-  <svg class="d3-plot" id="divDivLocalSvg{{data.id}}"></svg>
- </div>
-
- <form role="form" action="" method="post" name="divdiv_local_settings" class="form-inline">
-  {{form.hidden_tag()}}
-  <div class="form-group">
-   {{form.patient.label}} {{form.patient}}
-  </div>
-  <button type="submit" class="btn btn-default">Plot</button>
-  </form>
- </div>
-{% endblock %}
-
-

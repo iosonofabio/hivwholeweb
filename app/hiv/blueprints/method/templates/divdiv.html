@@ -1,56 +1,63 @@
 {% extends "sidebar.html" %}
-{% block head_end %}
-{{ super() }}
+{% block content %}
+<p class="text-explanation">
+Genetic divergence measures the fraction of genetic sites that have mutated in the viral population from the initial virus. Diversity indicates the fraction of mutated sites within a single viral population.
+</p>
+<hr>
+<h5 id="plotTitle"></h5>
+<hr>
+<!-- PLOT -->
+<div class="svg-container">
+  <svg class="d3-plot" id="divdivSvg"></svg>
+</div> 
+<!-- PLOT -->
+
+<!-- FORM -->
+<div class="form-group form-inline" align="center" style="padding-top: 20px;">
+  <label>Patient:</label>
+  <select class="form-control formPatient">
+    {% for patient in config['PATIENTS'] %}
+      <option>{{patient}}</option>
+    {% endfor %} 
+  </select>
+
+  <label>Region:</label>
+  <select class="form-control formRegion">
+    {% for region in config['REGIONS_SNP'] %}
+      {% if region == 'p17' %}
+        <option selected="selected">{{region}}</option>
+      {% else %}
+        <option>{{region}}</option>
+      {% endif %}
+    {% endfor %} 
+  </select>
+</div>
+<!-- FORM -->
+
+<!-- JS -->
 <script type="text/javascript" src="/static/js/divdiv.js"></script>
 <script type="text/javascript">
- function load_single(id, pname, region) {
-  d3.xhr("{{ url_for('.divdiv') }}")
-   .header("Content-Type", "application/json")
-   .post(
-     JSON.stringify({patient: pname, region: region}),
-     function(error, request) {
-      var data = JSON.parse(request.responseText);
-      updateDivDiv(id, data.data);
-     }
-  );
- }
+function loadDivDiv(id, pname, region) {
+  d3.json("/api/data/divdiv/"+pname+"/"+region, function(error, divdiv) {
+    // DOM manipulations
+    $('#plotTitle').html("\<b\>Patient "+pname+", region "+region+"\</b\>");
+    updateDivDiv(id, divdiv);  
+  });
+}
 
- function load() {
-  load_single("svgDivDiv{{data.id}}", "{{data.pname}}", "{{data.region}}");
- }
+loadDivDiv("divdivSvg",
+    $('.formPatient option:selected').val(),
+    $('.formRegion option:selected').val());
 </script>
-{% endblock %}
-{% block body_attributes %}onload="load()"{% endblock %}
-{% block content %}
- 
- {% if show_intro %}
-  <p class="text-explanation">
-   Genetic divergence measures the fraction of genetic sites that have mutated in the viral population from the initial virus. Diversity indicates the fraction of mutated sites within a single viral population.
-  </p>
-  <hr>
- {% endif %}
-  <h5><b>Dataset {{data.name}}</b></h5>
-  <hr>
-  <div class="svg-container">
-   <svg class="d3-plot" id="svgDivDiv{{data.id}}"></svg>
-  </div> 
 
- <div class="btn-group btn-pad">
- <a role="button" class="btn btn-default" href="/download/divdiv_dg_{{data.pname}}_{{data.region}}.dat">Download divergence</a>
- <a role="button" class="btn btn-default" href="/download/divdiv_ds_{{data.pname}}_{{data.region}}.dat">Download diversity</a>
- </div>
- 
- <form role="form" action="" method="post" name="divdiv_settings" class="form-inline">
-  {{form.hidden_tag()}}
-  <div class="form-group">
-   {{form.patient.label}}
-   {{form.patient}}
-  </div>
-  <div class="form-group">
-   {{form.region.label}}
-   {{form.region}}
-  </div>
-  <button type="submit" class="btn btn-default">Plot</button>
- </form>
+<!-- jquery event handling for selections -->
+<script>
+$('select.formPatient, select.formRegion').on('change', function(){
+  var patient = $('.formPatient option:selected').val();
+  var region = $('.formRegion option:selected').val();
+  emptyDivDiv("divdivSvg");
+  loadDivDiv("divdivSvg", patient, region);
+});
+</script>
 {% endblock %}
 

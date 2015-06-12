@@ -2,7 +2,6 @@
 {% block head_end %}
 {{ super() }}
 <style>
-
 .axis {
   font: 12px sans-serif;
   -webkit-user-select: none;
@@ -31,70 +30,61 @@
   stroke-opacity: .5;
   stroke-width: 1.25px;
 }
-
 </style>
+{% endblock %}
+{% block content %}
+<p class="text-explanation">
+Mutations at different sites are present at different frequencies in the viral population. These frequencies change in time. Frequency changes are caused by depending on interactions with the host immune system and other selective pressures, by linkage and hitchhiking (genetic draft), and by genetic drift.
+</p>
+<hr>
+<h5 id="plotTitle"></h5>
+<hr>
+<!-- PLOT -->
+<div class="svg-container genome">
+  <svg class="d3-plot" id="allFreqSvg" height="700"></svg>
+</div>
+<!-- PLOT -->
+
+<!-- FORM -->
+<div class="form-group form-inline" align="center">
+  <label>Patient:</label>
+  <select class="form-control formPatient">
+    {% for patient in config['PATIENTS'] %}
+      <option>{{patient}}</option>
+    {% endfor %} 
+  </select>
+</div>
+<!-- FORM -->
+
+<!-- JS -->
 <script src="/static/js/genome.js"></script>
 <script type="text/javascript" src="/static/js/allele_frequencies.js"></script>
 <script type="text/javascript">
- function load_single(id, pname, callback) {
-  d3.xhr("{{ url_for('.allele_frequencies') }}")
-   .header("Content-Type", "application/json")
-   .post(
-     JSON.stringify({patient: pname}),
-     function(error, request) {
-      var data = JSON.parse(request.responseText);
+function loadAlleleFrequencies(id, pname) {
+  d3.json("/api/data/singleNucleotidePolymorphisms/"+pname, function(error, snp) {
+    d3.json("/api/data/referenceSequence/"+pname, function(error, genome) {
+      d3.json("/api/data/numberTemplates/"+pname, function(error, nTemplates) {
+        var data = snp;
+        data['pname'] = pname;
+        data['genome'] = genome;
+        data['ntemplates'] = nTemplates;
+        // DOM manipulations
+        $('#plotTitle').html("\<b\>Patient "+pname+"\</b\>");
+        updateAlleleFrequencies(id, data);
+      });    
+    });  
+  });
+}
 
-      d3.xhr("{{ url_for('.genomes') }}")
-      .header("Content-Type", "application/json")
-      .post(
-        JSON.stringify({patient: pname}),
-        function(error, request) {
-         var data_gn = JSON.parse(request.responseText);
+loadAlleleFrequencies("allFreqSvg", $('.formPatient option:selected').val());
+</script>
 
-
-	 d3.xhr("{{ url_for('.n_templates') }}")
-	   .header("Content-Type", "application/json")
-	   .post(
-             JSON.stringify({patient: pname}),
-             function(error, request) {
-              var data_ntemplates = JSON.parse(request.responseText);
-
-	      // This is not totally safe, but ok for now
-	      data = data.data;
-	      data.genome = data_gn.data;
-	      data.ntemplates = data_ntemplates.data.ntemplates;
-	      callback(id, data);
-	   });
-        });
-     });
- }
-
- function load() {
-  load_single("allFreqSvg{{data.id}}", "{{data.pname}}", updateAlleleFrequencies);
- }
+<!-- jquery event handling for selections -->
+<script>
+$('select.formPatient').on('change', function(){
+  var patient = $('.formPatient option:selected').val();
+  emptyAlleleFrequencies("allFreqSvg");
+  loadAlleleFrequencies("allFreqSvg", patient);
+});
 </script>
 {% endblock %}
-{% block body_attributes %}onload="load()"{% endblock %}
-{% block content %}
- 
- {% if show_intro %}
-  <p class="text-explanation">
-      Mutations at different sites are present at different frequencies in the viral population. These frequencies change in time. Frequency changes are caused by depending on interactions with the host immune system and other selective pressures, by linkage and hitchhiking (genetic draft), and by genetic drift.
-  </p>
-  <hr>
- {% endif %}
-  <h5><b>Dataset {{data.name}}</b></h5>
-  <hr>
-  <div class="svg-container genome">
-   <svg class="d3-plot" id="allFreqSvg{{data.id}}" height="700"></svg>
-  </div>
-
- <form role="form" action="" method="post" name="aft_settings" class="form-inline">
-  {{form.hidden_tag()}}
-  <div class="form-group">
-   {{form.patient.label}} {{form.patient}}
-  </div>
-  <button type="submit" class="btn btn-default">Plot</button>
-  </form>
-{% endblock %}
-
