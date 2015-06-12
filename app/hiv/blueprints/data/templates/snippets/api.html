@@ -1,24 +1,64 @@
-<p>
-All data shown on this website can be accessed via a RESTful API for easy web-compatible manipulation.
-</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>URL</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Trees</td>
+      <td>tree/&ltpatientname&gt/&ltregion&gt</td>
+      <td><a href="/api/data/tree/p1/V3">tree/p1/V3</a></td>
+    </tr>
+    <tr>
+      <td>Viral load</td>
+      <td>viralLoad/&ltpatientname&gt</td>
+      <td><a href="/api/data/viralLoad/p1">viralLoad/p1</a></td>
+    </tr>
+    <tr>
+      <td>CD4+ cell count</td>
+      <td>cellCount/&ltpatientname&gt</td>
+      <td><a href="/api/data/cellCount/p1">cellCount/p1</a></td>
+    </tr>
+    <tr>  
+      <td>Number of template molecules</td>
+      <td>numberTemplates/&ltpatientname&gt</td>
+      <td><a href="/api/data/numberTemplates/p1">numberTemplates/p1</a></td>
+    </tr>
+    <tr>  
+      <td>Reference sequences</td>
+      <td>referenceSequence/&ltpatientname&gt</td>
+      <td><a href="/api/data/referenceSequence/p1">referenceSequence/p1</a></td>
+    </tr>
+    <tr>
+      <td>Divergence/diversity</td>
+      <td>divdiv/&ltpatientname&gt/&ltregion&gt</td>
+      <td><a href="/api/data/divdiv/p1/V3">divdiv/p1/V3</a></td>
+    </tr>
+    <tr>  
+      <td>Single nucleotide polymorphisms</td>
+      <td>singleNucleotidePolymorphisms/&ltpatientname&gt</td>
+      <td><a href="/api/data/singleNucleotidePolymorphisms/p1">singleNucleotidePolymorphisms/p1</a></td>
+    </tr>
+    <tr>  
+      <td>Haplotypes</td>
+      <td>haplotypes/&ltpatientname&gt/&ltregion&gt</td>
+      <td><a href="/api/data/haplotypes/p1/V3">haplotypes/p1/V3</a></td>
+    </tr>
+  </tbody>    
+</table>
 
-<p>
-The API is in <b>JSON</b> format only. Any "Accept" HTTP header will be ignored.
-</p>
+<div class="text-explanation">
 
-<p>
-The base URI is <b>/api/data/</b>. To this root you can add parameters of interest:
+<b>Notes:</b>
 <ul>
-  <li><b>TREES:</b> tree/&ltpatientname&gt/&ltregion&gt (e.g. tree/p1/V3)</li>
-  <li><b>VIRAL LOAD:</b> viralLoad/&ltpatientname&gt (e.g. viralLoad/p1)</li>
-  <li><b>CD4+ CELL COUNT:</b> cellCount/&ltpatientname&gt (e.g. cellCount/p1)</li>
-  <li><b>NUMBER OF TEMPLATE MOLECULES:</b> numberTemplates/&ltpatientname&gt (e.g. numberTemplates/p1)</li>
-  <li><b>REFERENCE SEQUENCES:</b> referenceSequence/&ltpatientname&gt (e.g. referenceSequence/p1)</li>
-  <li><b>DIVERGENCE/DIVERSITY:</b> divdiv/&ltpatientname&gt/&ltregion&gt (e.g. divdiv/p1/V3)</li>
-  <li><b>COVERAGE:</b> coverage/&ltpatientname&gt (e.g. coverage/p1)</li>
-  <li><b>SINGLE NUCLEOTIDE POLYMORPHISMS:</b> singleNucleotidePolymorphisms/&ltpatientname&gt (e.g. singleNucleotidePolymorphisms/p1)</li>
-  <li><b>HAPLOTYPES:</b> haplotypes/&ltpatientname&gt/&ltregion&gt (e.g. haplotypes/p1/V3)</li>
-  <li>TODO: write and document complete API</li>
+<li>All data shown on this website can be accessed via a RESTful API for easy web-compatible manipulation.</li>
+<li>The API is in <b>JSON</b> format only. Any "Accept" HTTP header will be ignored.</li>
+<li>The base URL is <b>/api/data/</b>. To this root you can add parameters of interest.</li>
 </ul>
-</p>
 
+ TODO: write and document complete API
+
+</div>
