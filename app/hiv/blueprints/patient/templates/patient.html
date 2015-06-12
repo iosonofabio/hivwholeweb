@@ -117,7 +117,7 @@
           <img width="18" src="../../static/images/icons/tree.svg"> 
           <a data-toggle="collapse" href="#tree" name="phylo">Phylogenetic trees</a>
         </div>
-        <div id="tree" class="panel-collapse collapse">
+        <div id="tree" class="panel-collapse collapse in">
           <div class="panel-body">
             <div align="center">
               <div class="col-xs-8 col-sm-6">
@@ -437,61 +437,61 @@ function loadHaplo(id) {
 <script>
 loadPhysio("physioSvg", "{{pname}}");
 loadHaplo("haploThumbnail");
+loadTree("treeSvg", "{{pname}}", $('.treeRegion option:selected').val());
 </script>
 
 <!-- collapsible event handling -->
 <script type="text/javascript">
   $('#viral').on('shown.bs.collapse', function () {
     loadPhysio("physioSvg", "{{pname}}");
-  })
+  });
   $('#viral').on('hidden.bs.collapse', function () {
     emptyPhysio("physioSvg");
-  })
+  });
 
   $('#genome').on('shown.bs.collapse', function () {
     loadGenome("genomeSvg", "{{pname}}");
-  })
+  });
   $('#genome').on('hidden.bs.collapse', function () {
     emptyGenome("genomeSvg");
-  })
+  });
 
   $('#tree').on('shown.bs.collapse', function () {
     var region = $('.treeRegion option:selected').val();
     loadTree("treeSvg", "{{pname}}", region);
-  })
+  });
   $('#tree').on('hidden.bs.collapse', function () {
     emptyTree("treeSvg");
-  })
+  });
 
   $('#divDiv').on('shown.bs.collapse', function () {
     var region = $('.divDivRegion option:selected').val();
     loadDivDiv("divDivSvg", "{{pname}}", region);
-  })
+  });
   $('#divDiv').on('hidden.bs.collapse', function () {
     emptyDivDiv("divDivSvg");
-  })
+  });
 
   $('#divDivLocal').on('shown.bs.collapse', function () {
     loadDivDivLocal("divDivLocalSvg", "{{pname}}");
-  })
+  });
   $('#divDivLocal').on('hidden.bs.collapse', function () {
     emptyDivDivLocal("divDivLocalSvg");
-  })
+  });
 
   $('#cov').on('shown.bs.collapse', function () {
     loadCoverage("coverageSvg", "{{pname}}");
-  })
+  });
   $('#cov').on('hidden.bs.collapse', function () {
     emptyCoverage("coverageSvg");
-  })
+  });
 
   $('#allFreq').on('shown.bs.collapse', function () {
     loadAlleleFrequencies("allFreqSvg", "{{pname}}");
-  })
+  });
   $('#allFreq').on('hidden.bs.collapse', function () {
     emptyAlleleFrequencies("allFreqSvg");
-  })
-
+  });
 </script>
 
 <!-- jquery event handling for selections (trees, etc) -->
@@ -506,7 +506,6 @@ loadHaplo("haploThumbnail");
    emptyDivDiv("divDivSvg");
    loadDivDiv("divDivSvg", "{{pname}}", region);
  });
-
 </script>
 
 <!-- Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken -->
@@ -531,6 +530,6 @@ $('#switchColorLinkDate').on('click', function () {
   $(this).addClass('active');
   updateTree("treeSvg");
 });
-</ script>
+</script>
    
 {% endblock %}
