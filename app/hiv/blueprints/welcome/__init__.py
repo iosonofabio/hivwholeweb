@@ -20,8 +20,6 @@ welcome = Blueprint('welcome', __name__,
 
 # Views
 @welcome.route('/', methods=['GET'])
-@welcome.route('/index/', methods=['GET'])
-@welcome.route('/welcome/', methods=['GET'])
 def index():
     table = PatientTableModel().get_table()    
     return render_template('welcome.html',

@@ -12,7 +12,7 @@
 {% block content %}
 <div class="container">
   <div class="jumbotron">
-    <h2 class="jumbo-header"><span style="display:inline-block;width:150px;"><img src="/static/images/logo/HIV_v2-1b.png" style="height:130px;"></span><b>HIV EVO</b> <small><b>Intrapatient HIV evolution</b></small></h2>
+    <img src="/static/images/logo/HivEvo2_combined.png" width="100%">
   </div>
   <div class="panel panel-default">
     <div class="panel-body"> 
@@ -42,6 +42,8 @@
         </h5>
         <div align="center">
           <svg id="treeSvgAll" style="max-width:80%"></svg>
+          <!-- NOTE: the tag below is a trick for the tree plot -->
+          <div id="switchColorLinkPatient" class="active"></div>
           <h5 class="text-muted" style="text-align:center">Reference sequences are colored black.</h5>
         </div>
       </div>
@@ -63,12 +65,9 @@
       </div>
     </div>
   </div>
-
-  <!-- NOTE: the tag below is a trick for the tree plot -->
-  <div id="switchColorLinkPatient" class="active"></div>
 </div>
 
-<!-- phylogenetic tree -->
+<!-- JS -->
 <script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
 function loadTree(id, pname, region) {

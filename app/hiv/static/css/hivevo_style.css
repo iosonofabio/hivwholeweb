@@ -59,6 +59,8 @@ a:visited:hover {
 }
 body {
   background-color: #fcfcfc;
+  font-family: "Raleway";
+  font-size: 150%;
 }
 
 /* table style */
@@ -106,10 +108,9 @@ body {
 .jumbotron {
   background-color: white;
   border: 1px lightgrey solid;
+  padding: 20px;
 }
-.jumbo-header {
-  color: indianred;
-}
+
 .subheader {
   margin-left: 17px;
   color: dimgrey;
@@ -117,6 +118,7 @@ body {
 .caption {
   text-align: center;
   color: dimgrey;
+  font-size: 105%;
 }
 
 /* people page styles */
