@@ -114,6 +114,7 @@ body {
 .subheader {
   margin-left: 17px;
   color: dimgrey;
+  font-weight: bold;
 }
 .caption {
   text-align: center;
