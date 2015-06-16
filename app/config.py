@@ -60,10 +60,13 @@ REGIONS_HAPLO = ['p17',
                  'V3',
                 ]
 
-REGIONS_SNP = ['V3',
-               'psi',
-               'p17',
-               'RRE',
+
+REGIONS_SNP = ['psi',
+               'p17', 'p24', 'p2', 'p7', 'p1', 'p6',
+               'PR', 'RT', 'p15', 'IN',
+               'vif', 'vpr', 'vpu',
+               'gp120', 'gp41', 'RRE', 'V3',
+               'nef',
               ]
 
 REGIONS_TREE = REGIONS_SNP + [r+'_minor' for r in REGIONS_HAPLO]

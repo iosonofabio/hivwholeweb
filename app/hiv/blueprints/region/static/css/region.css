@@ -10,7 +10,7 @@
 .region-sidebar
 {
   padding-top: 70px;
-  position: fixed;
+  position: absolute;
   top: 0px;
   bottom: 0px;
   width: 130px; /* same as .patient-content left */

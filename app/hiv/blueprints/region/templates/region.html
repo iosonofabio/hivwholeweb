@@ -102,19 +102,35 @@
 <!-- JS -->
 <script type="text/javascript" src="/static/js/genome.js"></script>
 <script type="text/javascript">
+function updateGenome(id, data) {
+    var svg = d3.select('#'+id),
+        divWidth = $('#'+id).parent().width();
+
+    var chart = genomeChart()
+      .svgWidth(divWidth)
+      .zoomCallbacks({'zoomin': {'pre': function(d) {
+        var loc = window.location.href;
+        if (loc.substr(-1) == '/')
+          loc = loc.substr(0, loc.length - 1);
+        loc = loc.substr(0, loc.lastIndexOf("/")) + "/" + d.name;
+        window.location.href = loc;
+        throw '';
+      }}});
+
+    svg.datum(data)
+       .call(chart);
+}
+
 function loadGenome(id, pname, highlight) {
-  d3.xhr("/method/genomes/")
-    .header("Content-Type", "application/json")
-    .post(
-        JSON.stringify({patient: pname}),
-        function(error, request) {
-          var data = JSON.parse(request.responseText);
-          data = {pname: pname, genome: data.data};
-          if (highlight)
-            data.highlightedRegions = ["{{region}}"];
-          updateGenome(id, data);
-        }
-        );
+  d3.json("/api/data/referenceSequence/"+pname, function(error, genome) {
+    var data = {
+      'genome': genome,
+      'pname': pname,
+    };
+    if (highlight)
+      data.highlightedRegions = ["{{region}}"];
+    updateGenome(id, data);  
+  });
 }
 </script>
 
@@ -124,21 +140,16 @@ function loadGenome(id, pname, highlight) {
 function loadDivs(id, pnames, region, dtype, data) {
   data = data || [];
   var pname = pnames[0];
-  d3.xhr("/method/divdiv/")
-    .header("Content-Type", "application/json")
-    .post(
-        JSON.stringify({patient: pname, region: region}),
-        function(error, request) {
-          var datum = JSON.parse(request.responseText).data;
-          datum.patient = pname;
-          data.push(datum);
-          pnames.shift();
-          // recursive JS call :-)
-          if (pnames.length > 0) 
-            loadDivs(id, pnames, region, dtype, data);
-          else
-            updateDivs(id, data, dtype);
-        });
+  d3.json("/api/data/divdiv/"+pname+"/"+region, function(error, divdiv) {
+    divdiv.patient = pname;
+    data.push(divdiv);
+    pnames.shift();
+    // recursive JS call
+    if (pnames.length > 0) 
+      loadDivs(id, pnames, region, dtype, data);
+    else
+      updateDivs(id, data, dtype);
+  });
 }
 
 function loadTree(id, pname, region) {
