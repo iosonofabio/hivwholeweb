@@ -109,11 +109,13 @@ function updateGenome(id, data) {
     var chart = genomeChart()
       .svgWidth(divWidth)
       .zoomCallbacks({'zoomin': {'pre': function(d) {
-        var loc = window.location.href;
-        if (loc.substr(-1) == '/')
-          loc = loc.substr(0, loc.length - 1);
-        loc = loc.substr(0, loc.lastIndexOf("/")) + "/" + d.name;
-        window.location.href = loc;
+        if ({{config['REGIONS_SNP']|tojson}}.indexOf(d.name) != -1) {
+          var loc = window.location.href;
+          if (loc.substr(-1) == '/')
+            loc = loc.substr(0, loc.length - 1);
+          loc = loc.substr(0, loc.lastIndexOf("/")) + "/" + d.name;
+          window.location.href = loc;
+        }
         throw '';
       }}});
 

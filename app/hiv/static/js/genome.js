@@ -172,7 +172,6 @@ function genomeChart() {
                     var start = d.location[0][0],
                         end = d.location[0][1],
                         zoomData = {'start': start, 'end': end, 'name': d.name};
-                        console.log(zoomData);
 
                     if (("zoomin" in zoomCallbacks) && ("pre" in zoomCallbacks.zoomin))
                         zoomCallbacks.zoomin.pre(zoomData);
