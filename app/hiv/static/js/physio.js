@@ -105,14 +105,14 @@ function updatePhysio(id, data) {
       .attr("transform", "rotate(-90)");
 
  vlTextBox.append("text")
-      .attr("dy", "-4.8em")
+      .attr("dy", "-3.8em")
       .attr("x", -height / 2)
       .style("text-anchor", "middle")
       .text("Viral load [copies/ml]");
  
   vlTextBox.append("circle")
       .attr("class", "circles vlAxis")
-      .attr("cy", "-5.1em")
+      .attr("cy", "-4.0em")
       .attr("cx", -0.85 * height)
       .attr("r", 7)
       .style("fill", colors['viral load']);
