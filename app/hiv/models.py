@@ -335,7 +335,7 @@ class AlleleFrequencyTrajectoryModel(object):
         return data_folder[full]+'single_nucleotide_variants/'+fn
 
 
-    def get_data(self, cov_min=100, af_min=1e-1):
+    def get_data(self, cov_min=50, af_min=1e-1):
         from itertools import izip
         import numpy as np
         npz = np.load(self.get_allele_counts_filename())
@@ -365,7 +365,7 @@ class AlleleFrequencyTrajectoryModel(object):
             cand = ((aft_pos > af_min).sum(axis=0) >= 2).nonzero()[0]
             for ai in cand:
                 af = aft_pos[:, ai]
-                af[af < 2e-3] = 1e-3
+                af[af < 3e-3] = 1e-3
                 aft.append([pos, alpha[ai], zip(times[ind], af)])
                 times_set |= set(times[ind])
             
