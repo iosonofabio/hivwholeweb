@@ -796,11 +796,15 @@ class SampleTableModel(object):
                     elif fieldinds[ifi] == 'RNA':
                         from math import floor, log10
                         fmtfun = lambda x: int(round(float(x), 1 - int(floor(log10(float(x))))))
-                        datafmt = fmtfun(field)
-                        if datafmt < 1000:
-                            datafmt = '{:2d}'.format(datafmt)
+                        field = float(field)
+                        if field < 1:
+                            datafmt = '-'
                         else:
-                            datafmt = '{:2d} 000'.format(datafmt // 1000)                        
+                            datafmt = fmtfun(field)
+                            if datafmt < 1000:
+                                datafmt = '{:2d}'.format(datafmt)
+                            else:
+                                datafmt = '{:2d} 000'.format(datafmt // 1000)                        
 
                     # Any other field
                     else:
