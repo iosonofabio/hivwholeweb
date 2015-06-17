@@ -348,11 +348,16 @@ class AlleleFrequencyTrajectoryModel(object):
         for pos in xrange(act.shape[2]):
             act_pos = act[:, :, pos]
             cov_pos = act_pos.sum(axis=1)
+
+            # Ind are the good time points for this position. The earliest of
+            # those sets the ancestral allele (not plotted)
             ind = cov_pos >= cov_min
             if ind.sum() < 2:
                 continue
 
-            aft_pos = (1.0 * act_pos[ind].T / cov_pos[ind]).T
+            act_pos = act_pos[ind]
+            cov_pos = cov_pos[ind]
+            aft_pos = (1.0 * act_pos.T / cov_pos).T
 
             # Ignore ancestral alleles
             aft_pos[:, act_pos[0].argmax()] = 0
