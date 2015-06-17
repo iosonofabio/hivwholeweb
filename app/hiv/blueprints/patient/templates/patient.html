@@ -173,7 +173,11 @@
                 <label>Region:</label>
                 <select class="form-control divDivRegion">
                   {% for region in config['REGIONS_SNP'] %}
+                  {% if region == 'p17' %}
+                  <option selected="selected">{{region}}</option>
+                  {% else %}
                   <option>{{region}}</option>
+                  {% endif %}
                   {% endfor %} 
                 </select>
               </div>
