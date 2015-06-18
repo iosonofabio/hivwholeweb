@@ -103,14 +103,14 @@ function updateDivDiv(id, data) {
        .attr("transform", "rotate(-90)");
 
  dgTextBox.append("text")
-       .attr("dy", "-4.7em")
+       .attr("dy", "-4.4em")
        .attr("x", -height / 2)
        .style("text-anchor", "middle")
        .text("Divergence");
 
  dgTextBox.append("circle")
       .attr("class", "circles dgAxis")
-      .attr("cy", "-5.1em")
+      .attr("cy", "-4.4em")
       .attr("cx", -0.75 * height)
       .attr("r", 7)
       .style("fill", colors.dg);
@@ -124,14 +124,14 @@ function updateDivDiv(id, data) {
        .attr("transform", "rotate(+90)");
 
  dsTextBox.append("text")
-       .attr("dy", "-5em")
+       .attr("dy", "-4.4em")
        .attr("x", height / 2)
        .style("text-anchor", "middle")
        .text("Diversity");
 
  dsTextBox.append("rect")
       .attr("class", "circles dsAxis")
-      .attr("y", "-5.8em")
+      .attr("y", "-4.8em")
       .attr("x", 0.25 * height)
       .attr("width", 14)
       .attr("height", 14)
