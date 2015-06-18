@@ -43,7 +43,7 @@
           <div class="panel-body">
             <div class="row">
               <div class="col-xs-12">
-                <svg class="d3-plot" id="svgGenome" style="padding-bottom:20px"></svg>
+                <svg class="d3-plot" id="genomeSvg" style="padding-bottom:20px"></svg>
               </div>
             </div>
           </div>
@@ -58,9 +58,16 @@
         </div>
         <div id="tree" class="panel-collapse collapse in" align="center">
           <div class="panel-body">
-            <svg class="d3-plot" id="svgTree" style="max-width:500px;"></svg>
-            <!-- NOTE: the tag below is a trick for the tree plot -->
-            <div id="switchColorLinkPatient" class="active"></div>
+            <div class="col-xs-6 col-centered">
+              <span>Representation:</span>
+              <div class="btn-group btn-pad">
+                <button class="btn btn-default active" type="radio" id="switchRadial" autocomplete="off">Radial</button>
+                <button class="btn btn-default" type="radio" id="switchRectangular" autocomplete="off">Horizontal</button>
+              </div>
+              <svg class="d3-plot" id="treeSvg"></svg>
+              <!-- NOTE: the tag below is a trick for the tree plot -->
+              <div id="switchColorLinkPatient" class="active"></div>
+            </div>
           </div>
         </div>
         <div class="text-explanation">{% include "snippets/treeRegion.html" ignore missing %}</div>
@@ -74,7 +81,7 @@
         </div>
         <div id="divergence" class="panel-collapse collapse in" align="center">
           <div class="panel-body">
-            <svg class="d3-plot" id="svgDivergence"></svg>
+            <svg class="d3-plot" id="divergenceSvg"></svg>
           </div>
         </div>
         <div class="text-explanation">{% include "snippets/divergenceRegion.html" ignore missing %}</div>
@@ -88,7 +95,7 @@
         </div>
         <div id="diversity" class="panel-collapse collapse in" align="center">
           <div class="panel-body">
-            <svg class="d3-plot" id="svgDiversity"></svg>
+            <svg class="d3-plot" id="diversitySvg"></svg>
           </div>
         </div>
         <div class="text-explanation">{% include "snippets/diversityRegion.html" ignore missing %}</div>
@@ -137,7 +144,6 @@ function loadGenome(id, pname, highlight) {
 </script>
 
 <script type="text/javascript" src="/static/js/divdivAll.js"></script>
-<script type="text/javascript" src="/static/js/trees.js"></script>
 <script type="text/javascript">
 function loadDivs(id, pnames, region, dtype, data) {
   data = data || [];
@@ -153,7 +159,9 @@ function loadDivs(id, pnames, region, dtype, data) {
       updateDivs(id, data, dtype);
   });
 }
-
+</script>
+<script type="text/javascript" src="/static/js/trees.js"></script>
+<script type="text/javascript">
 function loadTree(id, pname, region) {
   d3.json("/api/data/tree/"+pname+"/"+region, function(error, tree) {
     var data = {};
@@ -169,9 +177,31 @@ function loadTree(id, pname, region) {
 </script>
 <!-- load at page opening -->
 <script>
-loadGenome("svgGenome", "HXB2", true);
-loadDivs("svgDivergence", {{config['PATIENTS'] | tojson}}, "{{region}}", "dg");
-loadDivs("svgDiversity", {{config['PATIENTS'] | tojson}}, "{{region}}", "ds");
-loadTree("svgTree", "all", "{{region}}");
+loadGenome("genomeSvg", "HXB2", true);
+loadDivs("divergenceSvg", {{config['PATIENTS'] | tojson}}, "{{region}}", "dg");
+loadDivs("diversitySvg", {{config['PATIENTS'] | tojson}}, "{{region}}", "ds");
+loadTree("treeSvg", "all", "{{region}}");
+</script>
+
+<!-- Manual implementation of the radio buttons in jQuery, since the bootstrap default is broken -->
+<script>
+$('#switchRectangular').on('click', function () {
+  $('#switchRadial').removeClass('active');
+  $(this).addClass('active');
+  var data = {};
+  data.leafLabels = false;
+  data.optimizeSpace = true;
+  data.tipMuts = false;
+  updateTree("treeSvg", data);
+});
+$('#switchRadial').on('click', function () {
+  $('#switchRectangular').removeClass('active');
+  $(this).addClass('active');
+  var data = {};
+  data.leafLabels = false;
+  data.optimizeSpace = true;
+  data.tipMuts = false;
+  updateTree("treeSvg", data);
+});   
 </script>
 {% endblock %}
