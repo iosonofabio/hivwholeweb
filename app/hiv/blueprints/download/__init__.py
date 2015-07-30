@@ -147,4 +147,19 @@ def data_proxy(path):
               .get_reads_filename(tind, fragment, full=False, format=fmt))
         return send_static_file(fn)
 
+    # READS
+    elif dtype == 'cocounts':
+        if len(fields) < 3:
+            abort(404)
+        pname = fields[0]
+        tind = fields[1]
+        fragment = fields[2]
+        if fmt is None:
+            fmt = 'npy'
+
+        from ...models import CocountsTableModel
+        fn = (CocountsTableModel(pname)
+              .get_cocounts_filename(tind, fragment, full=False, format=fmt))
+        return send_static_file(fn)
+
     abort(404)

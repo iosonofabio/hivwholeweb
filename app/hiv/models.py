@@ -459,14 +459,14 @@ class LocalHaplotypeModel(object):
 
     def get_timeline_filename(self, full=True):
         '''Get the filename of the timeline'''
-	fn = self.pname+'/timeline.tsv'
-	return data_folder[full]+'patients/'+fn
+        fn = self.pname+'/timeline.tsv'
+        return data_folder[full]+'patients/'+fn
 
 
     def get_coordinate_map_filename(self, full=True, refname='HXB2', format='tsv'):
         '''Get the filename of the coordinate map'''
-	fn = 'coordinate_map_'+self.pname+'_'+refname+'_genomewide.'+format
-	return data_folder[full]+'coordinate_maps/'+fn
+        fn = 'coordinate_map_'+self.pname+'_'+refname+'_genomewide.'+format
+        return data_folder[full]+'coordinate_maps/'+fn
 
 
     def get_local_haplotype_filename(self, full=True):
@@ -583,17 +583,17 @@ class LocalHaplotypeModel(object):
         file_format = filename.split('.')[-1]
         if file_format in file_formats:
             file_format = file_formats[file_format]
-	    alis = [ali['ali'] for ali in alis if ali is not None]
+            alis = [ali['ali'] for ali in alis if ali is not None]
             AlignIO.write(alis, filename, file_format)
-    
+
         elif file_format == 'zip':
             import StringIO
             import zipfile, zlib
 
             with zipfile.ZipFile(filename, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
                 for i, ali in enumerate(alis):
-		    if ali is None:
-		        continue
+                    if ali is None:
+                        continue
 
                     f = StringIO.StringIO()
                     AlignIO.write(ali['ali'], f, 'fasta')
@@ -606,25 +606,25 @@ class LocalHaplotypeModel(object):
 
     def get_data(self, clean=True):
         '''Get the data'''
-	import numpy as np
+        import numpy as np
         from .analysis.get_local_haplotypes import get_local_haplotypes_aligned
 
         if clean:
             self.clean_temporary_folders()
 
-	times = np.loadtxt(self.get_timeline_filename())
+        times = np.loadtxt(self.get_timeline_filename())
 
         fragment, start, end = self.roi 
 
         alis = []
-	for i_time in xrange(len(times)):
-	    bamfilename = self.get_bam_filename(i_time, fragment)
-	    if not os.path.isfile(bamfilename):
-	        alis.append(None)
-	        continue
+        for i_time in xrange(len(times)):
+            bamfilename = self.get_bam_filename(i_time, fragment)
+            if not os.path.isfile(bamfilename):
+                alis.append(None)
+                continue
 
             label = self.pname+'_'+str(times[i_time])+'_days_'+\
-	      fragment+'_'+str(start+1)+'_'+str(end)+'_'
+                    fragment+'_'+str(start+1)+'_'+str(end)+'_'
 
             ali = get_local_haplotypes_aligned(bamfilename, start, end,
                                                label=label,
@@ -634,8 +634,8 @@ class LocalHaplotypeModel(object):
                 alis.append(None)
                 continue
 
-	    alis.append({'time': times[i_time],
-	                 'ali': ali})
+        alis.append({'time': times[i_time],
+                     'ali': ali})
 
         fn_out = self.get_local_haplotype_filename()
         self.store_alignments(alis, fn_out)
@@ -717,8 +717,8 @@ class PatientTableModel(object):
 
     def get_table_filename(self, full=True, format='tsv'):
         '''Get the filename of the patient table'''
-	fn = 'patients.'+format
-	return data_folder[full]+'tables/'+fn
+        fn = 'patients.'+format
+        return data_folder[full]+'tables/'+fn
 
 
     def get_table(self):
@@ -759,7 +759,7 @@ class SampleTableModel(object):
         else:
             fn = fn+'_qualitative'
         fn = fn+'_'+self.pname+'.'+format
-	return data_folder[full]+'tables/'+fn
+        return data_folder[full]+'tables/'+fn
 
 
     def get_table(self, fields=None):
@@ -823,8 +823,8 @@ class SampleTableModel(object):
 class ReadsTableModel(SampleTableModel):
     def get_reads_filename(self, i, fragment, full=True, format='bam'):
         '''Get the filename of the table with the presence of reads files'''
-	fn = fragment+'.'+format
-	fn = data_folder[full]+'reads/'+self.pname+'_sample_'+str(i)+'_'+fn
+        fn = fragment+'.'+format
+        fn = data_folder[full]+'reads/'+self.pname+'_sample_'+str(i)+'_'+fn
         return fn
 
 
@@ -838,4 +838,21 @@ class ReadsTableModel(SampleTableModel):
 
         return table
 
+class CocountsTableModel(SampleTableModel):
+    def get_cocounts_filename(self, i, fragment, full=True, format='bam'):
+        '''Get the filename of the table with the presence of reads files'''
+        fn = fragment+'.'+format
+        fn = data_folder[full]+'pair_nucleotide_variants/cocounts_'+self.pname+'_sample_'+str(i)+'_'+fn
+        return fn
+
+
+    def get_table(self):
+        import os
+
+        table = super(CocountsTableModel, self).get_table(fields=['time'])
+        for it, datum in enumerate(table, 1):
+            for fragment in ['F'+str(i) for i in xrange(1, 7)]:
+                datum[fragment] = os.path.isfile(self.get_cocounts_filename(it, fragment))
+
+        return table
 
