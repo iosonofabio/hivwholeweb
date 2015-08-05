@@ -1,0 +1,34 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Sample</th>
+      <th colspan="6" align="center">PCR amplicon</th>
+    </tr>
+    <tr>
+      <th>[days since infection]</th>
+      <th>F1</th>
+      <th>F2</th>
+      <th>F3</th>
+      <th>F4</th>
+      <th>F5</th>
+      <th>F6</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sample in datum.reads %}
+    {% set sampleloop = loop %}
+    <tr>
+      <td>{{sample.time}}</td>
+      {% for fr in fragments %}
+      <td>
+        {% if sample.get(fr) %}
+        <a href="/download/cocounts_{{datum.pname}}_{{sampleloop.index}}_{{fr}}.npy">npy</a></td>
+      {% else %}
+      -
+      {% endif %}
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

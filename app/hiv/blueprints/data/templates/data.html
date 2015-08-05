@@ -125,6 +125,41 @@
     </div>
   </div>
   <!-- READS -->
+  <!-- COCOUNTS -->
+  <div class="panel tab-panel">
+    <div class="panel-heading tab bottom-border"> 
+      Counts of pairs of SNPs
+    </div>
+    <div class="panel-body">
+      <!-- TABS FOR PATIENT COCOUNTS -->
+      <ul class="nav nav-tabs">
+        {% for datum in data %}
+        {% if datum.pname == "p1" %}
+        <li class="active"><a data-toggle="tab" href="#cocounts{{datum.pname}}">{{datum.pname}}</a></li>
+        {% else %}
+        <li><a data-toggle="tab" href="#cocounts{{datum.pname}}">{{datum.pname}}</a></li>
+        {% endif %}
+        {% endfor %}
+      </ul> 
+      <!-- TABS FOR PATIENT READS -->
+      <div class="tab-content">
+        {% for datum in data %}
+        {% if datum.pname == "p1" %}
+        <div id="cocounts{{datum.pname}}" class="tab-pane fade in active">
+        {% else %}
+        <div id="cocounts{{datum.pname}}" class="tab-pane fade">
+        {% endif %}
+          {% include "snippets/cocountTable.html" ignore missing %}
+        </div>
+        {% endfor %}
+        <div class="text-explanation">
+          {% include "snippets/cocountDownload.html" ignore missing %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- COCOUNTS -->
+
   <!-- API -->
   <div class="panel tab-panel" id="api">
     <div class="panel-heading tab bottom-border"> 
