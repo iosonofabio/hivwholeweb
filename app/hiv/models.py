@@ -488,6 +488,7 @@ class LocalHaplotypeModel(object):
 
 
     def translate_coordinates(self):
+        '''Translate HXB2 coordinate into patient coordinates'''
         import numpy as np
         # NOTE: the map is always genomewide??
         mapco = dict(np.loadtxt(self.get_coordinate_map_filename(full=True),
@@ -496,18 +497,20 @@ class LocalHaplotypeModel(object):
         # In case the coordinate is missing, extend the region
         # Translate start position
         pos = self.roi[1]
+        pmin = min(mapco.iterkeys())
         while pos not in mapco:
             pos -= 1
-        pmin = min(mapco.iterkeys())
-        pos = max(pos, pmin)
+            if pos < pmin:
+                raise ValueError('Initial position outside of sequenced area.')
         start = mapco[pos]
 
         # Translate end position
         pos = self.roi[2]
+        pmax = max(mapco.iterkeys())
         while pos not in mapco:
             pos += 1
-        pmax = max(mapco.iterkeys())
-        pos = min(pos, pmax)
+            if pos > pmax:
+                raise ValueError('Final position outside of sequenced area.')
         end = mapco[pos]
 
         # Find the fragment if available
