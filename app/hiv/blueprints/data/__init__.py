@@ -90,8 +90,8 @@ def index():
 
         data.append({'pname': pname,
                      'nsamples': n_samples,
-                     'vl': d('physio_vl_'+pname+'.tsv'),
-                     'cd4': d('physio_cc_'+pname+'.tsv'),
+                     'vl': d('viralLoad_'+pname+'.tsv'),
+                     'cd4': d('cellCount_'+pname+'.tsv'),
                      'refgb': d('genome_'+pname+'.gb'),
                      'reffa': d('genome_'+pname+'.fasta'),
                      'act': d('act_'+pname+'.zip'),
