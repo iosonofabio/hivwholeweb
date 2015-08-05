@@ -453,14 +453,13 @@ class LocalHaplotypeModel(object):
 
     def get_bam_filename(self, i_time, fragment, full=True):
         '''Get the BAM filename of a sample and a fragment'''
-        fn = self.pname+'/samples/'+str(i_time+1)+'/'+fragment+'.bam'
-        return data_folder[full]+'patients/'+fn
+        return (data_folder[full]+'reads/'+self.pname+'_sample_'+
+                str(i_time+1)+'_'+fragment+'.bam')
 
 
     def get_timeline_filename(self, full=True):
         '''Get the filename of the timeline'''
-        fn = self.pname+'/timeline.tsv'
-        return data_folder[full]+'patients/'+fn
+        return data_folder[full]+'time_points/time_points_'+self.pname+'.tsv'
 
 
     def get_coordinate_map_filename(self, full=True, refname='HXB2', format='tsv'):

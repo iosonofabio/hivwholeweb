@@ -50,7 +50,7 @@ def index():
                 hm.translate_coordinates()
                 cont = True
             except ValueError:
-                flash('No PCR fragment covers such region, please select a narrower region')
+                flash('No PCR fragment covers such region, please select another region')
                 cont = False
 
             if cont:
