@@ -112,14 +112,14 @@ class DivDivSliding(Resource):
 
 class AlleleFrequencies(Resource):
     '''SNP resource, both trajectories and single samples'''
-    def get(self, psname, region='genomewide'):
+    def get(self, psname, region='genomewide', fmt='full'):
         try:
             if '_' in psname:
                 from ....models import AlleleFrequencyModel
-                return AlleleFrequencyModel(psname, region).get_data()
+                return AlleleFrequencyModel(psname, region).get_data(fmt=fmt)
             else:
                 from ....models import AlleleFrequencyTrajectoryModel
-                return AlleleFrequencyTrajectoryModel(psname, region).get_data()
+                return AlleleFrequencyTrajectoryModel(psname, region).get_data(fmt=fmt)
         except IOError:
             msg = "No SNP data for {} and region {} found".format(psname, region)
             abort(404, message=msg)

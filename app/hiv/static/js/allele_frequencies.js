@@ -116,7 +116,7 @@ function updateAlleleFrequencies(id, data) {
 
         vis.select(".afg")
             .selectAll(".afg_point")
-            .data(data.aft)
+            .data(data.data)
             .enter()
             .append("circle")
             .filter(function(d) {
@@ -192,7 +192,7 @@ function updateAlleleFrequencies(id, data) {
                 .interpolate('linear');
    
             visAft.selectAll(".aft")
-                 .data(data.aft)
+                 .data(data.data)
                  .enter()
                  .append("svg:path")
                  .attr("class", "aft")
@@ -353,7 +353,7 @@ function updateAlleleFrequencies(id, data) {
             vis.append("g")
                  .attr("class", "circles afg")
                  .selectAll(".afg_point")
-                 .data(data.aft)
+                 .data(data.data)
                  .enter()
                  .append("circle")
                  .filter(function(d) { return hasTime(d[2], currentTime); })

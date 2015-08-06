@@ -61,7 +61,7 @@ Mutations at different sites are present at different frequencies in the viral p
 <script type="text/javascript" src="/static/js/allele_frequencies.js"></script>
 <script type="text/javascript">
 function loadAlleleFrequencies(id, pname) {
-  d3.json("/api/data/singleNucleotidePolymorphisms/"+pname, function(error, snp) {
+  d3.json("/api/data/snp/"+pname+"/genomewide/sparse", function(error, snp) {
     d3.json("/api/data/referenceSequence/"+pname, function(error, genome) {
       d3.json("/api/data/numberTemplates/"+pname, function(error, nTemplates) {
         var data = snp;

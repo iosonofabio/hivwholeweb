@@ -69,8 +69,8 @@ api.add_resource(Coverage,
 
 # FIXME: this should be way more flexible (only polymorphic sites are returned now)
 api.add_resource(AlleleFrequencies,
-                 '/data/singleNucleotidePolymorphisms/<psname>',
-                 '/data/singleNucleotidePolymorphisms/<psname>/<region>',
+                 '/data/snp/<psname>/<region>',
+                 '/data/snp/<psname>/<region>/<fmt>',
                 )
 
 api.add_resource(Haplotypes,

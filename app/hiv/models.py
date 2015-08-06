@@ -294,7 +294,11 @@ class AlleleFrequencyModel(object):
         return data_folder[full]+'single_nucleotide_variants/'+fn
 
 
-    def get_data(self, cov_min=100):
+    def get_data(self, cov_min=100, fmt='full'):
+
+        if fmt != 'full':
+            raise ValueError('Allele frequencies are only in full format')
+
         from itertools import izip
         import numpy as np
         npz = np.load(self.get_allele_counts_filename())
@@ -335,7 +339,7 @@ class AlleleFrequencyTrajectoryModel(object):
         return data_folder[full]+'single_nucleotide_variants/'+fn
 
 
-    def get_data(self, cov_min=50, af_min=1e-1):
+    def get_data(self, cov_min=50, af_min=1e-1, fmt='full'):
         from itertools import izip
         import numpy as np
         npz = np.load(self.get_allele_counts_filename())
@@ -359,20 +363,40 @@ class AlleleFrequencyTrajectoryModel(object):
             cov_pos = cov_pos[ind]
             aft_pos = (1.0 * act_pos.T / cov_pos).T
 
-            # Ignore ancestral alleles
-            aft_pos[:, act_pos[0].argmax()] = 0
+            if fmt == 'sparse':
+                # Ignore ancestral alleles
+                aft_pos[:, act_pos[0].argmax()] = 0
+                cand = ((aft_pos > af_min).sum(axis=0) >= 2).nonzero()[0]
 
-            cand = ((aft_pos > af_min).sum(axis=0) >= 2).nonzero()[0]
+            elif fmt == 'full':
+                cand = xrange(6)
+
+            else:
+                raise ValueError('Allele frequency trajectories format: sparse|full')
+
             for ai in cand:
                 af = aft_pos[:, ai]
-                af[af < 3e-3] = 1e-3
-                aft.append([pos, alpha[ai], zip(times[ind], af)])
+                # FIXME: this should be done by plots only, but it's here for
+                # performance reasons
+                if fmt == 'sparse':
+                    af[af < 3e-3] = 1e-3
+
+                datum = [(t, float('{:1.3f}'.format(aftmp)))
+                         for (t, aftmp) in izip(times[ind], af)]
+
+                aft.append([pos, alpha[ai], datum])
+
                 times_set |= set(times[ind])
+
             
-        data = {'aft': aft,
+        data = {'data': aft,
                 'tmax': times.max(),
                 'times': sorted(times_set),
-                'len': act.shape[2]}
+                'len': act.shape[2],
+                'format': ('List of [position (bp in patient reference), '+
+                           'nucleotide, '+
+                           'List of pairs [time from infection (days), SNP frequency]]')
+               }
         return data
 
 
