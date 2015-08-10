@@ -1,6 +1,8 @@
 <b>Notes:</b>
   <ul>
-    <li>Select the patient of interest in the tabs above</li>
-    <li>For most fragments, a compressed numpy file with cocounts is available.</li>
-    <li>These files are around 10MB large and have dimension 6x6xLxL, where L is the length of the fragment.</li>
+    <li>Select the patient of interest in the tabs above.</li>
+    <li>A dash indicates a fragment that we were unable to sequence.</li>
+    <li>Each zip archive contains a single-column text file. The format of this file is specified in the first lines (header).</li>
+    <li>Once unzipped and reshaped, the pair counts matrices have dimension 6x6xLxL, where 6 is the length of the nucleotide alphabet, which is ACGT-N, and L is the length of the fragment.</li>
+    <li>Each file is around 10MB large.</li>
   </ul>
