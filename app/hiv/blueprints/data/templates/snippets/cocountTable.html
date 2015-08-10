@@ -21,8 +21,8 @@
       <td>{{sample.time}}</td>
       {% for fr in fragments %}
       <td>
-        {% if sample.get(fr) %}
-        <a href="/download/cocounts_{{datum.pname}}_{{sampleloop.index}}_{{fr}}.npy">NPY</a></td>
+      {% if sample.get(fr) %}
+      <a href="/download/cocounts_{{datum.pname}}_{{sampleloop.index}}_{{fr}}.zip">ZIP</a></td>
       {% else %}
       -
       {% endif %}
