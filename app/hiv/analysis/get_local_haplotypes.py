@@ -5,33 +5,10 @@ date:       11/11/14
 content:    Support module to calculate local haplotypes from a bamfile.
 '''
 # Functions
-def build_msa(haploc, VERBOSE=0, label=''):
-    '''Build multiple sequence alignment from cluster of haplotypes'''
-    from Bio.SeqRecord import SeqRecord
-    from Bio.Seq import Seq
-    from Bio.Alphabet.IUPAC import ambiguous_dna
-
-    seqs = [SeqRecord(Seq(seq, ambiguous_dna),
-                      id=label+'count_'+str(count)+'_rank_'+str(i),
-                      name=label+'count_'+str(count)+'_rank_'+str(i),
-                      description='')
-            for i, (seq, count) in enumerate(haploc.most_common())]
-
+def align_sequences(seqs):
     from .sequence_utils import align_muscle
     ali = align_muscle(*seqs, sort=True)
-
     return ali
-
-
-def cluster_haplotypes(haplo, VERBOSE=0, min_abundance=1):
-    '''Cluster haplotypes (trivial for now)'''
-    from collections import Counter
-    haploc = Counter()
-    for (seq, count) in haplo.iteritems():
-        if count >= min_abundance:
-            haploc[seq] = count
-
-    return haploc
 
 
 def merge_read_pair(seq1, seq2):
@@ -153,18 +130,72 @@ def get_local_haplotypes(bamfilename, start, end, VERBOSE=0, maxreads=-1):
 
             haplotypes[seq] += 1
 
+        if VERBOSE >= 2:
+            print
+
     return haplotypes
 
 
-def get_local_haplotypes_aligned(bamfilename, start, end, label='', VERBOSE=0, maxreads=-1):
+def cluster_haplotypes(haplo, VERBOSE=0, min_abundance=1, min_freq=0.01):
+    '''Cluster haplotypes (trivial for now)'''
+    from collections import Counter
+    haploc = Counter()
+    count_tot = sum(haplo.itervalues())
+    for (seq, count) in haplo.iteritems():
+        if count < min_abundance:
+            continue
+
+        freq = 1.0 * count / count_tot
+        if freq < min_freq:
+            continue
+
+        haploc[seq] = count
+
+    return haploc
+
+
+def format_haplotypes(haploc, VERBOSE=0, label_id='', label_description='', freqmin=0.01):
+    '''Build multiple sequence alignment from cluster of haplotypes'''
+    from Bio.SeqRecord import SeqRecord
+    from Bio.Seq import Seq
+    from Bio.Alphabet.IUPAC import ambiguous_dna
+
+    seqs = []
+    if not haploc:
+        return secs
+
+    count_tot = sum(haploc.itervalues())
+    for (seq, count) in haploc.most_common():
+        freq = 1.0 * count / count_tot
+        s_id = label_id+'frequency_'+str(int(100 * freq))+'%'
+        s_name = s_id
+        s_des = (label_description+
+                 'frequency: '+str(int(100 * freq))+'%'+
+                 ', n.reads: '+str(count))
+        rec = SeqRecord(Seq(seq, ambiguous_dna),
+                      id=s_id,
+                      name=s_name,
+                      description=s_des)
+
+        seqs.append(rec)
+
+    return seqs
+
+
+def get_local_haplotypes_formatted(bamfilename, start, end,
+                                   label_id='',
+                                   label_description='',
+                                   VERBOSE=0,
+                                   maxreads=-1,
+                                   min_freq=0.01,
+                                  ):
     '''Get local haplotypes, clustered and aligned'''
     haplo = get_local_haplotypes(bamfilename, start, end, VERBOSE=VERBOSE,
                                  maxreads=maxreads)
-    haploc = cluster_haplotypes(haplo, VERBOSE=VERBOSE)
-    if len(haploc) == 0:
-        return None
+    haploc = cluster_haplotypes(haplo, VERBOSE=VERBOSE, min_freq=min_freq)
 
-    msa = build_msa(haploc, VERBOSE=VERBOSE,
-                    label=label)
+    seqs = format_haplotypes(haploc, VERBOSE=VERBOSE,
+                             label_id=label_id,
+                             label_description=label_description)
 
-    return msa
+    return seqs
