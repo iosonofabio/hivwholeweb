@@ -67,7 +67,6 @@ api.add_resource(Coverage,
                  '/data/coverage/<psname>/<region>',
                 )
 
-# FIXME: this should be way more flexible (only polymorphic sites are returned now)
 api.add_resource(AlleleFrequencies,
                  '/data/snp/<psname>/<region>',
                  '/data/snp/<psname>/<region>/<fmt>',
