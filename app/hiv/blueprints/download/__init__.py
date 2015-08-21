@@ -164,5 +164,16 @@ def data_proxy(path):
         return send_static_file(fn)
 
 
+    # HLA
+    elif dtype == 'HLA':
+        if len(fields) < 1:
+            abort(404)
+        pname = fields[0]
+
+        from ...models import HLAModel
+        fn = HLAModel(pname).get_filename(full=False, format=fmt)
+        return send_static_file(fn)
+
+
     # default return error code
     abort(404)

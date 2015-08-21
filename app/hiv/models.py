@@ -865,3 +865,15 @@ class CocountsTableModel(SampleTableModel):
 
         return table
 
+
+class HLAModel(object):
+    def __init__(self, pname):
+        self.pname = pname
+
+
+    def get_filename(self, full=True, format='tsv'):
+        '''Get the filename of the samples table'''
+        fn = 'HLA'
+        fn = fn+'_'+self.pname+'.'+format
+        return data_folder[full]+'hla/'+fn
+
