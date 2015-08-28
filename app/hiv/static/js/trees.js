@@ -1,3 +1,35 @@
+/* 
+ * Plot phylogenetic trees with radial or rectangular representation
+ * Author: Fabio Zanini
+ *
+ * Arguments:
+ *   id (string): id of the DOM node to add the SVG to
+ *   data (object): data to plot
+ *
+ * data may contain properties of the chart and/or the data to plot
+ * The data to be plotted are expected to be in data.tree.
+ *
+ * data.tree must be a tree-like structure of objects (usually coming
+ * from JSON parsing). Each node in the tree MUST have the following
+ * properties:
+ *    branch_length (float): the distance between this node and the parent
+ * 
+ * In addition, each node MAY have the following properties:
+ *    DSI (numeric): the time of the node [Days Since Infection]
+ *    CD4 (numeric): the CD4+ cell counts [cells/ul]
+ *    VL (numeric): the viral load [counts/ml]
+ *    subtype (string): the subtype of the HIV sequence
+ *    patient (string): the patient the node is coming from
+ *    muts (string): space-separated list of mutations on the branch
+ *    frequency (float): the frequency of this variant
+ *
+ * In general, properties will be shown in the tooltip and by other visual
+ * cues (e.g. color), if not configured otherwise.
+ *
+ * Typically, each node MIGHT have the following properties, which are
+ * not relevant for plotting:
+ *    seq (string): the sequence attached to the node
+ */
 function emptyTree(id, keepData) {
 
  var svg = d3.select('#'+id);
@@ -7,10 +39,6 @@ function emptyTree(id, keepData) {
 
 }
 
-/* 
- * Plot phylogenetic trees with radial or rectangular representation
- * Author: Fabio Zanini
- */
 // NOTE: this function is ready for callbacks, they have to set data = {chartType: <chartType>}
 function updateTree(id, data) {
     if (typeof(data)==='undefined') data = {};
@@ -79,7 +107,7 @@ function treeChart() {
         height = svgHeight - margin.top - margin.bottom,
         chartType = "radial",
         colorLinkType = "black",
-        leafLabels = true,
+        leafLabels = false,
         optimizeSpace = false,
         tipMuts = true;
 
@@ -154,9 +182,11 @@ function treeChart() {
                 var colorLinkFunc = function(d) {
                     var cscale = d3.scale.category20()
                         .domain(['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11']);
-                    if (d.target.patient != "undefined")
+
+                    pname = d.target.patient
+                    if ((pname[0] == 'p') && (pname.length <= 3))
                         return cscale(d.target.patient);
-                    else if (d.target.name != "undefined")
+                    else if (pname != "undefined")
                         return "black";
                     else
                         return "grey";
@@ -300,7 +330,7 @@ function treeChart() {
                          .attr("text-anchor", function(d) { return d.angle < 180 ? "start" : "end"; })
                          .attr("transform", function(d) {
                              return ("rotate(" + (d.angle - 90) + 
-                                     ")translate(" + (r - 170 + 8) + 
+                                     ")translate(" + (d.radius - 170 + 8) + 
                                      ")rotate(" + (d.angle < 180 ? 0 : 180) + ")");
                          })
                          .text(leafLabelFunc)
@@ -554,12 +584,14 @@ function treeChart() {
 
 
                 function plotBallsRect(d, i) {
-                    if (typeof(d.target.frequency) != "undefined"){
-                        var freq = d.target.frequency,
-                        r = 2 + (18 - 5) * ((Math.log(freq) / Math.LN10) + 2.0) / 2.0;
-                    }else{
-                      r = 2.0;
-                    }
+                    var freq = d.target.frequency;
+                    var r;
+                    if ((typeof(freq) !== "undefined") && (freq != "undefined"))
+                      r = 3.0 + (18 - 5) * ((Math.log(freq) / Math.LN10) + 2.0) / 2.0;
+                    else if (!d.target.children)
+                      r = 3.0;
+                    else
+                      r = 0;
                     vis.append("circle")
                         .attr("class", "leaf")
                         .attr("r", r)
@@ -620,32 +652,17 @@ function treeChart() {
 
         // Get weighted minimun of the date since infection from the terminal nodes
         function setDSI(n) {
-//            if (n.children) {
-//                n.children.map(setDSI);
-//                var dsicum = d3.sum(n.children, function (d) {
-//                    var dsi = d.DSI;
-//                    if (dsi == "undefined")
-//                        return 0;
-//                    return dsi * d.nTerminals;
-//                });
-//                var childrencum = d3.sum(n.children, function(d) {
-//                    if (d.DSI == "undefined")
-//                        return 0;
-//                    return d.nTerminals;
-//                });
-//                if (childrencum == 0)
-//                    n.DSI = "undefined";
-//                else
-//                    n.DSI = getMinTree(n, dsi);
-//            }
-            if (n.children){
+            if (n.children) {
               n.children.map(setDSI);
-              n.DSI = getMinTree(n, function(d){return d.DSI;});
+              if (n.patient == "undefined")
+                  n.DSI = "undefined";
+              else
+                  n.DSI = getMinTree(n, function(d){return d.DSI;});
             }
-            else{
-              if (typeof(n.DSI) == "undefined"){
+            else {
+              if (typeof(n.DSI) == "undefined") {
                 n.DSI = "undefined";
-              }else{
+              } else {
                 n.DSI = n.DSI;
               }
             }
@@ -673,23 +690,19 @@ function treeChart() {
 
             var msg = "";
 
-            if (!(d.children)) {
-                var pname =  String(d.name).split('_')[0];
-                if (pname[0] == "p")
-                    msg = msg + "Patient: " + pname + "</br>";
-                else if (pname != "undefined") {
-                    if (pname == "LAI-III")
-                        msg = msg + "Name: " + pname + " (HXB2)</br>";
-                    else
-                        msg = msg + "Name: " + pname + "</br>";
-                }
-            
+            var pname =  String(d.patient);
+            if ((pname[0] == "p") && (pname.length <= 3))
+                msg = msg + "Patient: " + pname + "</br>";
+            else if (pname != "undefined") {
+                msg = msg + "Isolate: " + pname + "</br>";
+            }
+
+            if (!(d.children)) {            
                 if (isNumeric(d.CD4))
                     msg = msg + "CD4+ cell count [cells/ml]: " + d.CD4 + "</br>";
 
                 if (isNumeric(d.VL))
                     msg = msg + "Viral load [virions/ml]: " + d.VL + "</br>";
-
             }
 
             if ((typeof(d.subtype) != "undefined") && (d.subtype !== "undefined")) {
@@ -697,13 +710,13 @@ function treeChart() {
             }
 
             if (isNumeric(d.DSI))
-                msg = msg + "Day since infection: " + d.DSI.toFixed(0) + "</br>";
+                msg = msg + "Days since infection: " + d.DSI.toFixed(0) + "</br>";
 
             if (isNumeric(d.frequency))
                 msg = msg + "Frequency: " + (100 * d.frequency).toFixed(0) + "%</br>";
 
             if (isNumeric(d.count))
-                msg = msg + "N. reads: " + d.count.toFixed(0) + "</br>";
+                msg = msg + "No. reads: " + d.count.toFixed(0) + "</br>";
 
             if ((tipMuts) && (typeof(d.muts) != "undefined") && (d.muts !== "undefined")){
                 msg = msg + "Mutations on this branch: ";
