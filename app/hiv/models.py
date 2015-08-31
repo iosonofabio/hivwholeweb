@@ -453,7 +453,8 @@ class DivdivLocalModel(object):
 
         data = {'block_length': block_length,
                 'dx': dx,
-                'len': len_times}
+                'L': int(npz['L']),
+                'nTimes': len_times}
 
         # FIXME: this is buggy, we don't get the itime from the raw data
         if self.itimes is not None:

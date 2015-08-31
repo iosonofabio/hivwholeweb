@@ -1,3 +1,11 @@
+/* 
+ * Local divergence and diversity
+ * Author: Fabio Zanini
+ *
+ * Arguments of update function:
+ *   id (string): id of the DOM node to add the SVG to
+ *   data (object): data to plot
+ */
 function emptyDivDivLocal(id, keepData) {
 
  var svg = d3.select('#'+id);
@@ -8,7 +16,6 @@ function emptyDivDivLocal(id, keepData) {
 }
 
 function updateDivDivLocal(id, data) {
-
     var svg = d3.select('#'+id),
         divWidth = $('#'+id).parent().width();
 
@@ -22,14 +29,16 @@ function updateDivDivLocal(id, data) {
     svg.attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.bottom + margin.top);
 
-    var datal = data.divdiv.dg.length;
-  
+    var datal = data.divdiv.dg.length,
+        nTimes = data.divdiv.nTimes,
+        L = data.divdiv.L;
+
     var y = d3.scale.log()
          .domain([0.0001, 1.1])
          .range([height_single, 0]);
     
     var x = d3.scale.linear()
-         .domain([-100, data.divdiv.dg[0][1].length * data.divdiv.dx + data.divdiv.block_length + 100])
+         .domain([-100, L + 100])
          .range([0, width]);
     
     var xAxis = d3.svg.axis()
@@ -109,8 +118,8 @@ function updateDivDivLocal(id, data) {
   		       .interpolate('monotone');
   
     var colors = d3.scale.linear()
-    .domain([0, data.divdiv.len / 4, data.divdiv.len / 3, data.divdiv.len / 2,
-             2 * data.divdiv.len / 3, 3 * data.divdiv.len / 4, data.divdiv.len])
+    .domain([0, nTimes / 4, nTimes / 3, nTimes / 2,
+             2 * nTimes / 3, 3 * nTimes / 4, nTimes])
     .interpolate(d3.interpolateRgb)
     .range(["darkblue", "blue", "cyan", "green", "yellow", "orange", "red"]);
 

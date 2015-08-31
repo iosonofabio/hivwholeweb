@@ -2,7 +2,7 @@
  * Plot phylogenetic trees with radial or rectangular representation
  * Author: Fabio Zanini
  *
- * Arguments:
+ * Arguments of update function:
  *   id (string): id of the DOM node to add the SVG to
  *   data (object): data to plot
  *
