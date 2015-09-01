@@ -20,7 +20,7 @@ def find_tmp_folder():
 
 DEBUG = False
 CSRF_ENABLED = True
-SECRET_KEY = 'a gig is a gig is a gig'
+SECRET_KEY = '<put your key here>'
 
 BLUEPRINTS = {}
 
