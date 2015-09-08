@@ -761,33 +761,30 @@ class SampleTableModel(object):
         self.pname = pname
 
 
-    def get_table_filename(self, full=True, format='tsv', quantitative=False):
+    def get_table_filename(self, full=True, format='tsv'):
         '''Get the filename of the samples table'''
         fn = 'samples'
-        if quantitative:
-            fn = fn+'_quantitative'
-        else:
-            fn = fn+'_qualitative'
         fn = fn+'_'+self.pname+'.'+format
         return data_folder[full]+'tables/'+fn
 
 
-    def get_table(self, fields=None):
-        '''Read the table from file'''
+    def get_table(self, fields=['time', 'RNA',
+                                'F1', 'F2', 'F3', 'F4', 'F5', 'F6']):
+        '''Read the sample table from file'''
         fn = self.get_table_filename(full=True)
 
         table = []
-        fieldinds = []
+        fieldinds = {}
         with open(fn, 'r') as f:
             headerfields = f.readline().rstrip('\n').split('\t')
-            for field in headerfields:
+            for iff, field in enumerate(headerfields):
                 if field == 'days since infection':
                     field = 'time'
-                elif field == 'RNA templates':
+                elif field == 'templates approx':
                     field = 'RNA'
 
-                if (fields is None) or (field in fields):
-                    fieldinds.append(field)
+                if field in fields:
+                    fieldinds[iff] = field
 
             for line in f:
                 tline = {}
@@ -795,36 +792,43 @@ class SampleTableModel(object):
                 if len(fieldsline) == 0:
                     continue
 
-                for ifi, field in enumerate(fieldsline):
-                    if ifi >= len(fieldinds):
-                        break
+                for ifi, datum in enumerate(fieldsline):
+                    if ifi not in fieldinds:
+                        continue
+
+                    field = fieldinds[ifi]
 
                     # Qualitative description of PCR performance
-                    if fieldinds[ifi] in ['F'+str(i) for i in xrange(1, 7)]:
+                    if field in ['F'+str(i) for i in xrange(1, 7)]:
                         # Use reduced alphabet for website
-                        if field in ['end lower', 'low diversity']:
+                        if datum in ['end lower', 'low diversity']:
                             datafmt = 'low'
                         else:
-                            datafmt = field
+                            datafmt = datum
 
                     # Provide RNA templates with 2 significant digits
-                    elif fieldinds[ifi] == 'RNA':
+                    elif field == 'RNA':
                         from math import floor, log10
                         fmtfun = lambda x: int(round(float(x), 1 - int(floor(log10(float(x))))))
-                        field = float(field)
-                        if field < 1:
+                        datum = float(datum)
+                        if datum < 1:
                             datafmt = '-'
                         else:
-                            datafmt = fmtfun(field)
+                            datafmt = fmtfun(datum)
                             if datafmt < 1000:
                                 datafmt = '{:2d}'.format(datafmt)
                             else:
                                 datafmt = '{:2d} 000'.format(datafmt // 1000)                        
 
+                    # Date is in integer days
+                    elif field == 'time':
+                        datafmt = str(int(datum))
+
                     # Any other field
                     else:
-                        datafmt = '{:1.0f}'.format(float(field))
-                    tline[fieldinds[ifi]] = datafmt
+                        datafmt = str(datum)
+
+                    tline[field] = datafmt
                 table.append(tline)
 
         return table
