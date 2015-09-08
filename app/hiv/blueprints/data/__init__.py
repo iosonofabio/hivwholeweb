@@ -96,6 +96,7 @@ def index():
                      'refgb': d('genome_'+pname+'.gb'),
                      'reffa': d('genome_'+pname+'.fasta'),
                      'act': d('act_'+pname+'.zip'),
+                     'depth': d('depth_'+pname+'.tsv'),
                      'reads': reads_table,
                     })
 

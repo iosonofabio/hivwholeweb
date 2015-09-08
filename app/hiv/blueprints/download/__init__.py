@@ -175,5 +175,15 @@ def data_proxy(path):
         return send_static_file(fn)
 
 
+    # ESTIMATED DEPTH
+    elif dtype == 'depth':
+        if len(fields) < 1:
+            abort(404)
+        pname = fields[0]
+        from ...models import SampleTableModel
+        fn = SampleTableModel(pname).get_table_filename(full=False, format=fmt)
+        return send_static_file(fn)
+
+
     # default return error code
     abort(404)
