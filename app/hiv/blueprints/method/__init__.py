@@ -186,5 +186,5 @@ def haplotypes():
                                                    "haplotypes_"+pname+
                                                    "_"+str(start+1)+
                                                    "_"+str(end)+
-                                                   ".zip")
+                                                   ".fasta")
         return response

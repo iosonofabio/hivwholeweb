@@ -109,7 +109,8 @@ function treeChart() {
         colorLinkType = "black",
         leafLabels = false,
         optimizeSpace = false,
-        tipMuts = true;
+        tipMuts = true,
+        scaleBar = true;
 
     // TREE CHART FUNCTION
     function chart(selection) {
@@ -339,14 +340,14 @@ function treeChart() {
                 }
            
                 // scale bar
-                if ((leafLabels === true) & (depth > 1e-6)) {
+                if (scaleBar & (depth > 1e-6)) {
                     var barLengthData = (30.0 / treeScale).toPrecision(1),
                         barLength = treeScale * barLengthData,
                         barLengthText = String(barLengthData);
 
                     var bar = vis.append("g")
                         .attr("class", "lengthbar")
-                        .attr("transform", "translate(" + (r - 50) + "," + (r - 20) + ")");
+                        .attr("transform", "translate(" + (r - 50) + "," + (r - 40) + ")");
            
                     bar.selectAll(".lengthbar")
                        .data([[-barLength, 0, 0, 0]]) //, [-barLength, -barLength, -7, 7], [0, 0, -7, 7]])
@@ -793,6 +794,12 @@ function treeChart() {
     chart.tipMuts = function (_) {
         if (!arguments.length) return tipMuts;
         tipMuts = _;
+        return chart;
+    };
+
+    chart.scaleBar = function (_) {
+        if (!arguments.length) return scaleBar;
+        scaleBar = _;
         return chart;
     };
 

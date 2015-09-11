@@ -83,7 +83,7 @@ def index(pname):
                                                                "haplotypes_"+pname+
                                                                "_"+str(start+1)+
                                                                "_"+str(end)+
-                                                               ".zip")
+                                                               ".fasta")
                     return response
 
             else:
