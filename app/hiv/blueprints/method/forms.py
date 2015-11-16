@@ -9,11 +9,14 @@ from flask.ext.wtf import Form
 from wtforms import BooleanField, IntegerField, SelectField, FormField
 from wtforms.validators import Required
 
+from ... import hiv
+
 
 
 # Globals
 _regions = ('V3', 'PR', 'psi', 'vpr', 'vpu', 'p15', 'p17',
             'p6', 'p2', 'p1', 'p7', 'RRE')
+patients = hiv.config['PATIENTS']
 
 
 
@@ -42,20 +45,20 @@ class RoiForm(Form):
 
 class LocalHaplotypeForm(Form):
     patient = SelectField('Patient',
-                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+                          choices=[[p, p] for p in patients])
     roi = FormField(RoiForm)
 
 
 class PrecompiledHaplotypeForm(Form):
     patient = SelectField('Patient',
-                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+                          choices=[[p, p] for p in patients])
     region = SelectField('Region',
                          choices=[[reg] *2 for reg in _regions])
 
 
 class TreeForm(Form):
     patient = SelectField('Patient',
-                          choices=[['all'] * 2] + [['p'+str(i)] * 2 for i in xrange(1, 12)])
+                          choices=[['all', 'all']] + [[p, p] for p in patients]),
     region = SelectField('Region',
                           choices=([['F'+str(i)] * 2 for i in xrange(1, 7)] +
                                    [[reg] * 2 for reg in _regions] +
@@ -65,19 +68,19 @@ class TreeForm(Form):
 
 class PatSingleForm(Form):
     patient = SelectField('Patient',
-                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+                          choices=[[reg] *2 for reg in _regions])
 
 
 class PatFragSingleForm(Form):
     patient = SelectField('Patient',
-                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+                          choices=[[p, p] for p in patients])
     fragment = SelectField('Fragment',
                            choices=[['F'+str(i)] * 2 for i in xrange(1, 7)])
 
 
 class ConsensiForm(Form):
     patient = SelectField('Patient',
-                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+                          choices=[[p, p] for p in patients])
     region = SelectField('Region',
                           choices=([['genomewide', 'genomewide']] +
                                    [[reg] *2 for reg in _regions] +
@@ -86,7 +89,7 @@ class ConsensiForm(Form):
 
 class RegionFragForm(Form):
     patient = SelectField('Patient',
-                          choices=[['p'+str(i)] * 2 for i in xrange(1, 12)])
+                          choices=[[p, p] for p in patients])
     region = SelectField('Fragment',
                           choices=([['F'+str(i)] * 2 for i in xrange(1, 7)] +
                                    [[reg] *2 for reg in _regions]))
